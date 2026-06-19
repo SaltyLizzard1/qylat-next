@@ -1,0 +1,97 @@
+<svg width="1600" height="900" viewBox="0 0 1600 900" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Center calendar page blowing away</title>
+  <desc id="desc">A centered month page with red month text that peels and blows away.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f8fffc" />
+      <stop offset="100%" stop-color="#edf5ff" />
+    </linearGradient>
+    <filter id="shadow" x="-40%" y="-40%" width="180%" height="180%">
+      <feDropShadow dx="0" dy="10" stdDeviation="9" flood-color="#0f172a" flood-opacity="0.2" />
+    </filter>
+    <style>
+      .monthTitle { font: 800 78px 'Inter', Arial, sans-serif; fill: #dc2626; letter-spacing: 2px; }
+      .dayNum { font: 800 155px 'Inter', Arial, sans-serif; fill: #0f172a; }
+      .meta { font: 700 22px 'Inter', Arial, sans-serif; fill: #475569; }
+      .sheetMonth { font: 800 34px 'Inter', Arial, sans-serif; fill: #dc2626; }
+      .sheetLine { fill: #cbd5e1; }
+      .tearRoot { transform-origin: 800px 450px; }
+
+      .s1 { animation: blowAway1 4s ease-in-out infinite; }
+      .s2 { animation: blowAway2 4s ease-in-out infinite .55s; }
+      .s3 { animation: blowAway3 4s ease-in-out infinite 1.1s; }
+      .s4 { animation: blowAway4 4s ease-in-out infinite 1.65s; }
+
+      @keyframes blowAway1 {
+        0% { transform: translate(0,0) rotate(0deg) scale(1); opacity: 0; }
+        10% { opacity: 1; }
+        30% { transform: translate(-35px,-22px) rotate(-10deg) scale(.98); opacity: 1; }
+        100% { transform: translate(-520px,-170px) rotate(-34deg) scale(.86); opacity: 0; }
+      }
+      @keyframes blowAway2 {
+        0% { transform: translate(0,0) rotate(0deg) scale(1); opacity: 0; }
+        10% { opacity: 1; }
+        35% { transform: translate(-26px,-16px) rotate(-8deg) scale(.98); opacity: 1; }
+        100% { transform: translate(-620px,-90px) rotate(-22deg) scale(.82); opacity: 0; }
+      }
+      @keyframes blowAway3 {
+        0% { transform: translate(0,0) rotate(0deg) scale(1); opacity: 0; }
+        10% { opacity: 1; }
+        35% { transform: translate(-38px,-26px) rotate(-12deg) scale(.97); opacity: 1; }
+        100% { transform: translate(-700px,-220px) rotate(-40deg) scale(.78); opacity: 0; }
+      }
+      @keyframes blowAway4 {
+        0% { transform: translate(0,0) rotate(0deg) scale(1); opacity: 0; }
+        10% { opacity: 1; }
+        35% { transform: translate(-30px,-20px) rotate(-9deg) scale(.98); opacity: 1; }
+        100% { transform: translate(-760px,-140px) rotate(-28deg) scale(.75); opacity: 0; }
+      }
+    </style>
+  </defs>
+
+  <rect width="1600" height="900" fill="url(#bg)" />
+
+  <!-- main calendar centered so month text survives card crop -->
+  <g filter="url(#shadow)">
+    <rect x="560" y="220" width="480" height="460" rx="22" fill="#ffffff" />
+    <rect x="560" y="220" width="480" height="110" rx="22" fill="#fee2e2" />
+    <text x="800" y="295" text-anchor="middle" class="monthTitle">FEB</text>
+
+    <text x="800" y="500" text-anchor="middle" class="dayNum">15</text>
+    <text x="800" y="550" text-anchor="middle" class="meta">days to launch</text>
+    <rect x="640" y="576" width="320" height="3" fill="#fecaca" />
+  </g>
+
+  <!-- curled corner on center page -->
+  <path d="M1008 635 Q970 602 930 620 Q968 655 1008 635Z" fill="#e5e7eb" opacity=".92" />
+  <path d="M1008 635 Q970 602 942 618 Q973 645 1008 635Z" fill="#f8fafc" opacity=".96" />
+
+  <!-- blown off month sheets from center -->
+  <g class="tearRoot s1">
+    <path d="M760 360 L930 360 Q960 418 900 460 L730 460 Q700 410 760 360Z" fill="#ffffff" stroke="#94a3b8" stroke-width="2" />
+    <path d="M760 360 Q780 412 730 460 Q712 410 760 360Z" fill="#e2e8f0" opacity=".9" />
+    <text x="835" y="424" class="sheetMonth">FEB</text>
+    <rect x="792" y="434" width="70" height="7" class="sheetLine" />
+  </g>
+  <g class="tearRoot s2">
+    <path d="M770 370 L940 370 Q968 425 910 468 L742 468 Q712 418 770 370Z" fill="#ffffff" stroke="#94a3b8" stroke-width="2" />
+    <path d="M770 370 Q790 421 742 468 Q724 419 770 370Z" fill="#e2e8f0" opacity=".88" />
+    <text x="846" y="432" class="sheetMonth">FEB</text>
+    <rect x="804" y="442" width="68" height="7" class="sheetLine" />
+  </g>
+  <g class="tearRoot s3">
+    <path d="M778 380 L948 380 Q974 434 918 476 L750 476 Q722 426 778 380Z" fill="#ffffff" stroke="#94a3b8" stroke-width="2" />
+    <path d="M778 380 Q798 430 750 476 Q732 428 778 380Z" fill="#e2e8f0" opacity=".86" />
+    <text x="854" y="440" class="sheetMonth">FEB</text>
+    <rect x="812" y="450" width="66" height="7" class="sheetLine" />
+  </g>
+  <g class="tearRoot s4">
+    <path d="M786 388 L954 388 Q982 442 924 484 L758 484 Q728 434 786 388Z" fill="#ffffff" stroke="#94a3b8" stroke-width="2" />
+    <path d="M786 388 Q806 438 758 484 Q740 436 786 388Z" fill="#e2e8f0" opacity=".84" />
+    <text x="862" y="448" class="sheetMonth">FEB</text>
+    <rect x="820" y="458" width="64" height="7" class="sheetLine" />
+  </g>
+
+  <path d="M350 430 Q520 365 690 430" fill="none" stroke="#93c5fd" stroke-width="5" stroke-linecap="round" opacity=".42" />
+  <path d="M300 540 Q500 470 700 535" fill="none" stroke="#93c5fd" stroke-width="4" stroke-linecap="round" opacity=".34" />
+</svg>
