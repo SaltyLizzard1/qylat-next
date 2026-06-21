@@ -51,7 +51,7 @@ export default function WorkWithMe() {
           just done pretending...
         </p>
 
-        <div className="bg-gray-50 rounded-2xl shadow-xl p-6 md:p-10 mb-8 md:mb-10 border border-gray-100">
+        <div className="rounded-2xl shadow-xl p-6 md:p-10 mb-8 md:mb-10" style={{ background: '#EBF0E6', border: '1px solid rgba(45,80,22,0.15)' }}>
           <h3 className="font-cormorant text-2xl md:text-3xl font-bold text-gray-900 mb-4">The Leap Session</h3>
 
           <p className="text-lg text-gray-600 mb-8">

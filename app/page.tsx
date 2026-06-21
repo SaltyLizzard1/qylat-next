@@ -12,6 +12,10 @@ import About from '../components/About';
 import Footer from '../components/Footer';
 import { scrollToSectionById } from '../utils/scrollToSection';
 
+const Divider = () => (
+  <div className="w-full" style={{ height: '3px', background: 'linear-gradient(90deg, transparent 0%, #C9A030 25%, #F5E070 50%, #C9A030 75%, transparent 100%)' }} />
+);
+
 export default function HomePage() {
   useEffect(() => {
     const hash = window.location.hash?.replace(/^#/, '');
@@ -25,11 +29,17 @@ export default function HomePage() {
     <div className="min-h-screen">
       <Header />
       <Hero />
+      <Divider />
       <LeadMagnet />
+      <Divider />
       <WorkWithMe />
+      <Divider />
       <DiscoverYourIdea />
+      <Divider />
       <IdeaToPlan />
+      <Divider />
       <LeapLog />
+      <Divider />
       <About />
       <Footer />
     </div>

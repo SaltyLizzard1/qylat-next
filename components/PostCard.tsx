@@ -51,7 +51,13 @@ export default function PostCard({ post, onOpenPost }: PostCardProps) {
             <button
               type="button"
               onClick={() => onOpenPost(post.slug)}
-              className="mt-4 inline-block font-medium transition-colors" style={{ color: '#8B6914' }}
+              className="mt-4 self-start font-sans font-semibold text-sm rounded-full px-5 py-2 transition-all duration-200 hover:scale-[1.03] active:scale-[0.98]"
+              style={{
+                background: 'linear-gradient(135deg, #8B6914 0%, #E8C84A 35%, #F5E070 55%, #C9A030 75%, #8B6914 100%)',
+                color: '#2D1A00',
+                border: '1.5px solid #7A5C0A',
+                boxShadow: '0 2px 10px rgba(139,105,20,0.25)',
+              }}
             >
               {post.postType === 'discussion' ? 'Join the discussion →' : 'Read the full leap →'}
             </button>

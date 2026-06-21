@@ -187,7 +187,12 @@ function WorkWithMeCTA({ onTakeLeapClick }: { onTakeLeapClick?: () => void }) {
       <a
         href="#work-with-me"
         onClick={(event) => handleTakeLeapCTA(event, onTakeLeapClick)}
-        className="inline-block bg-orange-500 hover:bg-orange-600 text-white text-lg font-semibold px-8 py-4 rounded-full transition-all transform hover:scale-105 shadow-lg"
+        className="inline-block text-lg font-semibold px-8 py-4 rounded-full transition-all hover:scale-[1.03] active:scale-[0.98] shadow-lg"
+        style={{
+          background: 'linear-gradient(135deg, #8B6914 0%, #E8C84A 35%, #F5E070 55%, #C9A030 75%, #8B6914 100%)',
+          color: '#2D1A00',
+          border: '1.5px solid #7A5C0A',
+        }}
       >
         Work With Me
       </a>
@@ -410,7 +415,7 @@ export const posts: Post[] = [
         <p>The ending never goes as planned.</p>
         <p>Go anyway.</p>
 
-        <div className="bg-gradient-to-br from-emerald-50 to-orange-50 rounded-2xl p-8 mt-12 border border-emerald-200 text-center">
+        <div className="rounded-2xl p-8 mt-12 text-center" style={{ background: '#EBF0E6', border: '1px solid rgba(45,80,22,0.15)' }}>
           <p className="text-sm font-semibold uppercase tracking-widest text-emerald-700 mb-2">
             Launch Pricing &mdash; Only 3 Spots
           </p>
@@ -432,7 +437,12 @@ export const posts: Post[] = [
                 document.getElementById('idea-to-plan')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
               });
             }}
-            className="inline-block bg-orange-500 hover:bg-orange-600 text-white text-lg font-semibold px-8 py-4 rounded-full transition-all transform hover:scale-105 shadow-lg"
+            className="inline-block text-lg font-semibold px-8 py-4 rounded-full transition-all hover:scale-[1.03] active:scale-[0.98] shadow-lg"
+            style={{
+              background: 'linear-gradient(135deg, #8B6914 0%, #E8C84A 35%, #F5E070 55%, #C9A030 75%, #8B6914 100%)',
+              color: '#2D1A00',
+              border: '1.5px solid #7A5C0A',
+            }}
           >
             Get Your Plan &mdash; $149 Early Rate
           </a>

@@ -102,7 +102,12 @@ function WorkWithMeCTA({ onTakeLeapClick }: { onTakeLeapClick?: () => void }) {
             document.getElementById('work-with-me')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
           });
         }}
-        className="inline-block bg-orange-500 hover:bg-orange-600 text-white text-lg font-semibold px-8 py-4 rounded-full transition-all transform hover:scale-105 shadow-lg"
+        className="inline-block text-lg font-semibold px-8 py-4 rounded-full transition-all hover:scale-[1.03] active:scale-[0.98] shadow-lg"
+        style={{
+          background: 'linear-gradient(135deg, #8B6914 0%, #E8C84A 35%, #F5E070 55%, #C9A030 75%, #8B6914 100%)',
+          color: '#2D1A00',
+          border: '1.5px solid #7A5C0A',
+        }}
       >
         Work With Me
       </a>

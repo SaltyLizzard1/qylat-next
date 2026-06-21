@@ -11,7 +11,7 @@ type NavItem =
 const NAV: NavItem[] = [
   { label: 'Home', type: 'scroll', id: 'hero' },
   { label: 'Discover Your Idea', type: 'link', href: '/quiz' },
-  { label: 'Idea To Plan', type: 'scroll', id: 'idea-to-plan' },
+  { label: 'IdeaToPlan', type: 'scroll', id: 'idea-to-plan' },
   { label: 'Work With Me', type: 'scroll', id: 'work-with-me' },
   { label: 'Leap Log', type: 'scroll', id: 'the-leap-log' },
   { label: 'About', type: 'scroll', id: 'about' },
