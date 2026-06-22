@@ -470,14 +470,14 @@ export default function IdeaToPlan() {
                         </select>
                       </div>
                       <div>
-                        <label className="block text-sm font-semibold text-slate-800 mb-1">Goal for this plan</label>
-                        <select name="planGoal" value={form.planGoal} onChange={handleChange}
+                        <label className="block text-sm font-semibold text-slate-800 mb-1">Goal for this plan <span className="text-red-500">*</span></label>
+                        <select name="planGoal" value={form.planGoal} onChange={handleChange} required
                           className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#166534] transition bg-white">
                           <option value="">Select goal...</option>
                           <option value="bank-loan">Bank loan</option>
                           <option value="investor">Investor pitch</option>
                           <option value="personal-roadmap">Personal roadmap</option>
-                          <option value="other">Other</option>
+                          <option value="personal-roadmap">Other / General roadmap</option>
                         </select>
                       </div>
                     </div>
