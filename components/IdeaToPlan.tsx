@@ -10,7 +10,7 @@ const goldGradient =
 const goldBtn = {
   background: goldGradient,
   color: '#2D1A00',
-  border: '1.5px solid #7A5C0A',
+  border: '1.5px solid #92400e',
   boxShadow: '0 8px 32px rgba(139,105,20,0.35)',
 } as const;
 
@@ -175,8 +175,8 @@ export default function IdeaToPlan() {
 
         <div className="relative max-w-4xl mx-auto text-center">
 
-          {/* Introducing label — pinned to top */}
-          <p className="font-sans text-base md:text-lg font-bold uppercase tracking-[0.3em] text-[#8B6914] mb-3">
+          {/* Introducing label */}
+          <p className="font-sans text-base md:text-lg font-bold uppercase tracking-[0.3em] text-[#B45309] mb-3">
             Introducing
           </p>
 
@@ -196,14 +196,14 @@ export default function IdeaToPlan() {
           {/* Headline */}
           <h2
             className="font-cormorant font-bold mb-6 max-w-3xl mx-auto leading-tight"
-            style={{ fontSize: 'clamp(2.25rem, 5vw, 3.2rem)', color: '#2D5016' }}
+            style={{ fontSize: 'clamp(2.25rem, 5vw, 3.2rem)', color: '#166534' }}
           >
             Turn Your Business Idea Into an Actionable Plan in 72 Hours
           </h2>
 
           {/* Body */}
           <div className="max-w-2xl mx-auto mb-10">
-            <p className="text-lg text-gray-600 leading-relaxed">
+            <p className="text-lg text-slate-700 leading-relaxed">
               A done-for-you business planning service built for founders who are ready to move. Fast turnaround. Real plans.
             </p>
           </div>
@@ -214,14 +214,14 @@ export default function IdeaToPlan() {
               <div key={index} className="flex flex-col items-center text-center">
                 <div
                   className="flex items-center justify-center w-16 h-16 rounded-full mb-4"
-                  style={{ background: 'rgba(200,160,48,0.15)' }}
+                  style={{ background: 'rgba(22,101,52,0.10)' }}
                 >
-                  <step.icon className="w-8 h-8" style={{ color: '#C9A030' }} />
+                  <step.icon className="w-8 h-8" style={{ color: '#166534' }} />
                 </div>
-                <h3 className="text-xl font-bold mb-2" style={{ color: '#2D5016' }}>
+                <h3 className="text-xl font-bold mb-2" style={{ color: '#166534' }}>
                   {step.title}
                 </h3>
-                <p className="text-gray-600 text-sm leading-relaxed px-4">
+                <p className="text-slate-700 text-sm leading-relaxed px-4">
                   {step.description}
                 </p>
               </div>
@@ -232,13 +232,13 @@ export default function IdeaToPlan() {
           <div className="grid md:grid-cols-3 gap-6 mb-10 text-left">
 
             <div
-              className="rounded-2xl p-6 flex flex-col bg-white"
-              style={{ border: '1px solid rgba(45,80,22,0.15)' }}
+              className="rounded-2xl p-6 flex flex-col bg-[#F8FAFC]"
+              style={{ border: '1px solid #E2E8F0' }}
             >
-              <h3 className="text-xl font-bold mb-1" style={{ color: '#2D5016' }}>Starter</h3>
-              <p className="font-bold text-2xl mb-1" style={{ color: '#8B6914' }}>$25</p>
-              <p className="text-sm text-gray-500 mb-4">For founders who want a polished business plan without overpaying.</p>
-              <ul className="space-y-2 text-sm text-gray-500 flex-1">
+              <h3 className="text-xl font-bold mb-1" style={{ color: '#166534' }}>Starter</h3>
+              <p className="font-bold text-2xl mb-1" style={{ color: '#B45309' }}>$25</p>
+              <p className="text-sm text-slate-700 mb-4">For founders who want a polished business plan without overpaying.</p>
+              <ul className="space-y-2 text-sm text-slate-700 flex-1">
                 {[
                   'Actionable business plan built around your idea',
                   'Revenue model and pricing strategy',
@@ -246,7 +246,7 @@ export default function IdeaToPlan() {
                   'Professional PDF delivered in 72 hours',
                 ].map((item, i) => (
                   <li key={i} className="flex items-start gap-2">
-                    <span className="font-bold mt-0.5 flex-shrink-0" style={{ color: '#C9A030' }}>✓</span>
+                    <span className="font-bold mt-0.5 flex-shrink-0" style={{ color: '#10B981' }}>✓</span>
                     {item}
                   </li>
                 ))}
@@ -256,9 +256,9 @@ export default function IdeaToPlan() {
             <div
               className="rounded-2xl p-6 flex flex-col relative"
               style={{
-                background: 'rgba(245,224,112,0.15)',
-                border: '1.5px solid rgba(200,160,48,0.45)',
-                boxShadow: '0 0 40px rgba(200,160,48,0.12)',
+                background: 'rgba(22,101,52,0.06)',
+                border: '1.5px solid rgba(22,101,52,0.30)',
+                boxShadow: '0 0 40px rgba(22,101,52,0.10)',
               }}
             >
               <div
@@ -267,10 +267,10 @@ export default function IdeaToPlan() {
               >
                 Most Popular
               </div>
-              <h3 className="text-xl font-bold mb-1" style={{ color: '#2D5016' }}>Growth</h3>
-              <p className="font-bold text-2xl mb-1" style={{ color: '#8B6914' }}>$50</p>
-              <p className="text-sm text-gray-500 mb-4">For entrepreneurs who want market validation and smarter positioning.</p>
-              <ul className="space-y-2 text-sm text-gray-500 flex-1">
+              <h3 className="text-xl font-bold mb-1" style={{ color: '#166534' }}>Growth</h3>
+              <p className="font-bold text-2xl mb-1" style={{ color: '#B45309' }}>$50</p>
+              <p className="text-sm text-slate-700 mb-4">For entrepreneurs who want market validation and smarter positioning.</p>
+              <ul className="space-y-2 text-sm text-slate-700 flex-1">
                 {[
                   'Everything in Starter',
                   'Competitor research and landscape analysis',
@@ -278,7 +278,7 @@ export default function IdeaToPlan() {
                   'Viability verdict with go/no-go assessment',
                 ].map((item, i) => (
                   <li key={i} className="flex items-start gap-2">
-                    <span className="font-bold mt-0.5 flex-shrink-0" style={{ color: '#C9A030' }}>✓</span>
+                    <span className="font-bold mt-0.5 flex-shrink-0" style={{ color: '#10B981' }}>✓</span>
                     {item}
                   </li>
                 ))}
@@ -286,19 +286,19 @@ export default function IdeaToPlan() {
             </div>
 
             <div
-              className="rounded-2xl p-6 flex flex-col relative opacity-50 bg-white"
-              style={{ border: '1px dashed rgba(45,80,22,0.15)' }}
+              className="rounded-2xl p-6 flex flex-col relative opacity-50 bg-[#F8FAFC]"
+              style={{ border: '1px dashed #E2E8F0' }}
             >
               <div
                 className="absolute -top-3 left-1/2 -translate-x-1/2 text-xs font-bold px-4 py-1 rounded-full whitespace-nowrap"
-                style={{ background: 'rgba(45,80,22,0.08)', color: '#2D5016', border: '1px solid rgba(45,80,22,0.15)' }}
+                style={{ background: '#F1F5F9', color: '#166534', border: '1px solid #E2E8F0' }}
               >
                 Coming soon
               </div>
-              <h3 className="text-xl font-bold mb-1 text-gray-400">Visa / Immigration</h3>
-              <p className="font-bold text-2xl mb-1 text-gray-400">$599</p>
-              <p className="text-sm text-gray-400 mb-4">For founders who need USCIS- and investor-ready structure and compliance language.</p>
-              <ul className="space-y-2 text-sm text-gray-400 flex-1">
+              <h3 className="text-xl font-bold mb-1 text-slate-400">Visa / Immigration</h3>
+              <p className="font-bold text-2xl mb-1 text-slate-400">$599</p>
+              <p className="text-sm text-slate-400 mb-4">For founders who need USCIS- and investor-ready structure and compliance language.</p>
+              <ul className="space-y-2 text-sm text-slate-400 flex-1">
                 {[
                   'Everything in Growth',
                   'Visa-ready formatting and structure',
@@ -306,7 +306,7 @@ export default function IdeaToPlan() {
                   'Job creation and non-marginality language',
                 ].map((item, i) => (
                   <li key={i} className="flex items-start gap-2">
-                    <span className="font-bold mt-0.5 flex-shrink-0 text-gray-300">✓</span>
+                    <span className="font-bold mt-0.5 flex-shrink-0 text-slate-300">✓</span>
                     {item}
                   </li>
                 ))}
@@ -318,9 +318,9 @@ export default function IdeaToPlan() {
           <div className="mb-8 max-w-2xl mx-auto">
             <div
               className="rounded-xl px-6 py-4"
-              style={{ background: 'rgba(200,160,48,0.06)', border: '1px solid rgba(200,160,48,0.25)' }}
+              style={{ background: 'rgba(22,101,52,0.06)', border: '1px solid rgba(22,101,52,0.20)' }}
             >
-              <p className="font-semibold text-sm leading-relaxed text-[#2D5016]">
+              <p className="font-semibold text-sm leading-relaxed text-[#166534]">
                 Special introductory offer — no payment upfront. You receive your plan, we talk it through,
                 and you pay only if you love it. In exchange, we&apos;d love your honest feedback.
               </p>
@@ -346,27 +346,27 @@ export default function IdeaToPlan() {
           onClick={(e) => { if (e.target === e.currentTarget) closeForm(); }}
         >
           <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
               <div>
-                <h3 className="text-lg font-bold" style={{ color: '#2D5016' }}>Tell Us About Your Idea</h3>
-                <p className="text-xs text-gray-500 mt-0.5">Takes about 3 minutes.</p>
+                <h3 className="text-lg font-bold" style={{ color: '#166534' }}>Tell Us About Your Idea</h3>
+                <p className="text-xs text-slate-500 mt-0.5">Takes about 3 minutes.</p>
               </div>
-              <button onClick={closeForm} className="p-2 rounded-full hover:bg-gray-100 transition-colors" aria-label="Close">
-                <X className="w-5 h-5 text-gray-500" />
+              <button onClick={closeForm} className="p-2 rounded-full hover:bg-slate-100 transition-colors" aria-label="Close">
+                <X className="w-5 h-5 text-slate-500" />
               </button>
             </div>
 
             <div className="overflow-y-auto flex-1 p-6">
               {status === 'success' ? (
                 <div className="text-center py-8">
-                  <CheckCircle className="w-16 h-16 mx-auto mb-4" style={{ color: '#C9A030' }} />
-                  <h3 className="text-2xl font-bold mb-3" style={{ color: '#2D5016' }}>We&apos;ve got your idea!</h3>
-                  <p className="text-gray-600 mb-2">Expect a message within 48 hours. We&apos;ll build your plan, walk you through it, and go from there.</p>
-                  <p className="text-gray-500 text-sm">No payment until you love it. Check your inbox — and spam, just in case.</p>
+                  <CheckCircle className="w-16 h-16 mx-auto mb-4" style={{ color: '#10B981' }} />
+                  <h3 className="text-2xl font-bold mb-3" style={{ color: '#166534' }}>We&apos;ve got your idea!</h3>
+                  <p className="text-slate-700 mb-2">Expect a message within 48 hours. We&apos;ll build your plan, walk you through it, and go from there.</p>
+                  <p className="text-slate-500 text-sm">No payment until you love it. Check your inbox — and spam, just in case.</p>
                   <button
                     onClick={closeForm}
                     className="mt-6 px-8 py-3 text-white font-semibold rounded-lg transition-colors"
-                    style={{ background: '#2D5016' }}
+                    style={{ background: '#166534' }}
                   >
                     Close
                   </button>
@@ -383,84 +383,84 @@ export default function IdeaToPlan() {
                   <form onSubmit={handleSubmit} className="space-y-5">
                     <div className="grid sm:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">Full Name <span className="text-red-500">*</span></label>
+                        <label className="block text-sm font-semibold text-slate-800 mb-1">Full Name <span className="text-red-500">*</span></label>
                         <input name="fullName" value={form.fullName} onChange={handleChange} required placeholder="Jane Smith"
-                          className="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#C9A030] transition" />
+                          className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#166534] transition" />
                       </div>
                       <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">Email <span className="text-red-500">*</span></label>
+                        <label className="block text-sm font-semibold text-slate-800 mb-1">Email <span className="text-red-500">*</span></label>
                         <input name="email" type="email" value={form.email} onChange={handleChange} required placeholder="jane@example.com"
-                          className="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#C9A030] transition" />
+                          className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#166534] transition" />
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-1">Describe your business idea <span className="text-red-500">*</span></label>
+                      <label className="block text-sm font-semibold text-slate-800 mb-1">Describe your business idea <span className="text-red-500">*</span></label>
                       <textarea name="businessIdea" value={form.businessIdea} onChange={handleChange} required rows={3}
                         placeholder="What's the idea? Give us the overview."
-                        className="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#C9A030] transition resize-none" />
+                        className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#166534] transition resize-none" />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-1">What problem does it solve? <span className="text-red-500">*</span></label>
+                      <label className="block text-sm font-semibold text-slate-800 mb-1">What problem does it solve? <span className="text-red-500">*</span></label>
                       <textarea name="problem" value={form.problem} onChange={handleChange} required rows={2}
                         placeholder="What pain point are you solving?"
-                        className="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#C9A030] transition resize-none" />
+                        className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#166534] transition resize-none" />
                     </div>
 
                     <div className="grid sm:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">Industry / type of business <span className="text-red-500">*</span></label>
+                        <label className="block text-sm font-semibold text-slate-800 mb-1">Industry / type of business <span className="text-red-500">*</span></label>
                         <input name="industry" value={form.industry} onChange={handleChange} required placeholder="e.g. E-commerce, Consulting, SaaS"
-                          className="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#C9A030] transition" />
+                          className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#166534] transition" />
                       </div>
                       <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">Where will you operate?</label>
+                        <label className="block text-sm font-semibold text-slate-800 mb-1">Where will you operate?</label>
                         <input name="location" value={form.location} onChange={handleChange} placeholder="City, State — or Online/Location-independent"
-                          className="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#C9A030] transition" />
+                          className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#166534] transition" />
                       </div>
                     </div>
 
                     <div className="grid sm:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">Current annual revenue</label>
+                        <label className="block text-sm font-semibold text-slate-800 mb-1">Current annual revenue</label>
                         <input name="currentRevenue" value={form.currentRevenue} onChange={handleChange}
                           placeholder="e.g. $150,000 — leave blank if pre-revenue"
-                          className="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#C9A030] transition" />
+                          className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#166534] transition" />
                       </div>
                       <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">Years in business</label>
+                        <label className="block text-sm font-semibold text-slate-800 mb-1">Years in business</label>
                         <input name="yearsInBusiness" value={form.yearsInBusiness} onChange={handleChange}
                           placeholder="e.g. 5 years — leave blank if new"
-                          className="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#C9A030] transition" />
+                          className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#166534] transition" />
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-1">Who is your target customer? <span className="text-red-500">*</span></label>
+                      <label className="block text-sm font-semibold text-slate-800 mb-1">Who is your target customer? <span className="text-red-500">*</span></label>
                       <input name="targetAudience" value={form.targetAudience} onChange={handleChange} required
                         placeholder="e.g. Freelance designers aged 30–45 who want to go full-time"
-                        className="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#C9A030] transition" />
+                        className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#166534] transition" />
                     </div>
 
                     <div className="grid sm:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">How will you make money?</label>
+                        <label className="block text-sm font-semibold text-slate-800 mb-1">How will you make money?</label>
                         <input name="revenueModel" value={form.revenueModel} onChange={handleChange} placeholder="e.g. Subscriptions, one-time sales, services"
-                          className="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#C9A030] transition" />
+                          className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#166534] transition" />
                       </div>
                       <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">What makes you different?</label>
+                        <label className="block text-sm font-semibold text-slate-800 mb-1">What makes you different?</label>
                         <input name="differentiation" value={form.differentiation} onChange={handleChange} placeholder="Your edge over competitors"
-                          className="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#C9A030] transition" />
+                          className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#166534] transition" />
                       </div>
                     </div>
 
                     <div className="grid sm:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">Approximate startup budget</label>
+                        <label className="block text-sm font-semibold text-slate-800 mb-1">Approximate startup budget</label>
                         <select name="budget" value={form.budget} onChange={handleChange}
-                          className="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#C9A030] transition bg-white">
+                          className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#166534] transition bg-white">
                           <option value="">Select range...</option>
                           <option value="under5k">Under $5,000</option>
                           <option value="5k-25k">$5,000 – $25,000</option>
@@ -470,9 +470,9 @@ export default function IdeaToPlan() {
                         </select>
                       </div>
                       <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">Goal for this plan</label>
+                        <label className="block text-sm font-semibold text-slate-800 mb-1">Goal for this plan</label>
                         <select name="planGoal" value={form.planGoal} onChange={handleChange}
-                          className="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#C9A030] transition bg-white">
+                          className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#166534] transition bg-white">
                           <option value="">Select goal...</option>
                           <option value="bank-loan">Bank loan</option>
                           <option value="investor">Investor pitch</option>
@@ -483,103 +483,103 @@ export default function IdeaToPlan() {
                     </div>
 
                     {form.planGoal === 'bank-loan' && (
-                      <div className="space-y-4 border border-[#C9A030]/30 rounded-xl p-4 bg-white">
-                        <p className="text-sm font-semibold" style={{ color: '#8B6914' }}>Bank Loan Details</p>
+                      <div className="space-y-4 border border-[#166534]/20 rounded-xl p-4 bg-[#F8FAFC]">
+                        <p className="text-sm font-semibold" style={{ color: '#B45309' }}>Bank Loan Details</p>
                         <div className="grid sm:grid-cols-2 gap-4">
                           <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1">Loan amount requested</label>
+                            <label className="block text-sm font-semibold text-slate-800 mb-1">Loan amount requested</label>
                             <input name="loanAmount" value={form.loanAmount} onChange={handleChange} placeholder="e.g. $50,000 SBA loan"
-                              className="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#C9A030] transition" />
+                              className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#166534] transition" />
                           </div>
                           <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1">Intended use of loan</label>
+                            <label className="block text-sm font-semibold text-slate-800 mb-1">Intended use of loan</label>
                             <input name="loanUse" value={form.loanUse} onChange={handleChange} placeholder="e.g. Equipment, working capital, inventory"
-                              className="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#C9A030] transition" />
+                              className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#166534] transition" />
                           </div>
                         </div>
                         <div className="grid sm:grid-cols-2 gap-4">
                           <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1">Credit &amp; financial standing</label>
+                            <label className="block text-sm font-semibold text-slate-800 mb-1">Credit &amp; financial standing</label>
                             <input name="creditStanding" value={form.creditStanding} onChange={handleChange} placeholder="e.g. Good credit, no bankruptcies"
-                              className="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#C9A030] transition" />
+                              className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#166534] transition" />
                           </div>
                           <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1">Existing debt or obligations</label>
+                            <label className="block text-sm font-semibold text-slate-800 mb-1">Existing debt or obligations</label>
                             <input name="existingDebt" value={form.existingDebt} onChange={handleChange} placeholder="e.g. Car loan, no other business debt"
-                              className="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#C9A030] transition" />
+                              className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#166534] transition" />
                           </div>
                         </div>
                         <div>
-                          <label className="block text-sm font-semibold text-gray-700 mb-1">Collateral and assets</label>
+                          <label className="block text-sm font-semibold text-slate-800 mb-1">Collateral and assets</label>
                           <textarea name="assetsCollateral" value={form.assetsCollateral} onChange={handleChange} rows={3}
                             placeholder="e.g. Vehicle or property as collateral, savings, equipment"
-                            className="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#C9A030] transition resize-none" />
+                            className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#166534] transition resize-none" />
                         </div>
                       </div>
                     )}
 
                     {form.planGoal === 'investor' && (
-                      <div className="space-y-4 border border-[#C9A030]/30 rounded-xl p-4 bg-white">
-                        <p className="text-sm font-semibold" style={{ color: '#8B6914' }}>Investor Pitch Details</p>
+                      <div className="space-y-4 border border-[#166534]/20 rounded-xl p-4 bg-[#F8FAFC]">
+                        <p className="text-sm font-semibold" style={{ color: '#B45309' }}>Investor Pitch Details</p>
                         <div>
-                          <label className="block text-sm font-semibold text-gray-700 mb-1">Your background</label>
+                          <label className="block text-sm font-semibold text-slate-800 mb-1">Your background</label>
                           <textarea name="founderBackground" value={form.founderBackground} onChange={handleChange} rows={3}
                             placeholder="Relevant experience and why you're the right person to build this."
-                            className="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#C9A030] transition resize-none" />
+                            className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#166534] transition resize-none" />
                         </div>
                         <div className="grid sm:grid-cols-2 gap-4">
                           <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1">Funding ask</label>
+                            <label className="block text-sm font-semibold text-slate-800 mb-1">Funding ask</label>
                             <input name="fundingAsk" value={form.fundingAsk} onChange={handleChange} placeholder="e.g. $500K seed round"
-                              className="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#C9A030] transition" />
+                              className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#166534] transition" />
                           </div>
                           <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-1">Current traction</label>
+                            <label className="block text-sm font-semibold text-slate-800 mb-1">Current traction</label>
                             <input name="currentTraction" value={form.currentTraction} onChange={handleChange} placeholder="Revenue, users, pilots, waitlist, etc."
-                              className="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#C9A030] transition" />
+                              className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#166534] transition" />
                           </div>
                         </div>
                         <div>
-                          <label className="block text-sm font-semibold text-gray-700 mb-1">Use of funds</label>
+                          <label className="block text-sm font-semibold text-slate-800 mb-1">Use of funds</label>
                           <textarea name="useOfFunds" value={form.useOfFunds} onChange={handleChange} rows={2}
                             placeholder="What will the investment capital be used for?"
-                            className="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#C9A030] transition resize-none" />
+                            className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#166534] transition resize-none" />
                         </div>
                         <div>
-                          <label className="block text-sm font-semibold text-gray-700 mb-1">Exit vision</label>
+                          <label className="block text-sm font-semibold text-slate-800 mb-1">Exit vision</label>
                           <textarea name="exitVision" value={form.exitVision} onChange={handleChange} rows={2}
                             placeholder="Acquisition, IPO, lifestyle business? What does success look like in 5-7 years?"
-                            className="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#C9A030] transition resize-none" />
+                            className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#166534] transition resize-none" />
                         </div>
                       </div>
                     )}
 
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">Plan type <span className="text-red-500">*</span></label>
-                      <p className="text-xs text-gray-500 mb-3">No payment required until after your plan is delivered.</p>
+                      <label className="block text-sm font-semibold text-slate-800 mb-2">Plan type <span className="text-red-500">*</span></label>
+                      <p className="text-xs text-slate-500 mb-3">No payment required until after your plan is delivered.</p>
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                         {PLAN_OPTIONS.map((opt) =>
                           opt.comingSoon ? (
                             <div key={opt.value}
-                              className="flex flex-col border-2 border-dashed border-gray-300 rounded-xl p-4 text-left h-full bg-gray-50 cursor-not-allowed opacity-75"
+                              className="flex flex-col border-2 border-dashed border-slate-200 rounded-xl p-4 text-left h-full bg-slate-50 cursor-not-allowed opacity-75"
                               aria-disabled="true"
                             >
                               <span className="self-start text-[10px] font-bold uppercase tracking-wide text-amber-900 bg-amber-100 px-2 py-0.5 rounded-full border border-amber-200 mb-2">
                                 Coming soon
                               </span>
-                              <span className="font-bold text-gray-800 text-sm leading-tight">{opt.title}</span>
-                              <span className="text-gray-500 font-bold text-lg mt-1">{opt.price}</span>
-                              <p className="text-xs text-gray-500 mt-2 leading-relaxed flex-1">{opt.description}</p>
+                              <span className="font-bold text-slate-700 text-sm leading-tight">{opt.title}</span>
+                              <span className="text-slate-400 font-bold text-lg mt-1">{opt.price}</span>
+                              <p className="text-xs text-slate-400 mt-2 leading-relaxed flex-1">{opt.description}</p>
                             </div>
                           ) : (
                             <label key={opt.value}
-                              className={`flex flex-col cursor-pointer border-2 rounded-xl p-4 text-left transition-all h-full ${form.planType === opt.value ? 'border-[#C9A030] bg-[#EBF0E6] ring-2 ring-[#C9A030]/40' : 'border-gray-200 hover:border-[#C9A030]/60 bg-white'}`}
-                            style={form.planType === opt.value ? { boxShadow: '0 0 24px rgba(200,160,48,0.22)' } : undefined}
+                              className={`flex flex-col cursor-pointer border-2 rounded-xl p-4 text-left transition-all h-full ${form.planType === opt.value ? 'border-[#166534] bg-[#F0FDF4] ring-2 ring-[#166534]/25' : 'border-slate-200 hover:border-[#166534]/50 bg-white'}`}
+                              style={form.planType === opt.value ? { boxShadow: '0 0 24px rgba(22,101,52,0.15)' } : undefined}
                             >
                               <input type="radio" name="planType" value={opt.value} checked={form.planType === opt.value} onChange={handleChange} className="sr-only" />
-                              <span className="font-bold text-gray-900 text-sm leading-tight">{opt.title}</span>
-                              <span className="font-bold text-lg mt-1" style={{ color: '#8B6914' }}>{opt.price}</span>
-                              <p className="text-xs text-gray-600 mt-2 leading-relaxed flex-1">{opt.description}</p>
+                              <span className="font-bold text-slate-900 text-sm leading-tight">{opt.title}</span>
+                              <span className="font-bold text-lg mt-1" style={{ color: '#B45309' }}>{opt.price}</span>
+                              <p className="text-xs text-slate-700 mt-2 leading-relaxed flex-1">{opt.description}</p>
                             </label>
                           )
                         )}
@@ -588,14 +588,14 @@ export default function IdeaToPlan() {
 
                     <button type="submit" disabled={status === 'loading'}
                       className="w-full py-4 text-white text-lg font-semibold rounded-lg transition-all shadow-md flex items-center justify-center gap-2 disabled:opacity-60"
-                      style={{ background: status === 'loading' ? '#6B8F5A' : '#2D5016' }}
+                      style={{ background: status === 'loading' ? '#15803d' : '#166534' }}
                     >
                       {status === 'loading' ? (
                         <><Loader className="w-5 h-5 animate-spin" />Sending...</>
                       ) : 'Submit Your Idea'}
                     </button>
 
-                    <p className="text-center text-xs text-gray-400">
+                    <p className="text-center text-xs text-slate-400">
                       No payment now. We&apos;ll be in touch within 48 hours to review your plan together.
                     </p>
                   </form>
