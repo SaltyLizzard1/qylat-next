@@ -162,15 +162,14 @@ export default function IdeaToPlan() {
     <>
       <section
         id="idea-to-plan"
-        className="relative overflow-hidden pt-4 pb-12 md:pt-6 md:pb-16 px-6"
-        style={{ background: '#EBF0E6' }}
+        className="relative overflow-hidden pt-4 pb-12 md:pt-6 md:pb-16 px-6 bg-white"
       >
         <div
-          className="pointer-events-none absolute -top-32 -right-32 w-80 h-80 rounded-full opacity-[0.08]"
+          className="pointer-events-none absolute -top-32 -right-32 w-80 h-80 rounded-full opacity-[0.07]"
           style={{ background: goldGradient }}
         />
         <div
-          className="pointer-events-none absolute -bottom-24 -left-24 w-60 h-60 rounded-full opacity-[0.06]"
+          className="pointer-events-none absolute -bottom-24 -left-24 w-60 h-60 rounded-full opacity-[0.05]"
           style={{ background: goldGradient }}
         />
 
@@ -319,7 +318,7 @@ export default function IdeaToPlan() {
           <div className="mb-8 max-w-2xl mx-auto">
             <div
               className="rounded-xl px-6 py-4"
-              style={{ background: 'rgba(45,80,22,0.06)', border: '1px solid rgba(45,80,22,0.15)' }}
+              style={{ background: 'rgba(200,160,48,0.06)', border: '1px solid rgba(200,160,48,0.25)' }}
             >
               <p className="font-semibold text-sm leading-relaxed text-[#2D5016]">
                 Special introductory offer — no payment upfront. You receive your plan, we talk it through,
@@ -574,7 +573,8 @@ export default function IdeaToPlan() {
                             </div>
                           ) : (
                             <label key={opt.value}
-                              className={`flex flex-col cursor-pointer border-2 rounded-xl p-4 text-left transition-all h-full ${form.planType === opt.value ? 'border-[#C9A030] bg-[#F5E070]/15 ring-1 ring-[#C9A030]/30' : 'border-gray-200 hover:border-[#C9A030]/50 bg-white'}`}
+                              className={`flex flex-col cursor-pointer border-2 rounded-xl p-4 text-left transition-all h-full ${form.planType === opt.value ? 'border-[#C9A030] bg-[#FFFBEA] ring-2 ring-[#C9A030]/40' : 'border-gray-200 hover:border-[#C9A030]/60 bg-white'}`}
+                            style={form.planType === opt.value ? { boxShadow: '0 0 24px rgba(200,160,48,0.22)' } : undefined}
                             >
                               <input type="radio" name="planType" value={opt.value} checked={form.planType === opt.value} onChange={handleChange} className="sr-only" />
                               <span className="font-bold text-gray-900 text-sm leading-tight">{opt.title}</span>
