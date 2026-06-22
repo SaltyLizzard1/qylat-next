@@ -573,7 +573,7 @@ export default function IdeaToPlan() {
                             </div>
                           ) : (
                             <label key={opt.value}
-                              className={`flex flex-col cursor-pointer border-2 rounded-xl p-4 text-left transition-all h-full ${form.planType === opt.value ? 'border-[#C9A030] bg-[#FFFBEA] ring-2 ring-[#C9A030]/40' : 'border-gray-200 hover:border-[#C9A030]/60 bg-white'}`}
+                              className={`flex flex-col cursor-pointer border-2 rounded-xl p-4 text-left transition-all h-full ${form.planType === opt.value ? 'border-[#C9A030] bg-[#EBF0E6] ring-2 ring-[#C9A030]/40' : 'border-gray-200 hover:border-[#C9A030]/60 bg-white'}`}
                             style={form.planType === opt.value ? { boxShadow: '0 0 24px rgba(200,160,48,0.22)' } : undefined}
                             >
                               <input type="radio" name="planType" value={opt.value} checked={form.planType === opt.value} onChange={handleChange} className="sr-only" />
