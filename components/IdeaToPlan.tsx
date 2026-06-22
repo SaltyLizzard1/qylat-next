@@ -7,6 +7,13 @@ import { Lightbulb, FileText, Rocket, X, CheckCircle, AlertCircle, Loader } from
 const goldGradient =
   'linear-gradient(135deg, #8B6914 0%, #E8C84A 35%, #F5E070 55%, #C9A030 75%, #8B6914 100%)';
 
+const metalGoldText = {
+  background: goldGradient,
+  WebkitBackgroundClip: 'text',
+  WebkitTextFillColor: 'transparent',
+  backgroundClip: 'text',
+} as const;
+
 const goldBtn = {
   background: goldGradient,
   color: '#2D1A00',
@@ -236,7 +243,7 @@ export default function IdeaToPlan() {
               style={{ border: '1px solid #E2E8F0' }}
             >
               <h3 className="text-xl font-bold mb-1" style={{ color: '#166534' }}>Starter</h3>
-              <p className="font-bold text-2xl mb-1" style={{ color: '#B45309' }}>$25</p>
+              <p className="font-bold text-2xl mb-1" style={metalGoldText}>$25</p>
               <p className="text-sm text-slate-700 mb-4">For founders who want a polished business plan without overpaying.</p>
               <ul className="space-y-2 text-sm text-slate-700 flex-1">
                 {[
@@ -268,7 +275,7 @@ export default function IdeaToPlan() {
                 Most Popular
               </div>
               <h3 className="text-xl font-bold mb-1" style={{ color: '#166534' }}>Growth</h3>
-              <p className="font-bold text-2xl mb-1" style={{ color: '#B45309' }}>$50</p>
+              <p className="font-bold text-2xl mb-1" style={metalGoldText}>$50</p>
               <p className="text-sm text-slate-700 mb-4">For entrepreneurs who want market validation and smarter positioning.</p>
               <ul className="space-y-2 text-sm text-slate-700 flex-1">
                 {[
@@ -578,7 +585,7 @@ export default function IdeaToPlan() {
                             >
                               <input type="radio" name="planType" value={opt.value} checked={form.planType === opt.value} onChange={handleChange} className="sr-only" />
                               <span className="font-bold text-slate-900 text-sm leading-tight">{opt.title}</span>
-                              <span className="font-bold text-lg mt-1" style={{ color: '#B45309' }}>{opt.price}</span>
+                              <span className="font-bold text-lg mt-1" style={metalGoldText}>{opt.price}</span>
                               <p className="text-xs text-slate-700 mt-2 leading-relaxed flex-1">{opt.description}</p>
                             </label>
                           )
