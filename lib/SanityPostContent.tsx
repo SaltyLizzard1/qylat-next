@@ -3,7 +3,7 @@ import { urlFor } from './sanity';
 import type { SanityPost } from './useSanityPosts';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type PortableTextBlock = Record<string, any>;
+type PortableTextBlock = { _type: string; _key?: string; [key: string]: any };
 
 function groupConsecutiveImages(blocks: PortableTextBlock[]): (PortableTextBlock | PortableTextBlock[])[] {
   const result: (PortableTextBlock | PortableTextBlock[])[] = [];
@@ -93,7 +93,8 @@ function PostBody({ body }: { body: any[] }) {
         return (
           <PortableText
             key={i}
-            value={[item]}
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            value={[item] as any}
             components={components}
           />
         );
