@@ -1,34 +1,18 @@
-'use client';
-
-import { useEffect, useState } from 'react';
 import { images } from '../config/images';
 
 export default function Hero() {
-  const [imageLoaded, setImageLoaded] = useState(false);
-
-  useEffect(() => {
-    const img = new Image();
-    img.src = images.hero ?? '';
-    img.onload = () => setImageLoaded(true);
-  }, []);
-
   return (
     <section
       id="hero"
       className="relative min-h-[100dvh] min-h-screen overflow-hidden"
+      style={{ backgroundColor: '#1a3320' }}
     >
       <div
-        className={`pointer-events-none absolute inset-0 bg-cover bg-center transition-opacity duration-700 ${
-          imageLoaded ? 'opacity-100' : 'opacity-0'
-        }`}
+        className="pointer-events-none absolute inset-0 bg-cover bg-center"
         style={{ backgroundImage: `url(${images.hero})` }}
       >
         <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/25 to-black/65" />
       </div>
-
-      {!imageLoaded && (
-        <div className="absolute inset-0 bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900" />
-      )}
 
       <div className="relative z-10 mx-auto flex min-h-[100dvh] min-h-screen w-full max-w-[100vw] flex-col items-center justify-center px-6 pb-12 sm:px-10 sm:pb-14 md:px-14 lg:px-20">
         <div className="w-full max-w-5xl text-center">
