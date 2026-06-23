@@ -1,4 +1,8 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://quityourlifeandtravel.com/sitemap.xml
+Disallow: /api/
+Disallow: /maintenance
+Disallow: /_next/
+
+Sitemap: https://www.quityourlifeandtravel.com/sitemap.xml
