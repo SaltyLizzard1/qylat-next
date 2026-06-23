@@ -45,28 +45,35 @@ function InlineImage({ value }: { value: PortableTextBlock }) {
 }
 
 function InlineImageGroup({ images }: { images: PortableTextBlock[] }) {
-  const cols =
-    images.length === 2 ? 'grid-cols-2' :
-    images.length >= 3 ? 'grid-cols-3' :
-    'grid-cols-1';
+  const validImages = images.filter((img) => img?.asset);
+  if (validImages.length === 0) return null;
+  if (validImages.length === 1) {
+    return (
+      <div className="not-prose my-8">
+        <InlineImage value={validImages[0]} />
+      </div>
+    );
+  }
+
+  const cols = validImages.length === 2 ? 'grid-cols-2' : 'grid-cols-3';
 
   return (
     <figure className="not-prose my-8">
       <div className={`grid ${cols} gap-3`}>
-        {images.map((img, i) => (
+        {validImages.map((img, i) => (
           <div key={i} className="overflow-hidden rounded-lg" style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.10)' }}>
             <img
               src={urlFor(img).width(800).url()}
               alt={img.alt || img.caption || ''}
-              className="w-full h-56 object-cover"
+              className="w-full h-56 object-contain"
               loading="lazy"
             />
           </div>
         ))}
       </div>
-      {images.some((img) => img.caption) && (
+      {validImages.some((img) => img.caption) && (
         <figcaption className="text-sm text-gray-400 italic text-center mt-2">
-          {images.find((img) => img.caption)?.caption}
+          {validImages.find((img) => img.caption)?.caption}
         </figcaption>
       )}
     </figure>

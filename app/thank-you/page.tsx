@@ -71,7 +71,7 @@ export default function ThankYouPage() {
             </a>
 
             <a
-              href="mailto:lizalfond@gmail.com"
+              href="mailto:liz@quityourlifeandtravel.com"
               aria-label="Email"
               className="w-12 h-12 rounded-full flex items-center justify-center text-white transition-transform hover:scale-110 shadow-md bg-orange-500 hover:bg-orange-600"
             >

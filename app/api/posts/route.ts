@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { sanityClient, urlFor } from '@/lib/sanity';
 
-export const revalidate = 3600;
+export const revalidate = 60
 
 const POSTS_QUERY = `*[_type == "post"] | order(publishedAt desc) {
   _id,
