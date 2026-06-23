@@ -2,28 +2,114 @@ import { PortableText } from '@portabletext/react';
 import { urlFor } from './sanity';
 import type { SanityPost } from './useSanityPosts';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type PortableTextBlock = Record<string, any>;
+
+function groupConsecutiveImages(blocks: PortableTextBlock[]): (PortableTextBlock | PortableTextBlock[])[] {
+  const result: (PortableTextBlock | PortableTextBlock[])[] = [];
+  let i = 0;
+  while (i < blocks.length) {
+    if (blocks[i]._type === 'image') {
+      const group: PortableTextBlock[] = [];
+      while (i < blocks.length && blocks[i]._type === 'image') {
+        group.push(blocks[i]);
+        i++;
+      }
+      result.push(group.length === 1 ? group[0] : group);
+    } else {
+      result.push(blocks[i]);
+      i++;
+    }
+  }
+  return result;
+}
+
+function InlineImage({ value }: { value: PortableTextBlock }) {
+  if (!value?.asset) return null;
+  return (
+    <figure className="flex flex-col items-center">
+      <img
+        src={urlFor(value).width(1200).url()}
+        alt={value.alt || value.caption || ''}
+        className="rounded-lg max-w-full h-auto"
+        style={{ maxHeight: '70vh', objectFit: 'contain', boxShadow: '0 4px 20px rgba(0,0,0,0.10)' }}
+        loading="lazy"
+      />
+      {value.caption && (
+        <figcaption className="text-sm text-gray-400 italic text-center mt-2">
+          {value.caption}
+        </figcaption>
+      )}
+    </figure>
+  );
+}
+
+function InlineImageGroup({ images }: { images: PortableTextBlock[] }) {
+  const cols =
+    images.length === 2 ? 'grid-cols-2' :
+    images.length >= 3 ? 'grid-cols-3' :
+    'grid-cols-1';
+
+  return (
+    <figure className="not-prose my-8">
+      <div className={`grid ${cols} gap-3`}>
+        {images.map((img, i) => (
+          <div key={i} className="overflow-hidden rounded-lg" style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.10)' }}>
+            <img
+              src={urlFor(img).width(800).url()}
+              alt={img.alt || img.caption || ''}
+              className="w-full h-56 object-cover"
+              loading="lazy"
+            />
+          </div>
+        ))}
+      </div>
+      {images.some((img) => img.caption) && (
+        <figcaption className="text-sm text-gray-400 italic text-center mt-2">
+          {images.find((img) => img.caption)?.caption}
+        </figcaption>
+      )}
+    </figure>
+  );
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function PostBody({ body }: { body: any[] }) {
+  const grouped = groupConsecutiveImages(body);
+
+  return (
+    <>
+      {grouped.map((item, i) => {
+        if (Array.isArray(item)) {
+          return <InlineImageGroup key={i} images={item} />;
+        }
+        if (item._type === 'image') {
+          return (
+            <div key={i} className="not-prose my-8">
+              <InlineImage value={item} />
+            </div>
+          );
+        }
+        return (
+          <PortableText
+            key={i}
+            value={[item]}
+            components={components}
+          />
+        );
+      })}
+    </>
+  );
+}
+
 const components = {
   types: {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    image: ({ value }: { value: any }) => {
-      if (!value?.asset) return null;
-      return (
-        <figure className="my-6 flex flex-col items-center">
-          <img
-            src={urlFor(value).width(1200).url()}
-            alt={value.caption || ''}
-            className="rounded-xl max-w-full h-auto"
-            style={{ maxHeight: '70vh', objectFit: 'contain' }}
-            loading="lazy"
-          />
-          {value.caption && (
-            <figcaption className="text-sm text-gray-500 text-center mt-2">
-              {value.caption}
-            </figcaption>
-          )}
-        </figure>
-      );
-    },
+    image: ({ value }: { value: any }) => (
+      <div className="not-prose my-8">
+        <InlineImage value={value} />
+      </div>
+    ),
   },
   marks: {
     link: ({
@@ -58,38 +144,6 @@ const components = {
   },
 };
 
-function ImageGallery({ images }: { images: SanityPost['gallery'] }) {
-  if (!images || images.length === 0) return null;
-
-  return (
-    <div
-      className={`grid gap-3 my-6 ${
-        images.length === 1
-          ? 'grid-cols-1'
-          : images.length === 2
-          ? 'grid-cols-2'
-          : 'grid-cols-2 md:grid-cols-3'
-      }`}
-    >
-      {images.map((img, i) => (
-        <figure key={i}>
-          <img
-            src={img.url}
-            alt={img.caption || ''}
-            className="rounded-xl w-full h-64 object-cover"
-            loading="lazy"
-          />
-          {img.caption && (
-            <figcaption className="text-sm text-gray-500 text-center mt-1">
-              {img.caption}
-            </figcaption>
-          )}
-        </figure>
-      ))}
-    </div>
-  );
-}
-
 function WorkWithMeCTA({ onTakeLeapClick }: { onTakeLeapClick?: () => void }) {
   return (
     <div className="mt-12 text-center not-prose">
@@ -118,10 +172,8 @@ function WorkWithMeCTA({ onTakeLeapClick }: { onTakeLeapClick?: () => void }) {
 
 export function SanityPostContent({ post, onTakeLeapClick }: { post: SanityPost; onTakeLeapClick?: () => void }) {
   return (
-    <article className="prose prose-lg max-w-none px-4 sm:px-6 md:px-8 py-6 text-[18px] sm:text-base leading-relaxed text-gray-700">      {post.gallery && post.gallery.length > 0 && (
-        <ImageGallery images={post.gallery} />
-      )}
-      {post.body && <PortableText value={post.body} components={components} />}
+    <article className="prose prose-lg max-w-none px-4 sm:px-6 md:px-8 py-6 text-[18px] sm:text-base leading-relaxed text-gray-700">
+      {post.body && <PostBody body={post.body} />}
       <WorkWithMeCTA onTakeLeapClick={onTakeLeapClick} />
     </article>
   );
