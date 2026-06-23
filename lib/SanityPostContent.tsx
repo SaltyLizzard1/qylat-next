@@ -8,11 +8,12 @@ const components = {
     image: ({ value }: { value: any }) => {
       if (!value?.asset) return null;
       return (
-        <figure className="my-6">
+        <figure className="my-6 flex flex-col items-center">
           <img
-            src={urlFor(value).width(800).url()}
+            src={urlFor(value).width(1200).url()}
             alt={value.caption || ''}
-            className="rounded-xl w-full"
+            className="rounded-xl max-w-full h-auto"
+            style={{ maxHeight: '70vh', objectFit: 'contain' }}
             loading="lazy"
           />
           {value.caption && (
