@@ -27,14 +27,14 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'How to Move Abroad and Build a Location-Independent Life | QYLAT',
     description: 'Real stories, tools, and coaching for women ready to quit corporate life, move abroad, and build location-independent income. From Florida to Thailand — in 60 days.',
-    images: [process.env.NEXT_PUBLIC_IMG_HERO ?? '/images/rice-fields.jpg'],
+    images: ['https://www.quityourlifeandtravel.com/images/rice-fields.jpg'],
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
     title: 'How to Move Abroad and Build a Location-Independent Life | QYLAT',
     description: 'Real stories, tools, and coaching for women ready to quit corporate life, move abroad, and build location-independent income. From Florida to Thailand — in 60 days.',
-    images: [process.env.NEXT_PUBLIC_IMG_HERO ?? '/images/rice-fields.jpg'],
+    images: ['https://www.quityourlifeandtravel.com/images/rice-fields.jpg'],
   },
 };
 
