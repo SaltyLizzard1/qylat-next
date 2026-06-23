@@ -21,19 +21,19 @@ const cinzel = Cinzel({
 export const metadata: Metadata = {
   metadataBase: new URL('https://quityourlifeandtravel.com'),
   title: 'QYLAT — Quit Your Life and Travel',
-  description: 'Stop waiting for the perfect moment and start building the life you actually want.',
+  description: 'Real stories, tools, and coaching for women ready to quit corporate life, move abroad, and build location-independent income. From Florida to Thailand — in 60 days.',
   keywords: 'digital nomad, quit your job, online business, remote work, location independence',
   authors: [{ name: 'Liz' }],
   openGraph: {
     title: 'QYLAT — Quit Your Life and Travel',
-    description: 'Stop waiting for the perfect moment and start building the life you actually want.',
+    description: 'Real stories, tools, and coaching for women ready to quit corporate life, move abroad, and build location-independent income. From Florida to Thailand — in 60 days.',
     images: [process.env.NEXT_PUBLIC_IMG_HERO ?? '/images/rice-fields.jpg'],
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
     title: 'QYLAT — Quit Your Life and Travel',
-    description: 'Stop waiting for the perfect moment and start building the life you actually want.',
+    description: 'Real stories, tools, and coaching for women ready to quit corporate life, move abroad, and build location-independent income. From Florida to Thailand — in 60 days.',
     images: [process.env.NEXT_PUBLIC_IMG_HERO ?? '/images/rice-fields.jpg'],
   },
 };
