@@ -9,7 +9,7 @@ export default function Comments({ pageTitle }: { pageTitle: string }) {
   const pathname = usePathname();
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const pageUrl = `https://quityourlifeantravel.com${pathname}`;
+  const pageUrl = `https://quityourlifeandtravel.com${pathname}`;
   const pageId = pathname;
 
   useEffect(() => {

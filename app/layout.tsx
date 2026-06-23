@@ -19,7 +19,7 @@ const cinzel = Cinzel({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://quityourlifeantravel.com'),
+  metadataBase: new URL('https://quityourlifeandtravel.com'),
   title: 'QYLAT — Quit Your Life and Travel',
   description: 'Stop waiting for the perfect moment and start building the life you actually want.',
   keywords: 'digital nomad, quit your job, online business, remote work, location independence',
