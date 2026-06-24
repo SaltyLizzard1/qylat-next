@@ -19,7 +19,10 @@ const cinzel = Cinzel({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://quityourlifeandtravel.com'),
+  metadataBase: new URL('https://www.quityourlifeandtravel.com'),
+  alternates: {
+    canonical: 'https://www.quityourlifeandtravel.com',
+  },
   title: 'How to Move Abroad and Build a Location-Independent Life | QYLAT',
   description: 'Real stories, tools, and coaching for women ready to quit corporate life, move abroad, and build location-independent income. From Florida to Thailand — in 60 days.',
   keywords: 'digital nomad, quit your job, online business, remote work, location independence',
