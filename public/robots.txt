@@ -3,6 +3,5 @@ Allow: /
 
 Disallow: /api/
 Disallow: /maintenance
-Disallow: /_next/
 
 Sitemap: https://www.quityourlifeandtravel.com/sitemap.xml
