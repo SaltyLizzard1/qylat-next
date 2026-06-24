@@ -47,11 +47,16 @@ function isRenderablePost(p: Post): boolean {
   return Boolean(p.content) || (Array.isArray(p.body) && p.body.length > 0);
 }
 
-export default function LeapPostClient({ slug }: { slug: string }) {
+export default function LeapPostClient({ slug, initialPost }: { slug: string; initialPost?: SanityPost | null }) {
   const router = useRouter();
   const headerRef = useRef<HTMLElement>(null);
 
   const { posts: sanityPosts, loading: sanityLoading } = useSanityPosts();
+
+  const initialConverted = useMemo(
+    () => (initialPost ? sanityToPost(initialPost) : null),
+    [initialPost],
+  );
 
   const allPosts = useMemo(() => {
     const converted = sanityPosts.map(sanityToPost);
@@ -60,13 +65,13 @@ export default function LeapPostClient({ slug }: { slug: string }) {
     return [...converted, ...filtered];
   }, [sanityPosts]);
 
-  const post = allPosts.find((p) => p.slug === slug && isRenderablePost(p));
+  const post = allPosts.find((p) => p.slug === slug && isRenderablePost(p)) ?? initialConverted;
 
   useEffect(() => {
     if (sanityLoading) return;
     const ok = allPosts.some((p) => p.slug === slug && isRenderablePost(p));
-    if (!ok) router.replace('/');
-  }, [slug, router, allPosts, sanityLoading]);
+    if (!ok && !initialConverted) router.replace('/');
+  }, [slug, router, allPosts, sanityLoading, initialConverted]);
 
   if (!post) {
     return (
