@@ -3,5 +3,11 @@
     "app/api/quiz/route.ts": {
       "maxDuration": 180
     }
-  }
+  },
+  "crons": [
+    {
+      "path": "/api/cron/health",
+      "schedule": "0 * * * *"
+    }
+  ]
 }
