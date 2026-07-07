@@ -1,6 +1,6 @@
 'use client';
 
-import QuizHeader from './QuizHeader';
+import QuizHeader from '../../components/QuizHeader';
 import { useState, useEffect, useRef } from 'react';
 import { ArrowLeft, ArrowRight, Loader2 } from 'lucide-react';
 
