@@ -182,8 +182,8 @@ export default function IdeaToPlan() {
                 alt="IdeaToPlan — Shape your future. Start today."
                 width={220}
                 height={69}
-                className="h-auto w-auto hover:opacity-90 transition-opacity"
-                style={{ filter: 'drop-shadow(0 0 10px rgba(232,200,74,0.30)) drop-shadow(0 0 px rgba(201,160,48,0.25))' }}
+                className="h-[69px] w-auto hover:opacity-90 transition-opacity"
+                style={{ filter: 'drop-shadow(0 0 3px rgba(201,160,48,0.15))' }}
               />
             </a>
           </div>

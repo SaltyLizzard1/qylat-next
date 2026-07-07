@@ -5,9 +5,9 @@ import Image from 'next/image';
 /*
   Animated QYLAT logo.
   Assets (all in /public):
-    /qylat-logo-base-v3.png — wordmark, fully cleaned (no baked line, plane, or debris)
-    /qylat-line-v2.png      — gold underline, extended to reach the T (751px @ 1:1 scale)
-    /qylat-plane.png        — the plane sprite (unchanged)
+    /qylat-logo-base.png — wordmark, fully cleaned (no baked line, plane, or debris)
+    /qylat-line.png      — gold underline, extended to reach the T (751px @ 1:1 scale)
+    /qylat-plane.png     — the plane sprite (unchanged)
   On load, the plane flies from the Q's swoosh to just beyond the T's stand,
   drawing the gold line behind it. Runs once. Reduced motion shows it static.
 */
@@ -57,11 +57,11 @@ export default function QylatLogo({ className = '' }: { className?: string }) {
         @media (prefers-reduced-motion: no-preference) {
           .qylat-line {
             clip-path: inset(0 100% 0 0);
-            animation: qylat-draw-line 1.3s cubic-bezier(0.45, 0, 0.25, 1) 0.25s forwards;
+            animation: qylat-draw-line 1.3s cubic-bezier(0.45, 0, 0.25, 1) 1.2s forwards;
           }
           .qylat-plane {
             transform: translateX(-749%);
-            animation: qylat-fly 1.3s cubic-bezier(0.45, 0, 0.25, 1) 0.25s forwards;
+            animation: qylat-fly 1.3s cubic-bezier(0.45, 0, 0.25, 1) 1.2s forwards;
           }
         }
         @keyframes qylat-draw-line {
