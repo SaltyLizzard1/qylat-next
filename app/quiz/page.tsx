@@ -559,8 +559,16 @@ export default function QuizPage() {
     return (
       <>
         <Header />
-        <div className="min-h-[calc(100vh-7rem)] bg-gray-50 flex items-center justify-center px-4">
-          <div className="text-center max-w-sm w-full">
+        <div className="relative overflow-hidden min-h-[calc(100vh-7rem)] flex items-center justify-center px-4" style={{ background: '#EBF0E6' }}>
+          <div
+            className="pointer-events-none absolute -top-24 -right-24 w-96 h-96 rounded-full opacity-20"
+            style={{ background: GOLD_GRADIENT }}
+          />
+          <div
+            className="pointer-events-none absolute -bottom-16 -left-16 w-64 h-64 rounded-full opacity-10"
+            style={{ background: GOLD_GRADIENT }}
+          />
+          <div className="relative text-center max-w-sm w-full">
             <Loader2 className="w-10 h-10 animate-spin mx-auto mb-6" style={{ color: '#8B6914' }} />
             <p className="text-lg font-semibold text-gray-800 transition-all duration-500 min-h-[3.5rem] flex items-center justify-center">
               {LOADING_MESSAGES[loadingMsgIndex]}
@@ -587,9 +595,28 @@ export default function QuizPage() {
     return (
       <>
         <Header />
-        <div className="min-h-screen bg-gray-50">
-          <div ref={topRef} className="max-w-2xl mx-auto px-4 py-10">
-            <h1 className="text-3xl font-bold text-gray-900 mb-1">Your online work matches</h1>
+        <div className="relative overflow-hidden min-h-screen" style={{ background: '#EBF0E6' }}>
+          <div
+            className="pointer-events-none absolute -top-24 -right-24 w-96 h-96 rounded-full opacity-20"
+            style={{ background: GOLD_GRADIENT }}
+          />
+          <div
+            className="pointer-events-none absolute -bottom-16 -left-16 w-64 h-64 rounded-full opacity-10"
+            style={{ background: GOLD_GRADIENT }}
+          />
+          <div ref={topRef} className="relative max-w-2xl mx-auto px-4 py-10">
+            <h1
+              className="mb-1"
+              style={{
+                fontFamily: "'Cormorant Garamond', Georgia, serif",
+                fontWeight: 700,
+                fontSize: 'clamp(1.75rem, 4vw, 2.5rem)',
+                color: '#2D5016',
+                lineHeight: 1.15,
+              }}
+            >
+              Your online work matches
+            </h1>
             <p className="text-gray-500 mb-8 text-sm">
               Based on your skills, values, and lifestyle goals — here are your top 7 paths.
             </p>
