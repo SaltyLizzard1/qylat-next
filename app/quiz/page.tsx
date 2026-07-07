@@ -1,6 +1,7 @@
 'use client';
 
-import QuizHeader from '../../components/QuizHeader';
+import Header from '../../components/Header';
+import Footer from '../../components/Footer';
 import { useState, useEffect, useRef } from 'react';
 import { ArrowLeft, ArrowRight, Loader2 } from 'lucide-react';
 
@@ -557,7 +558,7 @@ export default function QuizPage() {
   if (stage === 'loading') {
     return (
       <>
-        <QuizHeader />
+        <Header />
         <div className="min-h-[calc(100vh-7rem)] bg-gray-50 flex items-center justify-center px-4">
           <div className="text-center max-w-sm w-full">
             <Loader2 className="w-10 h-10 animate-spin mx-auto mb-6" style={{ color: '#8B6914' }} />
@@ -575,6 +576,7 @@ export default function QuizPage() {
             </p>
           </div>
         </div>
+        <Footer />
       </>
     );
   }
@@ -584,7 +586,7 @@ export default function QuizPage() {
 
     return (
       <>
-        <QuizHeader />
+        <Header />
         <div className="min-h-screen bg-gray-50">
           <div ref={topRef} className="max-w-2xl mx-auto px-4 py-10">
             <h1 className="text-3xl font-bold text-gray-900 mb-1">Your online work matches</h1>
@@ -657,6 +659,7 @@ export default function QuizPage() {
             )}
           </div>
         </div>
+        <Footer />
       </>
     );
   }
@@ -665,8 +668,16 @@ export default function QuizPage() {
 
   return (
     <>
-      <QuizHeader />
-      <div className="min-h-screen bg-gray-50">
+      <Header />
+      <div className="relative overflow-hidden min-h-screen" style={{ background: '#EBF0E6' }}>
+        <div
+          className="pointer-events-none absolute -top-24 -right-24 w-96 h-96 rounded-full opacity-20"
+          style={{ background: GOLD_GRADIENT }}
+        />
+        <div
+          className="pointer-events-none absolute -bottom-16 -left-16 w-64 h-64 rounded-full opacity-10"
+          style={{ background: GOLD_GRADIENT }}
+        />
         <div ref={topRef} className="max-w-xl mx-auto px-4 py-10">
           <h1 className="text-3xl font-bold text-gray-900 mb-1">Find your online work</h1>
           <p className="text-gray-500 mb-6 text-sm">
@@ -721,6 +732,7 @@ export default function QuizPage() {
           </div>
         </div>
       </div>
+      <Footer />
     </>
   );
 }

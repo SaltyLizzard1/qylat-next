@@ -14,7 +14,7 @@ const NAV: NavItem[] = [
   { label: 'Home', type: 'scroll', id: 'hero' },
   { label: 'My Story', type: 'link', href: '/story' },
   { label: 'Leap Log', type: 'scroll', id: 'the-leap-log' },
-  { label: 'Discover Your Idea', type: 'link', href: '/quiz' },
+  { label: 'Discover Your Idea', type: 'scroll', id: 'discover-your-idea' },
   { label: 'Idea To Plan', type: 'scroll', id: 'idea-to-plan' },
   { label: 'Work With Me', type: 'scroll', id: 'work-with-me' },
   { label: 'About', type: 'scroll', id: 'about' },
@@ -86,7 +86,7 @@ export default function Header() {
   const headerBg = 'bg-[#92A882]';
 
   const navPill =
-    'rounded-full px-5 py-1.5 text-sm font-semibold whitespace-nowrap ' + 
+    'rounded-full px-4 py-1 text-sm font-semibold whitespace-nowrap ' +
     'bg-white text-[#2C3340] border border-white/80 ' +
     'shadow-sm hover:bg-[#DED18F] hover:text-[#2C3340] hover:border-[#DED18F] ' +
     'active:scale-[0.97] transition-all duration-200';
@@ -103,7 +103,7 @@ export default function Header() {
       className={`sticky top-0 left-0 right-0 z-50 border-b border-[#7a8f6c]/60 transition-shadow duration-300 ${headerBg} ${scrolled ? 'shadow-md backdrop-blur-md' : 'shadow-sm'}`}
     >
       <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-12">
-        <div className="flex justify-between items-center py-2">
+        <div className="flex justify-between items-center py-1">
 
           {/* LOGO */}
           <button
@@ -112,7 +112,7 @@ export default function Header() {
             className="flex items-center flex-none text-left rounded-lg py-0 pr-2 ml-4 hover:bg-white/5 transition-colors focus:outline-none"
             aria-label="QYLAT"
           >
-            <QylatLogo className="h-20 w-[251px] lg:h-24 lg:w-[301px] block" />
+            <QylatLogo className="h-14 w-[176px] lg:h-16 lg:w-[201px] block" />
           </button>
 
           {/* DESKTOP NAV */}
