@@ -24,19 +24,19 @@ export const metadata: Metadata = {
     canonical: 'https://www.quityourlifeandtravel.com',
   },
   title: 'How to Move Abroad and Build a Location-Independent Life | QYLAT',
-  description: 'Real stories, tools, and coaching for women ready to quit corporate life, move abroad, and build location-independent income. From Florida to Thailand — in 60 days.',
+  description: 'Your mind tells you too old, too broke, too scared. It\'s lying. The life you\'ve always wanted is there, waiting for you. Here\'s how to build it.',
   keywords: 'digital nomad, quit your job, online business, remote work, location independence',
   authors: [{ name: 'Liz' }],
   openGraph: {
     title: 'How to Move Abroad and Build a Location-Independent Life | QYLAT',
-    description: 'Real stories, tools, and coaching for women ready to quit corporate life, move abroad, and build location-independent income. From Florida to Thailand — in 60 days.',
+    description: 'Your mind tells you too old, too broke, too scared. It\'s lying. The life you\'ve always wanted is there, waiting for you. Here\'s how to build it.',
     images: ['https://www.quityourlifeandtravel.com/images/rice-fields.jpg'],
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
     title: 'How to Move Abroad and Build a Location-Independent Life | QYLAT',
-    description: 'Real stories, tools, and coaching for women ready to quit corporate life, move abroad, and build location-independent income. From Florida to Thailand — in 60 days.',
+    description: 'Your mind tells you too old, too broke, too scared. It\'s lying. The life you\'ve always wanted is there, waiting for you. Here\'s how to build it.',
     images: ['https://www.quityourlifeandtravel.com/images/rice-fields.jpg'],
   },
 };
@@ -47,7 +47,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${cormorant.variable} ${cinzel.variable}`}>
+    <html lang="en" data-scroll-behavior="smooth" className={`${cormorant.variable} ${cinzel.variable}`}>
       <head>
         <link
           rel="preload"

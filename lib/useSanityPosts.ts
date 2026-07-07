@@ -29,7 +29,7 @@ export function useSanityPosts() {
         setLoading(false);
       })
       .catch((err: Error) => {
-        console.error('Posts fetch error:', err);
+        if (process.env.NODE_ENV === 'development') console.error('Posts fetch error:', err);
         setError(err.message);
         setLoading(false);
       });

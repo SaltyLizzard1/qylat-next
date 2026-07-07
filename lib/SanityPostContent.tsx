@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { PortableText } from '@portabletext/react';
 import { urlFor } from './sanity';
 import type { SanityPost } from './useSanityPosts';
@@ -28,9 +29,11 @@ function InlineImage({ value }: { value: PortableTextBlock }) {
   if (!value?.asset) return null;
   return (
     <figure className="flex flex-col items-center">
-      <img
+      <Image
         src={urlFor(value).width(1200).url()}
         alt={value.alt || value.caption || ''}
+        width={1200}
+        height={800}
         className="rounded-lg max-w-full h-auto"
         style={{ maxHeight: '70vh', objectFit: 'contain', boxShadow: '0 4px 20px rgba(0,0,0,0.10)' }}
         loading="lazy"
@@ -55,16 +58,18 @@ function InlineImageGroup({ images }: { images: PortableTextBlock[] }) {
     );
   }
 
-  const cols = validImages.length === 2 ? 'grid-cols-2' : 'grid-cols-3';
+  const cols = validImages.length === 2 ? 'grid-cols-2' : 'grid-cols-2 sm:grid-cols-3';
 
   return (
     <figure className="not-prose my-8">
       <div className={`grid ${cols} gap-3`}>
         {validImages.map((img, i) => (
           <div key={i} className="overflow-hidden rounded-lg" style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.10)' }}>
-            <img
+            <Image
               src={urlFor(img).width(800).url()}
               alt={img.alt || img.caption || ''}
+              width={800}
+              height={224}
               className="w-full h-56 object-contain"
               loading="lazy"
             />
@@ -157,7 +162,7 @@ function WorkWithMeCTA({ onTakeLeapClick }: { onTakeLeapClick?: () => void }) {
     <div className="mt-12 text-center not-prose">
       <p className="text-2xl md:text-3xl font-extrabold text-emerald-900 tracking-tight mb-6">Ready to take the leap?</p>
       <a
-        href="#work-with-me"
+        href="/work-with-me"
         onClick={(e) => {
           e.preventDefault();
           onTakeLeapClick?.();
@@ -165,7 +170,7 @@ function WorkWithMeCTA({ onTakeLeapClick }: { onTakeLeapClick?: () => void }) {
             document.getElementById('work-with-me')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
           });
         }}
-        className="inline-block text-lg font-semibold px-8 py-4 rounded-full transition-all hover:scale-[1.03] active:scale-[0.98] shadow-lg"
+        className="inline-block text-lg font-semibold px-8 py-4 rounded-full transition-all duration-200 hover:scale-[1.03] active:scale-[0.98] shadow-lg"
         style={{
           background: 'linear-gradient(135deg, #8B6914 0%, #E8C84A 35%, #F5E070 55%, #C9A030 75%, #8B6914 100%)',
           color: '#2D1A00',

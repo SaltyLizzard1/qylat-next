@@ -1,4 +1,7 @@
-export const metadata = { title: 'Back Soon | QYLAT' };
+export const metadata = {
+  title: 'Back Soon | Quit Your Life and Travel',
+  description: 'The site is undergoing a quick update. Check back shortly.',
+};
 
 export default function MaintenancePage() {
   return (

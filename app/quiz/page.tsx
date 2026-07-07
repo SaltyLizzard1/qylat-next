@@ -371,7 +371,7 @@ export default function QuizPage() {
       setMatches(parsed);
       setStage('results');
     } catch (err) {
-      console.error('Quiz error:', err);
+      if (process.env.NODE_ENV === 'development') console.error('Quiz error:', err);
       setError('Something went wrong fetching your results. Please try again.');
       setStage('form');
       setStep(5);
@@ -401,7 +401,7 @@ export default function QuizPage() {
 
       setStage('unlocked');
     } catch (err) {
-      console.error('Email error:', err);
+      if (process.env.NODE_ENV === 'development') console.error('Email error:', err);
       setEmailError('Something went wrong. Try again.');
     } finally {
       setEmailLoading(false);

@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import Header from '../../components/Header';
 import { images } from '../../config/images';
@@ -51,9 +52,11 @@ export default function WelcomePage() {
           </div>
 
           <div className="mt-16 pt-8 border-t border-gray-100">
-            <img
+            <Image
               src={images.logo}
               alt="Quit Your Life and Travel"
+              width={160}
+              height={64}
               className="h-16 mx-auto object-contain opacity-60"
             />
           </div>

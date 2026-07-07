@@ -1,6 +1,8 @@
 'use client';
 
-import { useState, useRef, useLayoutEffect } from 'react';
+import QylatLogo from './QylatLogo';
+import { useState, useEffect, useRef, useLayoutEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Menu, X } from 'lucide-react';
 import { SITE_HEADER_ID, scrollToSectionById } from '../utils/scrollToSection';
 
@@ -10,16 +12,26 @@ type NavItem =
 
 const NAV: NavItem[] = [
   { label: 'Home', type: 'scroll', id: 'hero' },
-  { label: 'Discover Your Idea', type: 'link', href: '/quiz' },
-  { label: 'IdeaToPlan', type: 'scroll', id: 'idea-to-plan' },
-  { label: 'Work With Me', type: 'scroll', id: 'work-with-me' },
+  { label: 'My Story', type: 'link', href: '/story' },
   { label: 'Leap Log', type: 'scroll', id: 'the-leap-log' },
+  { label: 'Discover Your Idea', type: 'link', href: '/quiz' },
+  { label: 'Idea To Plan', type: 'scroll', id: 'idea-to-plan' },
+  { label: 'Work With Me', type: 'scroll', id: 'work-with-me' },
   { label: 'About', type: 'scroll', id: 'about' },
 ];
 
 export default function Header() {
+  const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const headerRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 0);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   useLayoutEffect(() => {
     const el = headerRef.current;
@@ -54,15 +66,27 @@ export default function Header() {
     scrollToSectionById(id, { afterMobileMenuClose: fromMenu });
   };
 
-  const handleQuiz = () => {
+  const handleNavClick = (item: NavItem) => {
     setIsMobileMenuOpen(false);
-    window.location.href = '/quiz';
+
+    if (item.type === 'link') {
+      router.push(item.href);
+      return;
+    }
+
+    if (window.location.pathname === '/') {
+      scrollToSection(item.id);
+      return;
+    }
+
+    const href = item.id === 'hero' ? '/' : `/#${item.id}`;
+    router.push(href);
   };
 
   const headerBg = 'bg-[#92A882]';
 
   const navPill =
-    'rounded-full px-5 py-1.5 text-sm font-semibold whitespace-nowrap ' +
+    'rounded-full px-5 py-1.5 text-sm font-semibold whitespace-nowrap ' + 
     'bg-white text-[#2C3340] border border-white/80 ' +
     'shadow-sm hover:bg-[#DED18F] hover:text-[#2C3340] hover:border-[#DED18F] ' +
     'active:scale-[0.97] transition-all duration-200';
@@ -76,7 +100,7 @@ export default function Header() {
     <header
       ref={headerRef}
       id={SITE_HEADER_ID}
-      className={`sticky top-0 left-0 right-0 z-50 shadow-sm border-b border-[#7a8f6c]/60 ${headerBg}`}
+      className={`sticky top-0 left-0 right-0 z-50 border-b border-[#7a8f6c]/60 transition-shadow duration-300 ${headerBg} ${scrolled ? 'shadow-md backdrop-blur-md' : 'shadow-sm'}`}
     >
       <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-12">
         <div className="flex justify-between items-center py-2">
@@ -88,11 +112,7 @@ export default function Header() {
             className="flex items-center flex-none text-left rounded-lg py-0 pr-2 ml-4 hover:bg-white/5 transition-colors focus:outline-none"
             aria-label="QYLAT"
           >
-            <img
-              src="/qylat-logo-final.png"
-              alt="QYLAT"
-              className="h-16 w-auto md:h-18 lg:h-20 block"
-            />
+            <QylatLogo className="h-20 w-[251px] lg:h-24 lg:w-[301px] block" />
           </button>
 
           {/* DESKTOP NAV */}
@@ -101,7 +121,7 @@ export default function Header() {
               <button
                 key={item.label}
                 type="button"
-                onClick={() => item.type === 'link' ? handleQuiz() : scrollToSection(item.id)}
+                onClick={() => handleNavClick(item)}
                 className={navPill}
               >
                 {item.label}
@@ -115,7 +135,7 @@ export default function Header() {
               <button
                 key={item.label}
                 type="button"
-                onClick={() => item.type === 'link' ? handleQuiz() : scrollToSection(item.id)}
+                onClick={() => handleNavClick(item)}
                 className={navPill}
               >
                 {item.label}
@@ -143,7 +163,7 @@ export default function Header() {
               <button
                 key={item.label}
                 type="button"
-                onClick={() => item.type === 'link' ? handleQuiz() : scrollToSection(item.id)}
+                onClick={() => handleNavClick(item)}
                 className={navPillMobile}
               >
                 {item.label}

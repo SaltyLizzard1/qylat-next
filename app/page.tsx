@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import Header from '../components/Header';
 import Hero from '../components/Hero';
 import LeadMagnet from '../components/LeadMagnet';
+import StoryTeaser from '../components/StoryTeaser';
 import WorkWithMe from '../components/WorkWithMe';
 import DiscoverYourIdea from '../components/DiscoverYourIdea';
 import IdeaToPlan from '../components/IdeaToPlan';
@@ -30,15 +31,17 @@ export default function HomePage() {
       <Header />
       <Hero />
       <Divider />
+      <StoryTeaser />
+      <Divider />
       <LeadMagnet />
+      <Divider />
+      <LeapLog />
       <Divider />
       <WorkWithMe />
       <Divider />
       <DiscoverYourIdea />
       <Divider />
       <IdeaToPlan />
-      <Divider />
-      <LeapLog />
       <Divider />
       <About />
       <Footer />

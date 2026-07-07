@@ -53,7 +53,7 @@ export default function LeadMagnet() {
             className="flex flex-col sm:flex-row items-center gap-3"
           >
             <p
-              className="text-white/90 whitespace-nowrap shrink-0"
+              className="text-white/90 text-center sm:text-left sm:whitespace-nowrap shrink-0"
               style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1rem' }}
             >
               Not sure where to start? Grab the free 60-Day Leap Kit
@@ -69,11 +69,11 @@ export default function LeadMagnet() {
             <button
               type="submit"
               disabled={status === 'loading'}
-              className="rounded-full px-6 py-2 text-sm font-semibold transition-all duration-300 hover:scale-[1.03] active:scale-[0.98] whitespace-nowrap shrink-0"
+              className="rounded-full px-6 py-2 text-sm font-semibold transition-all duration-300 hover:scale-[1.03] hover:shadow-md active:scale-[0.98] whitespace-nowrap shrink-0"
               style={{
                 background: 'linear-gradient(135deg, #8B6914 0%, #E8C84A 35%, #F5E070 55%, #C9A030 75%, #8B6914 100%)',
                 color: '#2D1A00',
-                border: '1.5px solid #7A5C0A',
+                border: '1.5px solid #2D1A00',
                 boxShadow: '0 2px 12px rgba(0,0,0,0.2)',
               }}
             >

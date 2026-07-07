@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import type { Post } from '../data/posts';
 import {
   postHeroObjectFitClass,
@@ -16,7 +17,7 @@ export default function PostCard({ post, onOpenPost }: PostCardProps) {
 
   return (
     <div className="h-auto">
-      <article className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 group h-auto flex flex-col">
+      <article className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group h-auto flex flex-col">
         {post.image && (
           <button
             type="button"
@@ -24,13 +25,17 @@ export default function PostCard({ post, onOpenPost }: PostCardProps) {
             className="block w-full overflow-hidden bg-gray-100 text-left disabled:cursor-default"
             disabled={!post.content}
           >
-            <img
-              src={post.image}
-              alt={post.title}
-              className={`w-full h-80 ${postHeroObjectFitClass(post)} group-hover:scale-105 transition-transform duration-300 ${cardImageObjectPosition}`.trimEnd()}
-              style={heroPositionStyle}
-              loading="lazy"
-            />
+            <div className="relative w-full h-80 overflow-hidden">
+              <Image
+                src={post.image}
+                alt={post.title}
+                fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                className={`${postHeroObjectFitClass(post)} group-hover:scale-105 transition-transform duration-300 ${cardImageObjectPosition}`.trimEnd()}
+                style={heroPositionStyle}
+                loading="lazy"
+              />
+            </div>
           </button>
         )}
         <div className="p-6 flex flex-col flex-1">
@@ -51,11 +56,11 @@ export default function PostCard({ post, onOpenPost }: PostCardProps) {
             <button
               type="button"
               onClick={() => onOpenPost(post.slug)}
-              className="mt-4 self-start font-sans font-semibold text-sm rounded-full px-5 py-2 transition-all duration-200 hover:scale-[1.03] active:scale-[0.98]"
+              className="mt-4 self-start font-sans font-semibold text-sm rounded-full px-5 py-2 transition-all duration-200 hover:scale-[1.03] hover:shadow-md active:scale-[0.98]"
               style={{
                 background: 'linear-gradient(135deg, #8B6914 0%, #E8C84A 35%, #F5E070 55%, #C9A030 75%, #8B6914 100%)',
                 color: '#2D1A00',
-                border: '1.5px solid #7A5C0A',
+                border: '1.5px solid #2D1A00',
                 boxShadow: '0 2px 10px rgba(139,105,20,0.25)',
               }}
             >

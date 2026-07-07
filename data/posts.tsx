@@ -185,7 +185,7 @@ function WorkWithMeCTA({ onTakeLeapClick }: { onTakeLeapClick?: () => void }) {
         Ready to take the leap?
       </p>
       <a
-        href="#work-with-me"
+        href="/work-with-me"
         onClick={(event) => handleTakeLeapCTA(event, onTakeLeapClick)}
         className="inline-block text-lg font-semibold px-8 py-4 rounded-full transition-all hover:scale-[1.03] active:scale-[0.98] shadow-lg"
         style={{

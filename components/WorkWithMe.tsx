@@ -1,3 +1,6 @@
+'use client';
+
+import { motion, MotionConfig } from 'framer-motion';
 import { Check } from 'lucide-react';
 
 const CAL_URL = 'https://cal.com/qylat/leap-session';
@@ -5,7 +8,7 @@ const CAL_URL = 'https://cal.com/qylat/leap-session';
 const goldBtn = {
   background: 'linear-gradient(135deg, #8B6914 0%, #E8C84A 35%, #F5E070 55%, #C9A030 75%, #8B6914 100%)',
   color: '#2D1A00',
-  border: '1.5px solid #7A5C0A',
+  border: '1.5px solid #2D1A00',
   boxShadow: '0 4px 24px rgba(0,0,0,0.35)',
 } as const;
 
@@ -30,16 +33,21 @@ export default function WorkWithMe() {
   ];
 
   const leaveWith = [
-    'Your real BUT, named and categorized, the thing that’s actually been running the show',
+    "The real reason you’re stuck, named. Not the excuse you’ve been telling everyone.",
     'A written Leap Map, sent to you after the call, with your want and your first move spelled out',
     'One move, locked in, before you hang up, with a date on it',
     'The version of you stuck in that exact same spot a year from now stops being your future, starting today',
   ];
 
   return (
-    <section
+    <MotionConfig reducedMotion="user">
+    <motion.section
       id="work-with-me"
       className="pt-8 pb-14 md:pt-10 md:pb-20 bg-white relative z-10"
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
+      viewport={{ once: true, margin: '-80px' }}
     >
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2 className="font-cormorant text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-3 md:mb-4 text-center leading-tight">
@@ -48,7 +56,7 @@ export default function WorkWithMe() {
 
         <p className="text-lg md:text-xl text-gray-600 mb-5 md:mb-6 text-center max-w-3xl mx-auto leading-relaxed">
           You already know something has to change. You&apos;re not burned out. You&apos;re not lazy. You&apos;re
-          just done pretending...
+          just done pretending.
         </p>
 
         <div className="rounded-2xl shadow-xl p-6 md:p-10 mb-8 md:mb-10" style={{ background: '#EBF0E6', border: '1px solid rgba(45,80,22,0.15)' }}>
@@ -60,18 +68,6 @@ export default function WorkWithMe() {
             your blocks, clarify your wants, and build your first real action plan.
           </p>
 
-          <div className="mb-8">
-            <h4 className="text-xl font-bold text-gray-900 mb-4 text-center">What happens in the session:</h4>
-            <ul className="space-y-3">
-              {sessionFeatures.map((feature, index) => (
-                <li key={index} className="flex items-start">
-                  <Check className="w-6 h-6 mr-3 flex-shrink-0 mt-0.5" style={{ color: '#C9A030' }} />
-                  <span className="text-gray-700">{feature}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
           <div className="rounded-lg p-6 mb-8 border border-[#E8C84A]/30 bg-[#F5E070]/8">
             <div className="grid md:grid-cols-2 gap-8 md:gap-10">
               <div>
@@ -80,8 +76,8 @@ export default function WorkWithMe() {
                 </h4>
                 <ul className="space-y-3">
                   {forYouIf.map((item, index) => (
-                    <li key={index} className="flex items-start text-gray-700">
-                      <span className="mr-2 font-bold" style={{ color: '#C9A030' }}>•</span>
+                    <li key={index} className="flex items-start gap-3 text-gray-700">
+                      <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: '#C9A030' }} />
                       <span>{item}</span>
                     </li>
                   ))}
@@ -95,18 +91,25 @@ export default function WorkWithMe() {
                 <ul className="space-y-3">
                   {leaveWith.map((item, index) => (
                     <li key={index} className="flex items-start gap-3">
-                      <span
-                        className="font-cormorant text-xl font-bold leading-none flex-shrink-0 mt-0.5"
-                        style={{ color: '#C9A030' }}
-                      >
-                        {index + 1}.
-                      </span>
+                      <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: '#C9A030' }} />
                       <span className="text-gray-700">{item}</span>
                     </li>
                   ))}
                 </ul>
               </div>
             </div>
+          </div>
+
+          <div className="mb-8">
+            <h4 className="text-xl font-bold text-gray-900 mb-4 text-center">What happens in the session:</h4>
+            <ul className="space-y-3">
+              {sessionFeatures.map((feature, index) => (
+                <li key={index} className="flex items-start">
+                  <Check className="w-6 h-6 mr-3 flex-shrink-0 mt-0.5" style={{ color: '#C9A030' }} />
+                  <span className="text-gray-700">{feature}</span>
+                </li>
+              ))}
+            </ul>
           </div>
 
           <div className="text-center">
@@ -124,6 +127,7 @@ export default function WorkWithMe() {
           </div>
         </div>
       </div>
-    </section>
+    </motion.section>
+    </MotionConfig>
   );
 }

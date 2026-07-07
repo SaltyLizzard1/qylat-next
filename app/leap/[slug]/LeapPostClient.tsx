@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useEffect, useMemo, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
@@ -94,13 +95,14 @@ export default function LeapPostClient({ slug, initialPost }: { slug: string; in
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
           {post.image && (
             <div className="w-full max-h-[400px] overflow-hidden bg-gray-100">
-              <img
+              <Image
                 src={post.image}
                 alt={post.title}
+                width={1200}
+                height={400}
                 className={`h-[400px] max-h-[400px] w-full ${postHeroObjectFitClass(post)} ${postHeroObjectPositionClass(post, 'modal')}`.trimEnd()}
                 style={postHeroObjectPositionStyle(post)}
                 loading="eager"
-                decoding="async"
               />
             </div>
           )}

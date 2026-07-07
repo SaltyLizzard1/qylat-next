@@ -25,7 +25,7 @@ export default function DiscoverYourIdea() {
         style={{ background: goldGradient }}
       />
 
-      <div className="relative max-w-2xl mx-auto text-center">
+      <div className="relative max-w-2xl mx-auto text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
 
         {/* Eyebrow badge */}
         <span
@@ -80,7 +80,7 @@ export default function DiscoverYourIdea() {
         {/* CTA */}
         <a
           href="/quiz"
-          className="inline-block font-sans rounded-full px-12 py-4 text-lg font-semibold transition-all duration-300 hover:scale-[1.03] active:scale-[0.98]"
+          className="inline-block font-sans rounded-full px-12 py-4 text-lg font-semibold transition-all duration-300 hover:scale-[1.03] hover:shadow-md active:scale-[0.98]"
           style={{
             background: goldGradient,
             color: '#2D1A00',

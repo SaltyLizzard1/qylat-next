@@ -7,17 +7,10 @@ import { Lightbulb, FileText, Rocket, X, CheckCircle, AlertCircle, Loader } from
 const goldGradient =
   'linear-gradient(135deg, #8B6914 0%, #E8C84A 35%, #F5E070 55%, #C9A030 75%, #8B6914 100%)';
 
-const metalGoldText = {
-  background: goldGradient,
-  WebkitBackgroundClip: 'text',
-  WebkitTextFillColor: 'transparent',
-  backgroundClip: 'text',
-} as const;
-
 const goldBtn = {
   background: goldGradient,
   color: '#2D1A00',
-  border: '1.5px solid #92400e',
+  border: '1.5px solid #2D1A00',
   boxShadow: '0 8px 32px rgba(139,105,20,0.35)',
 } as const;
 
@@ -29,13 +22,13 @@ const steps = [
   },
   {
     icon: FileText,
-    title: 'AI-Assisted Planning',
-    description: 'We guide the AI to craft a tailored, actionable plan that fits your vision',
+    title: 'We Build Your Plan',
+    description: 'We pair expert guidance with AI research to craft a tailored, actionable plan that fits your vision',
   },
   {
     icon: Rocket,
     title: 'Get Your Plan',
-    description: "Get your polished, ready-to-use PDF plan in 72 hours—or faster if you're on a deadline",
+    description: "Get your polished, ready-to-use PDF plan in 72 hours, or faster if you're on a deadline",
   },
 ];
 
@@ -100,15 +93,13 @@ const PLAN_OPTIONS = [
     value: 'Starter',
     title: 'Starter',
     price: '$25',
-    description:
-      'Full business plan PDF: market fit, revenue model, 90-day actions, and marketing basics.',
+    description: 'Full plan, revenue strategy + 90-day roadmap',
   },
   {
     value: 'Growth',
     title: 'Growth',
     price: '$50',
-    description:
-      'Everything in Starter plus deeper competitor and positioning analysis.',
+    description: 'Adds competitor research, SWOT + go/no-go viability verdict',
   },
   {
     value: 'Visa / Immigration',
@@ -153,7 +144,7 @@ export default function IdeaToPlan() {
       setStatus('success');
       setForm(initialForm);
     } catch (err: unknown) {
-      console.error(err);
+      if (process.env.NODE_ENV === 'development') console.error(err);
       setErrorMsg('Something went wrong. Please try again or email us directly.');
       setStatus('error');
     }
@@ -169,180 +160,92 @@ export default function IdeaToPlan() {
     <>
       <section
         id="idea-to-plan"
-        className="relative overflow-hidden pt-4 pb-12 md:pt-6 md:pb-16 px-6 bg-white"
+        className="relative overflow-hidden pt-4 pb-6 md:pt-5 md:pb-6 px-6"
+        style={{ background: 'linear-gradient(180deg, #0d0d0f 0%, #17140c 50%, #0d0d0f 100%)' }}
       >
         <div
-          className="pointer-events-none absolute -top-32 -right-32 w-80 h-80 rounded-full opacity-[0.07]"
+          className="pointer-events-none absolute -top-32 -right-32 w-80 h-80 rounded-full opacity-[0.10] hidden md:block"
           style={{ background: goldGradient }}
         />
         <div
-          className="pointer-events-none absolute -bottom-24 -left-24 w-60 h-60 rounded-full opacity-[0.05]"
+          className="pointer-events-none absolute -bottom-24 -left-24 w-60 h-60 rounded-full opacity-[0.08] hidden md:block"
           style={{ background: goldGradient }}
         />
 
         <div className="relative max-w-4xl mx-auto text-center">
 
-          {/* Introducing label */}
-          <p className="font-sans text-base md:text-lg font-bold uppercase tracking-[0.3em] text-[#B45309] mb-3">
-            Introducing
-          </p>
-
           {/* Logo */}
-          <div className="flex justify-center mb-5">
+          <div className="flex justify-center mb-3">
             <a href="https://ideatoplan.to" target="_blank" rel="noopener noreferrer">
               <Image
                 src="/ideatoplan-logo.svg"
                 alt="IdeaToPlan — Shape your future. Start today."
-                width={380}
-                height={120}
-                className="h-auto hover:opacity-90 transition-opacity"
+                width={220}
+                height={69}
+                className="h-auto w-auto hover:opacity-90 transition-opacity"
+                style={{ filter: 'drop-shadow(0 0 10px rgba(232,200,74,0.30)) drop-shadow(0 0 px rgba(201,160,48,0.25))' }}
               />
             </a>
           </div>
 
           {/* Headline */}
           <h2
-            className="font-cormorant font-bold mb-6 max-w-3xl mx-auto leading-tight"
-            style={{ fontSize: 'clamp(2.25rem, 5vw, 3.2rem)', color: '#166534' }}
+            className="font-cormorant font-bold mb-3 max-w-5xl mx-auto leading-tight"
+           style={{ fontSize: 'clamp(1.75rem, 3vw, 2.25rem)', color: '#FBF6E3' }}
           >
             Turn Your Business Idea Into an Actionable Plan in 72 Hours
           </h2>
 
           {/* Body */}
-          <div className="max-w-2xl mx-auto mb-10">
-            <p className="text-lg text-slate-700 leading-relaxed">
+          <div className="max-w-2xl mx-auto mb-5">
+            <p className="text-base leading-relaxed" style={{ color: '#cfc9b8' }}>
               A done-for-you business planning service built for founders who are ready to move. Fast turnaround. Real plans.
             </p>
           </div>
 
           {/* 3-Step Flow */}
-          <div className="grid md:grid-cols-3 gap-6 mb-12">
+          <div className="grid md:grid-cols-3 gap-6 mb-6">
             {steps.map((step, index) => (
               <div key={index} className="flex flex-col items-center text-center">
                 <div
-                  className="flex items-center justify-center w-16 h-16 rounded-full mb-4"
-                  style={{ background: 'rgba(22,101,52,0.10)' }}
+                  className="flex items-center justify-center w-12 h-12 rounded-full mb-2"
+                  style={{ background: 'rgba(201,160,48,0.12)', border: '1px solid rgba(201,160,48,0.35)' }}
                 >
-                  <step.icon className="w-8 h-8" style={{ color: '#166534' }} />
+                  <step.icon className="w-8 h-8" style={{ color: '#E8C84A' }} />
                 </div>
-                <h3 className="text-xl font-bold mb-2" style={{ color: '#166534' }}>
+                <h3 className="text-xl font-bold mb-2" style={{ color: '#E8C84A' }}>
                   {step.title}
                 </h3>
-                <p className="text-slate-700 text-sm leading-relaxed px-4">
+                <p className="text-sm leading-relaxed" style={{ color: '#cfc9b8' }}>
                   {step.description}
                 </p>
               </div>
             ))}
           </div>
 
-          {/* Pricing Cards */}
-          <div className="grid md:grid-cols-3 gap-6 mb-10 text-left">
-
-            <div
-              className="rounded-2xl p-6 flex flex-col bg-[#F8FAFC]"
-              style={{ border: '1px solid #E2E8F0' }}
-            >
-              <h3 className="text-xl font-bold mb-1" style={{ color: '#166534' }}>Starter</h3>
-              <p className="font-bold text-2xl mb-1" style={metalGoldText}>$25</p>
-              <p className="text-sm text-slate-700 mb-4">For founders who want a polished business plan without overpaying.</p>
-              <ul className="space-y-2 text-sm text-slate-700 flex-1">
-                {[
-                  'Actionable business plan built around your idea',
-                  'Revenue model and pricing strategy',
-                  '90-day roadmap with clear milestones',
-                  'Professional PDF delivered in 72 hours',
-                ].map((item, i) => (
-                  <li key={i} className="flex items-start gap-2">
-                    <span className="font-bold mt-0.5 flex-shrink-0" style={{ color: '#10B981' }}>✓</span>
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div
-              className="rounded-2xl p-6 flex flex-col relative"
-              style={{
-                background: 'rgba(22,101,52,0.06)',
-                border: '1.5px solid rgba(22,101,52,0.30)',
-                boxShadow: '0 0 40px rgba(22,101,52,0.10)',
-              }}
-            >
-              <div
-                className="absolute -top-3 left-1/2 -translate-x-1/2 text-xs font-bold px-4 py-1 rounded-full whitespace-nowrap"
-                style={{ background: goldGradient, color: '#2D1A00' }}
-              >
-                Most Popular
-              </div>
-              <h3 className="text-xl font-bold mb-1" style={{ color: '#166534' }}>Growth</h3>
-              <p className="font-bold text-2xl mb-1" style={metalGoldText}>$50</p>
-              <p className="text-sm text-slate-700 mb-4">For entrepreneurs who want market validation and smarter positioning.</p>
-              <ul className="space-y-2 text-sm text-slate-700 flex-1">
-                {[
-                  'Everything in Starter',
-                  'Competitor research and landscape analysis',
-                  'SWOT analysis',
-                  'Viability verdict with go/no-go assessment',
-                ].map((item, i) => (
-                  <li key={i} className="flex items-start gap-2">
-                    <span className="font-bold mt-0.5 flex-shrink-0" style={{ color: '#10B981' }}>✓</span>
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div
-              className="rounded-2xl p-6 flex flex-col relative opacity-50 bg-[#F8FAFC]"
-              style={{ border: '1px dashed #E2E8F0' }}
-            >
-              <div
-                className="absolute -top-3 left-1/2 -translate-x-1/2 text-xs font-bold px-4 py-1 rounded-full whitespace-nowrap"
-                style={{ background: '#F1F5F9', color: '#166534', border: '1px solid #E2E8F0' }}
-              >
-                Coming soon
-              </div>
-              <h3 className="text-xl font-bold mb-1 text-slate-400">Visa / Immigration</h3>
-              <p className="font-bold text-2xl mb-1 text-slate-400">$599</p>
-              <p className="text-sm text-slate-400 mb-4">For founders who need USCIS- and investor-ready structure and compliance language.</p>
-              <ul className="space-y-2 text-sm text-slate-400 flex-1">
-                {[
-                  'Everything in Growth',
-                  'Visa-ready formatting and structure',
-                  '5-year financial projections',
-                  'Job creation and non-marginality language',
-                ].map((item, i) => (
-                  <li key={i} className="flex items-start gap-2">
-                    <span className="font-bold mt-0.5 flex-shrink-0 text-slate-300">✓</span>
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          {/* Introductory Offer */}
-          <div className="mb-8 max-w-2xl mx-auto">
-            <div
-              className="rounded-xl px-6 py-4"
-              style={{ background: 'rgba(22,101,52,0.06)', border: '1px solid rgba(22,101,52,0.20)' }}
-            >
-              <p className="font-semibold text-sm leading-relaxed text-[#166534]">
-                Special introductory offer — no payment upfront. You receive your plan, we talk it through,
-                and you pay only if you love it. In exchange, we&apos;d love your honest feedback.
-              </p>
-            </div>
-          </div>
-
           {/* CTA */}
           <button
             type="button"
             onClick={() => setShowForm(true)}
-            className="inline-block font-sans rounded-full px-12 py-4 text-lg font-semibold transition-all duration-300 hover:scale-[1.03] active:scale-[0.98] min-w-[260px]"
+            className="inline-block font-sans rounded-full px-12 py-4 text-lg font-semibold transition-all duration-300 hover:scale-[1.03] hover:shadow-md active:scale-[0.98] min-w-[260px]"
             style={goldBtn}
           >
             Share Your Idea
           </button>
+
+          {/* Soft pricing line */}
+          <p className="mt-3 text-sm" style={{ color: '#a89f8a' }}>
+            Plans start at $25. Full details at{' '}
+            <a
+              href="https://ideatoplan.to"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold underline underline-offset-4 hover:opacity-70 transition"
+              style={{ color: '#E8C84A' }}
+            >
+              ideatoplan.to
+            </a>
+          </p>
         </div>
       </section>
 
@@ -484,7 +387,6 @@ export default function IdeaToPlan() {
                           <option value="bank-loan">Bank loan</option>
                           <option value="investor">Investor pitch</option>
                           <option value="personal-roadmap">Personal roadmap</option>
-                          <option value="personal-roadmap">Other / General roadmap</option>
                         </select>
                       </div>
                     </div>
@@ -584,9 +486,19 @@ export default function IdeaToPlan() {
                               style={form.planType === opt.value ? { boxShadow: '0 0 24px rgba(22,101,52,0.15)' } : undefined}
                             >
                               <input type="radio" name="planType" value={opt.value} checked={form.planType === opt.value} onChange={handleChange} className="sr-only" />
+                              {opt.value === 'Growth' && (form.planGoal === 'bank-loan' || form.planGoal === 'investor') && (
+                                <span className="self-start text-[10px] font-bold uppercase tracking-wide text-white px-2 py-0.5 rounded-full mb-2" style={{ background: '#166534' }}>
+                                  Recommended for your goal
+                                </span>
+                              )}
                               <span className="font-bold text-slate-900 text-sm leading-tight">{opt.title}</span>
-                              <span className="font-bold text-lg mt-1" style={metalGoldText}>{opt.price}</span>
+                              <span className="font-bold text-lg mt-1" style={{ color: '#8B6914' }}>{opt.price}</span>
                               <p className="text-xs text-slate-700 mt-2 leading-relaxed flex-1">{opt.description}</p>
+                              {opt.value === 'Growth' && (form.planGoal === 'bank-loan' || form.planGoal === 'investor') && (
+                                <p className="text-[11px] mt-2 font-medium" style={{ color: '#166534' }}>
+                                  Lenders and investors expect this depth.
+                                </p>
+                              )}
                             </label>
                           )
                         )}

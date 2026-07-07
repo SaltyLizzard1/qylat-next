@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
 const ALERT_TO = 'liz@quityourlifeandtravel.com';
-const ALERT_FROM = 'noreply@quityourlifeandtravel.com';
+const ALERT_FROM = 'noreply@send.quityourlifeandtravel.com';
 
 // Max age for the trend cache before we consider it stale.
 // The workflow runs daily at 3am UTC — 26h gives a comfortable buffer.

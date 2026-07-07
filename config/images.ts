@@ -5,9 +5,8 @@ export const images = {
   sorting: '/mountainofclothes.jpg',
   baliAtm: '/images/bali-atm.jpg',
   about: '/FB_Pic.jpg',
-  aboutBeach: '/me-whitedress.png',
   hero: '/images/rice-fields.jpg',
   wetWipes: '/images/bathroom-travel-sign.jpg',
-  logo: '/logo-removebg.png?v=2',
+  logo: '/logo-removebg.png',
   bini: '/ai_bini.png',
 } as const;
