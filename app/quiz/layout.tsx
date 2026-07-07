@@ -8,8 +8,8 @@ export const metadata: Metadata = {
     canonical: 'https://www.quityourlifeandtravel.com/quiz',
   },
   robots: {
-    index: false,
-    follow: false,
+    index: true,
+    follow: true,
   },
 };
 

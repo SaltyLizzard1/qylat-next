@@ -387,19 +387,11 @@ export default function QuizPage() {
     setEmailError('');
 
     try {
-      const formId = process.env.NEXT_PUBLIC_KIT_QUIZ_FORM_ID;
-      const apiKey = process.env.NEXT_PUBLIC_KIT_API_KEY;
-
-      if (formId && apiKey) {
-        await fetch(`https://api.kit.com/v4/forms/${formId}/subscribers`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Kit-Api-Key': apiKey,
-          },
-          body: JSON.stringify({ email_address: email.trim() }),
-        });
-      }
+      await fetch('https://app.kit.com/forms/260ddc6f2c/subscriptions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email_address: email.trim() }),
+      });
 
       setStage('unlocked');
     } catch (err) {
