@@ -679,9 +679,21 @@ export default function QuizPage() {
           style={{ background: GOLD_GRADIENT }}
         />
         <div ref={topRef} className="max-w-xl mx-auto px-4 py-10">
-          <h1 className="text-3xl font-bold text-gray-900 mb-1">Find your online work</h1>
-          <p className="text-gray-500 mb-6 text-sm">
-            Answer 5 quick questions. Get 7 matched roles tailored to your skills and lifestyle.
+          <h1
+            className="mb-2 text-center"
+            style={{
+              fontFamily: "'Cormorant Garamond', Georgia, serif",
+              fontWeight: 700,
+              fontSize: 'clamp(1.75rem, 4vw, 2.5rem)',
+              color: '#2D5016',
+              lineHeight: 1.15,
+            }}
+          >
+            Find the Work That Funds the Life You Want
+          </h1>
+          <p className="text-gray-600 mb-6 text-sm leading-relaxed">
+            This isn&apos;t about finding another job. Answer 5 quick questions and get 7 real
+            paths matched to your skills, your values, and the life you&apos;re building.
           </p>
 
           <ProgressBar step={step} total={TOTAL_STEPS} />
