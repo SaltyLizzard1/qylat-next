@@ -1,5 +1,6 @@
 'use client';
 
+import QuizHeader from './QuizHeader';
 import { useState, useEffect, useRef } from 'react';
 import { ArrowLeft, ArrowRight, Loader2 } from 'lucide-react';
 
@@ -555,23 +556,26 @@ export default function QuizPage() {
 
   if (stage === 'loading') {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-        <div className="text-center max-w-sm w-full">
-          <Loader2 className="w-10 h-10 animate-spin mx-auto mb-6" style={{ color: '#8B6914' }} />
-          <p className="text-lg font-semibold text-gray-800 transition-all duration-500 min-h-[3.5rem] flex items-center justify-center">
-            {LOADING_MESSAGES[loadingMsgIndex]}
-          </p>
-          <div className="w-full h-2 bg-gray-200 rounded-full mt-4 overflow-hidden">
-            <div
-              className="h-full rounded-full transition-all duration-300 ease-out"
-              style={{ width: `${progress}%`, backgroundImage: GOLD_GRADIENT }}
-            />
+      <>
+        <QuizHeader />
+        <div className="min-h-[calc(100vh-7rem)] bg-gray-50 flex items-center justify-center px-4">
+          <div className="text-center max-w-sm w-full">
+            <Loader2 className="w-10 h-10 animate-spin mx-auto mb-6" style={{ color: '#8B6914' }} />
+            <p className="text-lg font-semibold text-gray-800 transition-all duration-500 min-h-[3.5rem] flex items-center justify-center">
+              {LOADING_MESSAGES[loadingMsgIndex]}
+            </p>
+            <div className="w-full h-2 bg-gray-200 rounded-full mt-4 overflow-hidden">
+              <div
+                className="h-full rounded-full transition-all duration-300 ease-out"
+                style={{ width: `${progress}%`, backgroundImage: GOLD_GRADIENT }}
+              />
+            </div>
+            <p className="text-sm text-gray-500 mt-3">
+              This takes about 60–90 seconds — we&apos;re building something tailored to you
+            </p>
           </div>
-          <p className="text-sm text-gray-500 mt-3">
-            This takes about 60–90 seconds — we&apos;re building something tailored to you
-          </p>
         </div>
-      </div>
+      </>
     );
   }
 
@@ -579,152 +583,144 @@ export default function QuizPage() {
     const locked = stage === 'results';
 
     return (
-      <div className="min-h-screen bg-gray-50">
-        <div ref={topRef} className="max-w-2xl mx-auto px-4 py-10">
-          <a
-            href="/"
-            className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 mb-6"
-          >
-            <ArrowLeft className="w-4 h-4" /> Back to QYLAT
-          </a>
+      <>
+        <QuizHeader />
+        <div className="min-h-screen bg-gray-50">
+          <div ref={topRef} className="max-w-2xl mx-auto px-4 py-10">
+            <h1 className="text-3xl font-bold text-gray-900 mb-1">Your online work matches</h1>
+            <p className="text-gray-500 mb-8 text-sm">
+              Based on your skills, values, and lifestyle goals — here are your top 7 paths.
+            </p>
 
-          <h1 className="text-3xl font-bold text-gray-900 mb-1">Your online work matches</h1>
-          <p className="text-gray-500 mb-8 text-sm">
-            Based on your skills, values, and lifestyle goals — here are your top 7 paths.
-          </p>
-
-          <div className="mb-4">
-            <MatchCard match={matches[0]} index={0} />
-          </div>
-
-          <div className="relative">
-            <div className={locked ? 'blur-sm select-none pointer-events-none' : ''}>
-              <div className="space-y-4">
-                {matches.slice(1).map((match, i) => (
-                  <MatchCard key={i} match={match} index={i + 1} />
-                ))}
-              </div>
+            <div className="mb-4">
+              <MatchCard match={matches[0]} index={0} />
             </div>
 
-            {locked && (
-              <div className="absolute inset-0 flex items-start justify-center pt-8">
-                <div className="bg-white rounded-2xl shadow-xl p-8 mx-4 w-full max-w-md text-center border border-gray-100">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">Unlock your full results</h3>
-                  <p className="text-gray-500 text-sm mb-6">
-                    Enter your email to reveal all 7 matches — no spam, unsubscribe any time.
-                  </p>
-                  <form onSubmit={submitEmail} className="space-y-3">
-                    <input
-                      type="email"
-                      required
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="your@email.com"
-                      className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#C9A030]"
-                    />
-                    <button
-                      type="submit"
-                      disabled={emailLoading}
-                      className="w-full py-3 font-semibold rounded-lg transition-all hover:brightness-105 disabled:opacity-60"
-                      style={GOLD_BUTTON_STYLE}
-                    >
-                      {emailLoading ? 'Revealing...' : 'Reveal my matches'}
-                    </button>
-                  </form>
-                  {emailError && (
-                    <p className="mt-3 text-sm text-red-600">{emailError}</p>
-                  )}
+            <div className="relative">
+              <div className={locked ? 'blur-sm select-none pointer-events-none' : ''}>
+                <div className="space-y-4">
+                  {matches.slice(1).map((match, i) => (
+                    <MatchCard key={i} match={match} index={i + 1} />
+                  ))}
                 </div>
+              </div>
+
+              {locked && (
+                <div className="absolute inset-0 flex items-start justify-center pt-8">
+                  <div className="bg-white rounded-2xl shadow-xl p-8 mx-4 w-full max-w-md text-center border border-gray-100">
+                    <h3 className="text-xl font-bold text-gray-900 mb-2">Unlock your full results</h3>
+                    <p className="text-gray-500 text-sm mb-6">
+                      Enter your email to reveal all 7 matches — no spam, unsubscribe any time.
+                    </p>
+                    <form onSubmit={submitEmail} className="space-y-3">
+                      <input
+                        type="email"
+                        required
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="your@email.com"
+                        className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#C9A030]"
+                      />
+                      <button
+                        type="submit"
+                        disabled={emailLoading}
+                        className="w-full py-3 font-semibold rounded-lg transition-all hover:brightness-105 disabled:opacity-60"
+                        style={GOLD_BUTTON_STYLE}
+                      >
+                        {emailLoading ? 'Revealing...' : 'Reveal my matches'}
+                      </button>
+                    </form>
+                    {emailError && (
+                      <p className="mt-3 text-sm text-red-600">{emailError}</p>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {!locked && (
+              <div className="mt-10 bg-emerald-50 rounded-2xl p-8 text-center border border-emerald-100">
+                <p className="text-lg font-bold text-emerald-900 mb-2">
+                  Want to know if your top match is actually viable where you are?
+                </p>
+                <p className="text-sm text-gray-600 mb-5">
+                  Run it through a full feasibility &amp; saturation check with IdeaToPlan.
+                </p>
+                <a
+                  href="/#idea-to-plan"
+                  className="inline-block px-8 py-3 font-semibold rounded-lg transition-all hover:brightness-105"
+                  style={GOLD_BUTTON_STYLE}
+                >
+                  Take it further with IdeaToPlan →
+                </a>
               </div>
             )}
           </div>
-
-          {!locked && (
-            <div className="mt-10 bg-emerald-50 rounded-2xl p-8 text-center border border-emerald-100">
-              <p className="text-lg font-bold text-emerald-900 mb-2">
-                Want to know if your top match is actually viable where you are?
-              </p>
-              <p className="text-sm text-gray-600 mb-5">
-                Run it through a full feasibility &amp; saturation check with IdeaToPlan.
-              </p>
-              <a
-                href="/#idea-to-plan"
-                className="inline-block px-8 py-3 font-semibold rounded-lg transition-all hover:brightness-105"
-                style={GOLD_BUTTON_STYLE}
-              >
-                Take it further with IdeaToPlan →
-              </a>
-            </div>
-          )}
         </div>
-      </div>
+      </>
     );
   }
 
   const TOTAL_STEPS = 5;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div ref={topRef} className="max-w-xl mx-auto px-4 py-10">
-        <a
-          href="/"
-          className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 mb-6"
-        >
-          <ArrowLeft className="w-4 h-4" /> Back to QYLAT
-        </a>
+    <>
+      <QuizHeader />
+      <div className="min-h-screen bg-gray-50">
+        <div ref={topRef} className="max-w-xl mx-auto px-4 py-10">
+          <h1 className="text-3xl font-bold text-gray-900 mb-1">Find your online work</h1>
+          <p className="text-gray-500 mb-6 text-sm">
+            Answer 5 quick questions. Get 7 matched roles tailored to your skills and lifestyle.
+          </p>
 
-        <h1 className="text-3xl font-bold text-gray-900 mb-1">Find your online work</h1>
-        <p className="text-gray-500 mb-6 text-sm">
-          Answer 5 quick questions. Get 7 matched roles tailored to your skills and lifestyle.
-        </p>
+          <ProgressBar step={step} total={TOTAL_STEPS} />
 
-        <ProgressBar step={step} total={TOTAL_STEPS} />
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8 mb-6">
+            {renderStep()}
+          </div>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8 mb-6">
-          {renderStep()}
-        </div>
+          <div className="flex justify-between items-center">
+            {step > 1 ? (
+              <button
+                type="button"
+                onClick={() => setStep((s) => s - 1)}
+                className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700 font-medium"
+              >
+                <ArrowLeft className="w-4 h-4" /> Back
+              </button>
+            ) : (
+              <span />
+            )}
 
-        <div className="flex justify-between items-center">
-          {step > 1 ? (
-            <button
-              type="button"
-              onClick={() => setStep((s) => s - 1)}
-              className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700 font-medium"
-            >
-              <ArrowLeft className="w-4 h-4" /> Back
-            </button>
-          ) : (
-            <span />
-          )}
-
-          {step < TOTAL_STEPS ? (
-            <button
-              type="button"
-              disabled={!canAdvance()}
-              onClick={() => setStep((s) => s + 1)}
-              className="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-semibold rounded-lg transition-all hover:brightness-105 disabled:opacity-40 disabled:cursor-not-allowed"
-              style={GOLD_BUTTON_STYLE}
-            >
-              Next <ArrowRight className="w-4 h-4" />
-            </button>
-          ) : (
-            <div className="text-right">
+            {step < TOTAL_STEPS ? (
               <button
                 type="button"
                 disabled={!canAdvance()}
-                onClick={submitQuiz}
-                className="px-8 py-3 font-semibold rounded-lg transition-all hover:brightness-105 disabled:opacity-40 disabled:cursor-not-allowed shadow-md"
+                onClick={() => setStep((s) => s + 1)}
+                className="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-semibold rounded-lg transition-all hover:brightness-105 disabled:opacity-40 disabled:cursor-not-allowed"
                 style={GOLD_BUTTON_STYLE}
               >
-                Show me my matches
+                Next <ArrowRight className="w-4 h-4" />
               </button>
-              <p className="text-xs text-gray-400 mt-2">
-                Then run any match through a full feasibility &amp; saturation check
-              </p>
-            </div>
-          )}
+            ) : (
+              <div className="text-right">
+                <button
+                  type="button"
+                  disabled={!canAdvance()}
+                  onClick={submitQuiz}
+                  className="px-8 py-3 font-semibold rounded-lg transition-all hover:brightness-105 disabled:opacity-40 disabled:cursor-not-allowed shadow-md"
+                  style={GOLD_BUTTON_STYLE}
+                >
+                  Show me my matches
+                </button>
+                <p className="text-xs text-gray-400 mt-2">
+                  Then run any match through a full feasibility &amp; saturation check
+                </p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
