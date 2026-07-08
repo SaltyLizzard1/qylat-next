@@ -10,6 +10,7 @@ const POSTS_QUERY = `*[_type == "post"] | order(publishedAt desc) {
   postType,
   excerpt,
   heroImage,
+  heroFit,
   gallery[] {
     asset->,
     caption
@@ -41,6 +42,7 @@ export async function GET() {
       heroImageUrl: post.heroImage
         ? urlFor(post.heroImage).width(800).url()
         : null,
+      heroFit: post.heroFit === 'contain' ? ('contain' as const) : ('cover' as const),
       gallery: Array.isArray(post.gallery)
         ? post.gallery.map((img: Record<string, unknown>) => ({
             url: urlFor(img).width(800).url(),

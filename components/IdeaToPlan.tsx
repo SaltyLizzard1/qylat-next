@@ -1,7 +1,7 @@
 'use client';
 
-import Image from 'next/image';
 import { useState } from 'react';
+import AnimatedLogo from './AnimatedLogo';
 import { Lightbulb, FileText, Rocket, X, CheckCircle, AlertCircle, Loader } from 'lucide-react';
 
 const goldGradient =
@@ -176,15 +176,8 @@ export default function IdeaToPlan() {
 
           {/* Logo */}
           <div className="flex justify-center mb-3">
-            <a href="https://ideatoplan.to" target="_blank" rel="noopener noreferrer">
-              <Image
-                src="/ideatoplan-logo.svg"
-                alt="IdeaToPlan — Shape your future. Start today."
-                width={220}
-                height={69}
-                className="hover:opacity-90 transition-opacity"
-                style={{ height: '69px', width: 'auto', filter: 'drop-shadow(0 0 3px rgba(201,160,48,0.15))' }}
-              />
+            <a href="https://ideatoplan.to" target="_blank" rel="noopener noreferrer" className="hover:opacity-90 transition-opacity">
+              <AnimatedLogo className="h-24 w-auto" />
             </a>
           </div>
 

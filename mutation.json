@@ -1,0 +1,10 @@
+{
+  "mutations": [
+    {
+      "patch": {
+        "id": "0DcS3DwvUAiNvwBPsG79r6",
+        "set": { "heroFit": "contain" }
+      }
+    }
+  ]
+}

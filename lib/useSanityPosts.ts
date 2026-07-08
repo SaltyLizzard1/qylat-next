@@ -7,6 +7,7 @@ export interface SanityPost {
   postType: 'blog' | 'discussion' | 'photo-essay';
   excerpt: string;
   heroImageUrl: string | null;
+  heroFit?: 'cover' | 'contain';
   gallery: { url: string; caption?: string }[];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   body: any[];

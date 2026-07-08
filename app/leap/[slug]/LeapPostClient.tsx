@@ -29,7 +29,7 @@ function sanityToPost(sp: SanityPost): Post {
       : '',
     excerpt: sp.excerpt || '',
     image: sp.heroImageUrl || '',
-    heroFit: 'cover',
+    heroFit: sp.heroFit === 'contain' ? 'contain' : 'cover',
     postType: sp.postType,
     body: sp.body,
     content: ({ onTakeLeapClick } = {}) => <SanityPostContent post={sp} onTakeLeapClick={onTakeLeapClick} />,
