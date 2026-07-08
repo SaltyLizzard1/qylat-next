@@ -69,7 +69,7 @@ export default function Footer() {
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid md:grid-cols-2 gap-x-12 gap-y-3">
-          {/* Left: title, tagline, copyright */}
+          {/* Left: title, tagline, copyright, legal links */}
           <div>
             <h3 className="text-lg font-bold mb-1 text-[#2C3340]">Quit Your Life and Travel</h3>
             <p className="text-[#2C3340]/75 text-sm leading-relaxed mb-1">
@@ -77,6 +77,15 @@ export default function Footer() {
             </p>
             <p className="text-[#2C3340]/50 text-xs">
               © 2026 Quit Your Life and Travel. All rights reserved.
+            </p>
+            <p className="text-[#2C3340]/50 text-xs mt-0.5">
+              <a href="/privacy" className="underline underline-offset-2 hover:text-[#2C3340]/80 transition-colors">
+                Privacy Policy
+              </a>
+              <span className="mx-2">·</span>
+              <a href="/terms" className="underline underline-offset-2 hover:text-[#2C3340]/80 transition-colors">
+                Terms of Service
+              </a>
             </p>
           </div>
 

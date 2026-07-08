@@ -197,21 +197,18 @@ export default function Header() {
       <style>{`
         .header-plane {
           position: absolute;
-          top: 50%;
-          left: 210px;
-          margin-top: -14px;
-          width: 28px;
+          top: 55px;
+          left: 245px;
+          width: 16px;
           height: auto;
           pointer-events: none;
           z-index: 5;
-          animation: header-plane-fly 2.2s cubic-bezier(0.45, 0, 0.25, 1) forwards;
+          animation: header-plane-fly 1.8s cubic-bezier(0.45, 0, 0.25, 1) forwards;
         }
         @keyframes header-plane-fly {
-          0%   { transform: translateX(0)      translateY(0);     opacity: 1; }
-          40%  { transform: translateX(30vw)   translateY(-2px);  opacity: 1; }
-          70%  { transform: translateX(58vw)   translateY(1.5px); opacity: 1; }
-          90%  { transform: translateX(82vw)   translateY(0);     opacity: 1; }
-          100% { transform: translateX(calc(100vw - 160px)) translateY(0); opacity: 0; }
+          0%   { transform: translateX(0);                    opacity: 1; }
+          85%  { transform: translateX(calc(100vw - 265px));  opacity: 1; }
+          100% { transform: translateX(calc(100vw - 245px));  opacity: 0; }
         }
       `}</style>
     </header>
