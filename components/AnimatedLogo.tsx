@@ -1,3 +1,7 @@
+'use client';
+
+import { useEffect, useRef, useState } from 'react';
+
 export default function AnimatedLogo({
   className,
   showTagline = true,
@@ -5,11 +9,31 @@ export default function AnimatedLogo({
   className?: string;
   showTagline?: boolean;
 }) {
+  const svgRef = useRef<SVGSVGElement>(null);
+  const [play, setPlay] = useState(false);
+
+  useEffect(() => {
+    const el = svgRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setPlay(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.4 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <svg
+      ref={svgRef}
       xmlns="http://www.w3.org/2000/svg"
       viewBox={showTagline ? "65 75 840 381" : "65 75 840 335"}
-      className={className}
+      className={play ? `${className ?? ''} play`.trimStart() : className}
       role="img"
       aria-label="IdeaToPlan — Shape your future. Start today."
     >
@@ -72,6 +96,9 @@ export default function AnimatedLogo({
       <style>{`
         /* Hop up the stairs: bar tops are y=300, 240, 180; star floats 40px above each */
         .star-mover {
+          transform: translate(106px, 262px);
+        }
+        .play .star-mover {
           animation: star-hop 2.6s forwards;
         }
         @keyframes star-hop {
@@ -88,6 +115,10 @@ export default function AnimatedLogo({
         .star-shine {
           transform-box: fill-box;
           transform-origin: center;
+          transform: scale(0.55);
+          opacity: 0.85;
+        }
+        .play .star-shine {
           animation: star-flare 2.6s forwards;
         }
         @keyframes star-flare {
@@ -99,8 +130,8 @@ export default function AnimatedLogo({
 
         /* Accessibility: skip motion, show the finished logo */
         @media (prefers-reduced-motion: reduce) {
-          .star-mover { animation: none; transform: translate(250px, 140px); }
-          .star-shine { animation: none; transform: scale(1); }
+          .star-mover, .play .star-mover { animation: none; transform: translate(250px, 140px); }
+          .star-shine, .play .star-shine { animation: none; transform: scale(1); }
         }
       `}</style>
     </svg>
