@@ -24,7 +24,6 @@ export default function Header() {
   const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [planeFlying, setPlaneFlying] = useState(false);
   const headerRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -84,13 +83,6 @@ export default function Header() {
     router.push(href);
   };
 
-  const handleLogoMouseEnter = () => {
-    if (planeFlying) return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    if (!window.matchMedia('(hover: hover)').matches) return;
-    setPlaneFlying(true);
-  };
-
   const headerBg = 'bg-[#92A882]';
 
   const navPill =
@@ -109,19 +101,7 @@ export default function Header() {
       ref={headerRef}
       id={SITE_HEADER_ID}
       className={`sticky top-0 left-0 right-0 z-50 border-b border-[#7a8f6c]/60 transition-shadow duration-300 ${headerBg} ${scrolled ? 'shadow-md backdrop-blur-md' : 'shadow-sm'}`}
-      style={{ overflowX: 'clip' }}
     >
-      {/* Easter-egg hover plane */}
-      {planeFlying && (
-        <img
-          src="/qylat-plane.png"
-          alt=""
-          aria-hidden="true"
-          className="header-plane"
-          onAnimationEnd={() => setPlaneFlying(false)}
-        />
-      )}
-
       <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-12">
         <div className="flex justify-between items-center py-1">
 
@@ -129,7 +109,6 @@ export default function Header() {
           <button
             type="button"
             onClick={() => scrollToSection('hero')}
-            onMouseEnter={handleLogoMouseEnter}
             className="flex items-center flex-none text-left rounded-lg py-0 pr-2 ml-4 hover:bg-white/5 transition-colors focus:outline-none"
             aria-label="QYLAT"
           >
@@ -194,23 +173,6 @@ export default function Header() {
         </div>
       )}
 
-      <style>{`
-        .header-plane {
-          position: absolute;
-          top: 55px;
-          left: 245px;
-          width: 16px;
-          height: auto;
-          pointer-events: none;
-          z-index: 5;
-          animation: header-plane-fly 1.8s cubic-bezier(0.45, 0, 0.25, 1) forwards;
-        }
-        @keyframes header-plane-fly {
-          0%   { transform: translateX(0);                    opacity: 1; }
-          85%  { transform: translateX(calc(100vw - 265px));  opacity: 1; }
-          100% { transform: translateX(calc(100vw - 245px));  opacity: 0; }
-        }
-      `}</style>
     </header>
   );
 }
