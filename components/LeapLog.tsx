@@ -24,7 +24,7 @@ function sanityToPost(sp: SanityPost): Post {
       : '',
     excerpt: sp.excerpt || '',
     image: sp.heroImageUrl || '',
-    heroFit: 'cover',
+    heroFit: sp.heroFit === 'contain' ? 'contain' : 'cover',
     postType: sp.postType,
     // Keep the Portable Text body so the post can be matched/rendered even if
     // `content` is ever absent.
