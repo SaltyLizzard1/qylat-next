@@ -17,6 +17,7 @@ const NAV: NavItem[] = [
   { label: 'Discover Your Idea', type: 'scroll', id: 'discover-your-idea' },
   { label: 'Idea To Plan', type: 'scroll', id: 'idea-to-plan' },
   { label: 'Work With Me', type: 'scroll', id: 'work-with-me' },
+  { label: 'FAQ', type: 'scroll', id: 'faq' },
   { label: 'About', type: 'scroll', id: 'about' },
 ];
 

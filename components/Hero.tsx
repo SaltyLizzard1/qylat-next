@@ -28,7 +28,7 @@ export default function Hero() {
 
           <div className="flex justify-center">
             <a
-              href="/quiz"
+              href="/assessment"
               className="font-sans rounded-full px-10 py-4 text-lg font-semibold transition-all duration-300 hover:scale-[1.03] hover:shadow-md active:scale-[0.98] sm:min-w-[14rem]"
               style={{
                 background: 'linear-gradient(135deg, #8B6914 0%, #E8C84A 35%, #F5E070 55%, #C9A030 75%, #8B6914 100%)',

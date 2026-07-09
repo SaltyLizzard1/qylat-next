@@ -660,19 +660,20 @@ export default function QuizPage() {
             </div>
 
             {!locked && (
-              <div className="mt-10 bg-emerald-50 rounded-2xl p-8 text-center border border-emerald-100">
-                <p className="text-lg font-bold text-emerald-900 mb-2">
-                  Want to know if your top match is actually viable where you are?
+              <div className="mt-10 rounded-2xl p-8 text-center border" style={{ background: '#FBF6E4', borderColor: '#EBD9A0' }}>
+                <p className="text-lg font-bold mb-2" style={{ color: '#2D1A00' }}>
+                  Ready to turn your top match into a real plan?
                 </p>
                 <p className="text-sm text-gray-600 mb-5">
-                  Run it through a full feasibility &amp; saturation check with IdeaToPlan.
+                  This assessment is your entry point. IdeaToPlan — part of the same ecosystem —
+                  turns your match into a clear, professional business plan.
                 </p>
                 <a
                   href="/#idea-to-plan"
                   className="inline-block px-8 py-3 font-semibold rounded-lg transition-all hover:brightness-105"
                   style={GOLD_BUTTON_STYLE}
                 >
-                  Take it further with IdeaToPlan →
+                  Continue with IdeaToPlan →
                 </a>
               </div>
             )}

@@ -79,7 +79,7 @@ export default function DiscoverYourIdea() {
 
         {/* CTA */}
         <a
-          href="/quiz"
+          href="/assessment"
           className="inline-block font-sans rounded-full px-12 py-4 text-lg font-semibold transition-all duration-300 hover:scale-[1.03] hover:shadow-md active:scale-[0.98]"
           style={{
             background: goldGradient,

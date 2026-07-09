@@ -42,7 +42,7 @@ export default function PrivacyPage() {
           <p>We collect information you choose to share with us when using quityourlifeandtravel.com:</p>
           <p>
             Your email address when you subscribe to our newsletter or request the free 60-Day Leap Kit.
-            Your quiz answers when you take the Discover Your Idea quiz.
+            Your answers when you take the Discover Your Idea assessment.
             Your name, email, and comment text when you comment on a blog post.
             Your name, email, and scheduling details when you book a Leap Session, along with payment processed at booking.
             Your business idea details if you submit the IdeaToPlan intake form, which may include financial information such as budget, revenue, funding goals, and loan details.
@@ -52,13 +52,13 @@ export default function PrivacyPage() {
 
         <Section title="2. How We Use Your Information">
           <p>
-            We use your information to deliver what you asked for: sending the Leap Kit, generating quiz results,
+            We use your information to deliver what you asked for: sending the Leap Kit, generating assessment results,
             publishing your comments, scheduling and holding your coaching session, and creating your business plan.
             If you subscribed, we send you emails you can unsubscribe from at any time. We do not sell your personal
             information to anyone.
           </p>
           <p>
-            Quiz responses and business idea submissions are processed with the help of AI language models to generate
+            Assessment responses and business idea submissions are processed with the help of AI language models to generate
             your results and plans. A human reviews business plans before delivery.
           </p>
         </Section>
@@ -71,9 +71,9 @@ export default function PrivacyPage() {
           <Processor name="Calendly" role="Handles Leap Session scheduling." href="https://calendly.com/legal/privacy-notice" />
           <Processor name="Stripe" role="Processes payments securely. We never see your full card number." href="https://stripe.com/privacy" />
           <Processor name="Google Workspace" role="Stores submissions and handles email communication." href="https://workspace.google.com/terms/privacy.html" />
-          <Processor name="n8n (self-hosted)" role="Automation that routes quiz and plan submissions through our pipeline, hosted on our own server." href="https://n8n.io/legal/privacy" />
-          <Processor name="OpenRouter" role="Routes AI requests for quiz results and business plans." href="https://openrouter.ai/privacy" />
-          <Processor name="Anthropic" role="AI model (Claude) used to draft quiz results and business plans." href="https://www.anthropic.com/privacy" />
+          <Processor name="n8n (self-hosted)" role="Automation that routes assessment and plan submissions through our pipeline, hosted on our own server." href="https://n8n.io/legal/privacy" />
+          <Processor name="OpenRouter" role="Routes AI requests for assessment results and business plans." href="https://openrouter.ai/privacy" />
+          <Processor name="Anthropic" role="AI model (Claude) used to draft assessment results and business plans." href="https://www.anthropic.com/privacy" />
           <Processor name="Perplexity" role="AI research used on Growth-tier business plans." href="https://www.perplexity.ai/hub/legal/privacy-policy" />
         </Section>
 

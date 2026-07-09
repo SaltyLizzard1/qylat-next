@@ -31,14 +31,14 @@ export default function TermsPage() {
           <p>
             Quit Your Life and Travel (&ldquo;QYLAT&rdquo;, &ldquo;we&rdquo;, &ldquo;us&rdquo;) is a lifestyle brand
             and coaching service at quityourlifeandtravel.com. We offer free content and resources, a skills and
-            business idea quiz, paid coaching sessions (Leap Sessions), and an intake for business planning services
-            delivered through our related brand, IdeaToPlan.
+            business idea assessment, paid coaching sessions (Leap Sessions), and an intake for business planning
+            services delivered through IdeaToPlan, part of the same ecosystem.
           </p>
         </Section>
 
         <Section title="2. Not Professional Advice">
           <p>
-            Everything on this site, including blog posts, the Leap Kit, quiz results, and coaching sessions, is
+            Everything on this site, including blog posts, the Leap Kit, assessment results, and coaching sessions, is
             informational and educational. It is not legal, financial, tax, investment, immigration, medical, or
             mental health advice. Big life changes carry real risk, and you are responsible for your own decisions.
             Consult licensed professionals before acting on anything significant.
