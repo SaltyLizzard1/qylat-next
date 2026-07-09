@@ -28,7 +28,7 @@ const steps = [
   {
     icon: Rocket,
     title: 'Get Your Plan',
-    description: "Get your polished, ready-to-use PDF plan in 72 hours, or faster if you're on a deadline",
+    description: 'Delivered within 72 hours. Expedited 48-hour delivery is available.',
   },
 ];
 
@@ -186,13 +186,16 @@ export default function IdeaToPlan() {
             className="font-cormorant font-bold mb-3 max-w-5xl mx-auto leading-tight"
            style={{ fontSize: 'clamp(1.75rem, 3vw, 2.25rem)', color: '#FBF6E3' }}
           >
-            Turn Your Business Idea Into an Actionable Plan in 72 Hours
+            Turn Your Business Idea Into an Investor-Ready Plan
           </h2>
 
           {/* Body */}
           <div className="max-w-2xl mx-auto mb-5">
             <p className="text-base leading-relaxed" style={{ color: '#cfc9b8' }}>
-              A done-for-you business planning service built for founders who are ready to move. Fast turnaround. Real plans.
+              IdeaToPlan is the business-planning arm of the QYLAT ecosystem. QYLAT helps you
+              find the right idea; IdeaToPlan turns it into a clear, professional plan you can
+              take to lenders, investors, or your own roadmap. Delivered within 72 hours.
+              Expedited 48-hour delivery is available.
             </p>
           </div>
 
@@ -251,7 +254,7 @@ export default function IdeaToPlan() {
           <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
               <div>
-                <h3 className="text-lg font-bold" style={{ color: '#166534' }}>Tell Us About Your Idea</h3>
+                <h3 className="text-lg font-bold" style={{ color: '#8B6914' }}>Tell Us About Your Idea</h3>
                 <p className="text-xs text-slate-500 mt-0.5">Takes about 3 minutes.</p>
               </div>
               <button onClick={closeForm} className="p-2 rounded-full hover:bg-slate-100 transition-colors" aria-label="Close">
@@ -262,14 +265,14 @@ export default function IdeaToPlan() {
             <div className="overflow-y-auto flex-1 p-6">
               {status === 'success' ? (
                 <div className="text-center py-8">
-                  <CheckCircle className="w-16 h-16 mx-auto mb-4" style={{ color: '#10B981' }} />
-                  <h3 className="text-2xl font-bold mb-3" style={{ color: '#166534' }}>We&apos;ve got your idea!</h3>
-                  <p className="text-slate-700 mb-2">Expect a message within 48 hours. We&apos;ll build your plan, walk you through it, and go from there.</p>
-                  <p className="text-slate-500 text-sm">No payment until you love it. Check your inbox — and spam, just in case.</p>
+                  <CheckCircle className="w-16 h-16 mx-auto mb-4" style={{ color: '#C9A030' }} />
+                  <h3 className="text-2xl font-bold mb-3" style={{ color: '#8B6914' }}>We&apos;ve got your idea!</h3>
+                  <p className="text-slate-700 mb-2">We&apos;ll be in touch within 48 hours to confirm the details. Plans are delivered within 72 hours, with expedited 48-hour delivery available.</p>
+                  <p className="text-slate-500 text-sm">Check your inbox — and spam, just in case.</p>
                   <button
                     onClick={closeForm}
                     className="mt-6 px-8 py-3 text-white font-semibold rounded-lg transition-colors"
-                    style={{ background: '#166534' }}
+                    style={{ background: '#8B6914' }}
                   >
                     Close
                   </button>
@@ -288,12 +291,12 @@ export default function IdeaToPlan() {
                       <div>
                         <label className="block text-sm font-semibold text-slate-800 mb-1">Full Name <span className="text-red-500">*</span></label>
                         <input name="fullName" value={form.fullName} onChange={handleChange} required placeholder="Jane Smith"
-                          className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#166534] transition" />
+                          className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#8B6914] transition" />
                       </div>
                       <div>
                         <label className="block text-sm font-semibold text-slate-800 mb-1">Email <span className="text-red-500">*</span></label>
                         <input name="email" type="email" value={form.email} onChange={handleChange} required placeholder="jane@example.com"
-                          className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#166534] transition" />
+                          className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#8B6914] transition" />
                       </div>
                     </div>
 
@@ -301,26 +304,26 @@ export default function IdeaToPlan() {
                       <label className="block text-sm font-semibold text-slate-800 mb-1">Describe your business idea <span className="text-red-500">*</span></label>
                       <textarea name="businessIdea" value={form.businessIdea} onChange={handleChange} required rows={3}
                         placeholder="What's the idea? Give us the overview."
-                        className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#166534] transition resize-none" />
+                        className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#8B6914] transition resize-none" />
                     </div>
 
                     <div>
                       <label className="block text-sm font-semibold text-slate-800 mb-1">What problem does it solve? <span className="text-red-500">*</span></label>
                       <textarea name="problem" value={form.problem} onChange={handleChange} required rows={2}
                         placeholder="What pain point are you solving?"
-                        className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#166534] transition resize-none" />
+                        className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#8B6914] transition resize-none" />
                     </div>
 
                     <div className="grid sm:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-semibold text-slate-800 mb-1">Industry / type of business <span className="text-red-500">*</span></label>
                         <input name="industry" value={form.industry} onChange={handleChange} required placeholder="e.g. E-commerce, Consulting, SaaS"
-                          className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#166534] transition" />
+                          className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#8B6914] transition" />
                       </div>
                       <div>
                         <label className="block text-sm font-semibold text-slate-800 mb-1">Where will you operate?</label>
                         <input name="location" value={form.location} onChange={handleChange} placeholder="City, State — or Online/Location-independent"
-                          className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#166534] transition" />
+                          className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#8B6914] transition" />
                       </div>
                     </div>
 
@@ -329,13 +332,13 @@ export default function IdeaToPlan() {
                         <label className="block text-sm font-semibold text-slate-800 mb-1">Current annual revenue</label>
                         <input name="currentRevenue" value={form.currentRevenue} onChange={handleChange}
                           placeholder="e.g. $150,000 — leave blank if pre-revenue"
-                          className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#166534] transition" />
+                          className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#8B6914] transition" />
                       </div>
                       <div>
                         <label className="block text-sm font-semibold text-slate-800 mb-1">Years in business</label>
                         <input name="yearsInBusiness" value={form.yearsInBusiness} onChange={handleChange}
                           placeholder="e.g. 5 years — leave blank if new"
-                          className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#166534] transition" />
+                          className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#8B6914] transition" />
                       </div>
                     </div>
 
@@ -343,19 +346,19 @@ export default function IdeaToPlan() {
                       <label className="block text-sm font-semibold text-slate-800 mb-1">Who is your target customer? <span className="text-red-500">*</span></label>
                       <input name="targetAudience" value={form.targetAudience} onChange={handleChange} required
                         placeholder="e.g. Freelance designers aged 30–45 who want to go full-time"
-                        className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#166534] transition" />
+                        className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#8B6914] transition" />
                     </div>
 
                     <div className="grid sm:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-semibold text-slate-800 mb-1">How will you make money?</label>
                         <input name="revenueModel" value={form.revenueModel} onChange={handleChange} placeholder="e.g. Subscriptions, one-time sales, services"
-                          className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#166534] transition" />
+                          className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#8B6914] transition" />
                       </div>
                       <div>
                         <label className="block text-sm font-semibold text-slate-800 mb-1">What makes you different?</label>
                         <input name="differentiation" value={form.differentiation} onChange={handleChange} placeholder="Your edge over competitors"
-                          className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#166534] transition" />
+                          className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#8B6914] transition" />
                       </div>
                     </div>
 
@@ -363,7 +366,7 @@ export default function IdeaToPlan() {
                       <div>
                         <label className="block text-sm font-semibold text-slate-800 mb-1">Approximate startup budget</label>
                         <select name="budget" value={form.budget} onChange={handleChange}
-                          className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#166534] transition bg-white">
+                          className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#8B6914] transition bg-white">
                           <option value="">Select range...</option>
                           <option value="under5k">Under $5,000</option>
                           <option value="5k-25k">$5,000 – $25,000</option>
@@ -375,7 +378,7 @@ export default function IdeaToPlan() {
                       <div>
                         <label className="block text-sm font-semibold text-slate-800 mb-1">Goal for this plan <span className="text-red-500">*</span></label>
                         <select name="planGoal" value={form.planGoal} onChange={handleChange} required
-                          className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#166534] transition bg-white">
+                          className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#8B6914] transition bg-white">
                           <option value="">Select goal...</option>
                           <option value="bank-loan">Bank loan</option>
                           <option value="investor">Investor pitch</option>
@@ -385,80 +388,80 @@ export default function IdeaToPlan() {
                     </div>
 
                     {form.planGoal === 'bank-loan' && (
-                      <div className="space-y-4 border border-[#166534]/20 rounded-xl p-4 bg-[#F8FAFC]">
+                      <div className="space-y-4 border border-[#8B6914]/20 rounded-xl p-4 bg-[#F8FAFC]">
                         <p className="text-sm font-semibold" style={{ color: '#B45309' }}>Bank Loan Details</p>
                         <div className="grid sm:grid-cols-2 gap-4">
                           <div>
                             <label className="block text-sm font-semibold text-slate-800 mb-1">Loan amount requested</label>
                             <input name="loanAmount" value={form.loanAmount} onChange={handleChange} placeholder="e.g. $50,000 SBA loan"
-                              className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#166534] transition" />
+                              className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#8B6914] transition" />
                           </div>
                           <div>
                             <label className="block text-sm font-semibold text-slate-800 mb-1">Intended use of loan</label>
                             <input name="loanUse" value={form.loanUse} onChange={handleChange} placeholder="e.g. Equipment, working capital, inventory"
-                              className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#166534] transition" />
+                              className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#8B6914] transition" />
                           </div>
                         </div>
                         <div className="grid sm:grid-cols-2 gap-4">
                           <div>
                             <label className="block text-sm font-semibold text-slate-800 mb-1">Credit &amp; financial standing</label>
                             <input name="creditStanding" value={form.creditStanding} onChange={handleChange} placeholder="e.g. Good credit, no bankruptcies"
-                              className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#166534] transition" />
+                              className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#8B6914] transition" />
                           </div>
                           <div>
                             <label className="block text-sm font-semibold text-slate-800 mb-1">Existing debt or obligations</label>
                             <input name="existingDebt" value={form.existingDebt} onChange={handleChange} placeholder="e.g. Car loan, no other business debt"
-                              className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#166534] transition" />
+                              className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#8B6914] transition" />
                           </div>
                         </div>
                         <div>
                           <label className="block text-sm font-semibold text-slate-800 mb-1">Collateral and assets</label>
                           <textarea name="assetsCollateral" value={form.assetsCollateral} onChange={handleChange} rows={3}
                             placeholder="e.g. Vehicle or property as collateral, savings, equipment"
-                            className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#166534] transition resize-none" />
+                            className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#8B6914] transition resize-none" />
                         </div>
                       </div>
                     )}
 
                     {form.planGoal === 'investor' && (
-                      <div className="space-y-4 border border-[#166534]/20 rounded-xl p-4 bg-[#F8FAFC]">
+                      <div className="space-y-4 border border-[#8B6914]/20 rounded-xl p-4 bg-[#F8FAFC]">
                         <p className="text-sm font-semibold" style={{ color: '#B45309' }}>Investor Pitch Details</p>
                         <div>
                           <label className="block text-sm font-semibold text-slate-800 mb-1">Your background</label>
                           <textarea name="founderBackground" value={form.founderBackground} onChange={handleChange} rows={3}
                             placeholder="Relevant experience and why you're the right person to build this."
-                            className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#166534] transition resize-none" />
+                            className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#8B6914] transition resize-none" />
                         </div>
                         <div className="grid sm:grid-cols-2 gap-4">
                           <div>
                             <label className="block text-sm font-semibold text-slate-800 mb-1">Funding ask</label>
                             <input name="fundingAsk" value={form.fundingAsk} onChange={handleChange} placeholder="e.g. $500K seed round"
-                              className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#166534] transition" />
+                              className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#8B6914] transition" />
                           </div>
                           <div>
                             <label className="block text-sm font-semibold text-slate-800 mb-1">Current traction</label>
                             <input name="currentTraction" value={form.currentTraction} onChange={handleChange} placeholder="Revenue, users, pilots, waitlist, etc."
-                              className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#166534] transition" />
+                              className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#8B6914] transition" />
                           </div>
                         </div>
                         <div>
                           <label className="block text-sm font-semibold text-slate-800 mb-1">Use of funds</label>
                           <textarea name="useOfFunds" value={form.useOfFunds} onChange={handleChange} rows={2}
                             placeholder="What will the investment capital be used for?"
-                            className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#166534] transition resize-none" />
+                            className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#8B6914] transition resize-none" />
                         </div>
                         <div>
                           <label className="block text-sm font-semibold text-slate-800 mb-1">Exit vision</label>
                           <textarea name="exitVision" value={form.exitVision} onChange={handleChange} rows={2}
                             placeholder="Acquisition, IPO, lifestyle business? What does success look like in 5-7 years?"
-                            className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#166534] transition resize-none" />
+                            className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#8B6914] transition resize-none" />
                         </div>
                       </div>
                     )}
 
                     <div>
                       <label className="block text-sm font-semibold text-slate-800 mb-2">Plan type <span className="text-red-500">*</span></label>
-                      <p className="text-xs text-slate-500 mb-3">No payment required until after your plan is delivered.</p>
+                      <p className="text-xs text-slate-500 mb-3">Delivered within 72 hours. Expedited 48-hour delivery is available.</p>
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                         {PLAN_OPTIONS.map((opt) =>
                           opt.comingSoon ? (
@@ -475,12 +478,12 @@ export default function IdeaToPlan() {
                             </div>
                           ) : (
                             <label key={opt.value}
-                              className={`flex flex-col cursor-pointer border-2 rounded-xl p-4 text-left transition-all h-full ${form.planType === opt.value ? 'border-[#166534] bg-[#F0FDF4] ring-2 ring-[#166534]/25' : 'border-slate-200 hover:border-[#166534]/50 bg-white'}`}
-                              style={form.planType === opt.value ? { boxShadow: '0 0 24px rgba(22,101,52,0.15)' } : undefined}
+                              className={`flex flex-col cursor-pointer border-2 rounded-xl p-4 text-left transition-all h-full ${form.planType === opt.value ? 'border-[#8B6914] bg-[#FBF6E4] ring-2 ring-[#8B6914]/25' : 'border-slate-200 hover:border-[#8B6914]/50 bg-white'}`}
+                              style={form.planType === opt.value ? { boxShadow: '0 0 24px rgba(139,105,20,0.15)' } : undefined}
                             >
                               <input type="radio" name="planType" value={opt.value} checked={form.planType === opt.value} onChange={handleChange} className="sr-only" />
                               {opt.value === 'Growth' && (form.planGoal === 'bank-loan' || form.planGoal === 'investor') && (
-                                <span className="self-start text-[10px] font-bold uppercase tracking-wide text-white px-2 py-0.5 rounded-full mb-2" style={{ background: '#166534' }}>
+                                <span className="self-start text-[10px] font-bold uppercase tracking-wide text-white px-2 py-0.5 rounded-full mb-2" style={{ background: '#8B6914' }}>
                                   Recommended for your goal
                                 </span>
                               )}
@@ -488,7 +491,7 @@ export default function IdeaToPlan() {
                               <span className="font-bold text-lg mt-1" style={{ color: '#8B6914' }}>{opt.price}</span>
                               <p className="text-xs text-slate-700 mt-2 leading-relaxed flex-1">{opt.description}</p>
                               {opt.value === 'Growth' && (form.planGoal === 'bank-loan' || form.planGoal === 'investor') && (
-                                <p className="text-[11px] mt-2 font-medium" style={{ color: '#166534' }}>
+                                <p className="text-[11px] mt-2 font-medium" style={{ color: '#8B6914' }}>
                                   Lenders and investors expect this depth.
                                 </p>
                               )}
@@ -500,7 +503,7 @@ export default function IdeaToPlan() {
 
                     <button type="submit" disabled={status === 'loading'}
                       className="w-full py-4 text-white text-lg font-semibold rounded-lg transition-all shadow-md flex items-center justify-center gap-2 disabled:opacity-60"
-                      style={{ background: status === 'loading' ? '#15803d' : '#166534' }}
+                      style={{ background: status === 'loading' ? '#6B500F' : '#8B6914' }}
                     >
                       {status === 'loading' ? (
                         <><Loader className="w-5 h-5 animate-spin" />Sending...</>
@@ -508,7 +511,7 @@ export default function IdeaToPlan() {
                     </button>
 
                     <p className="text-center text-xs text-slate-400">
-                      No payment now. We&apos;ll be in touch within 48 hours to review your plan together.
+                      We&apos;ll be in touch within 48 hours to confirm the details of your plan.
                     </p>
                   </form>
                 </>

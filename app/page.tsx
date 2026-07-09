@@ -8,6 +8,7 @@ import StoryTeaser from '../components/StoryTeaser';
 import WorkWithMe from '../components/WorkWithMe';
 import DiscoverYourIdea from '../components/DiscoverYourIdea';
 import IdeaToPlan from '../components/IdeaToPlan';
+import FAQ from '../components/FAQ';
 import LeapLog from '../components/LeapLog';
 import About from '../components/About';
 import Footer from '../components/Footer';
@@ -42,6 +43,8 @@ export default function HomePage() {
       <DiscoverYourIdea />
       <Divider />
       <IdeaToPlan />
+      <Divider />
+      <FAQ />
       <Divider />
       <About />
       <Footer />

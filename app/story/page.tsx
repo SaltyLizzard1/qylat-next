@@ -135,7 +135,7 @@ export default function StoryPage() {
           <p className="mt-3 text-lg font-medium">You don&rsquo;t need permission. You need a plan.</p>
 
           <div className="mt-8 flex flex-col gap-4 items-center">
-            <a href="/quiz" className="inline-block font-semibold px-10 py-4 rounded-full text-lg transition-all duration-300 hover:scale-[1.03] active:scale-[0.98] shadow-lg" style={goldBtn}>
+            <a href="/assessment" className="inline-block font-semibold px-10 py-4 rounded-full text-lg transition-all duration-300 hover:scale-[1.03] active:scale-[0.98] shadow-lg" style={goldBtn}>
               Discover Your Idea &rarr;
             </a>
             <a href="/work-with-me" className="inline-block font-semibold text-lg underline underline-offset-4 transition hover:opacity-70 self-center" style={{ color: '#0f172a' }}>
