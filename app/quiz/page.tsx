@@ -287,11 +287,13 @@ export default function QuizPage() {
   const [loadingMsgIndex, setLoadingMsgIndex] = useState(0);
   const [progress, setProgress] = useState(0);
   const [matches, setMatches] = useState<Match[]>([]);
+  const [resultId, setResultId] = useState<string | undefined>(undefined);
   const [error, setError] = useState('');
 
   const [email, setEmail] = useState('');
   const [emailLoading, setEmailLoading] = useState(false);
   const [emailError, setEmailError] = useState('');
+  const [copied, setCopied] = useState(false);
 
   const topRef = useRef<HTMLDivElement>(null);
 
@@ -371,6 +373,7 @@ export default function QuizPage() {
       if (!parsed.length) throw new Error('No matches returned');
 
       setMatches(parsed);
+      if (data.resultId) setResultId(data.resultId);
       setStage('results');
     } catch (err) {
       if (process.env.NODE_ENV === 'development') console.error('Quiz error:', err);
@@ -674,6 +677,28 @@ export default function QuizPage() {
                 >
                   Take it further with IdeaToPlan →
                 </a>
+              </div>
+            )}
+
+            {resultId && (
+              <div className="mt-6 text-center">
+                <p className="text-xs text-gray-400 mb-1.5">Shareable link</p>
+                <div className="inline-flex items-center gap-2 bg-white/70 border border-gray-200 rounded-lg px-3 py-2 max-w-full">
+                  <span className="text-xs text-gray-600 font-mono truncate">
+                    https://www.quityourlifeandtravel.com/results/{resultId}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard.writeText(`https://www.quityourlifeandtravel.com/results/${resultId}`);
+                      setCopied(true);
+                      setTimeout(() => setCopied(false), 2000);
+                    }}
+                    className="text-xs px-2 py-1 rounded border border-gray-200 text-gray-500 hover:text-gray-700 hover:border-gray-300 transition-colors flex-shrink-0"
+                  >
+                    {copied ? 'Copied!' : 'Copy'}
+                  </button>
+                </div>
               </div>
             )}
           </div>

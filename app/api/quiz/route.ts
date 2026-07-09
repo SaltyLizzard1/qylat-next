@@ -21,12 +21,35 @@ export async function POST(req: Request) {
       return Response.json({ error: `Upstream error: ${res.status}`, detail: text }, { status: 502 });
     }
 
+    let data: unknown;
     try {
-      return Response.json(JSON.parse(text));
+      data = JSON.parse(text);
     } catch {
       console.error('n8n response was not JSON:', text);
       return Response.json({ error: 'Invalid response from workflow', detail: text }, { status: 502 });
     }
+
+    const matches = Array.isArray(data) ? data : (data as Record<string, unknown>).matches ?? (data as Record<string, unknown>).result ?? [];
+
+    let resultId: string | undefined;
+    try {
+      const { supabase } = await import('../../../lib/supabase');
+      const id = crypto.randomUUID().replace(/-/g, '').slice(0, 12);
+      const { error } = await supabase.from('quiz_results').insert({ id, matches, site: 'qylat' });
+      if (error) {
+        console.error('Supabase insert error:', error);
+      } else {
+        resultId = id;
+      }
+    } catch (err) {
+      console.error('Supabase persistence error:', err);
+    }
+
+    const responsePayload = Array.isArray(data)
+      ? { matches, ...(resultId ? { resultId } : {}) }
+      : { ...(data as object), ...(resultId ? { resultId } : {}) };
+
+    return Response.json(responsePayload);
   } catch (err) {
     console.error('Quiz API error:', err);
     return Response.json({ error: 'Internal error', detail: String(err) }, { status: 500 });
