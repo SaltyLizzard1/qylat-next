@@ -143,7 +143,8 @@ export default async function ResultsPage({ params }: Props) {
   const canonicalUrl = `${BASE_URL}/results/${id}`;
   const top3 = matches.slice(0, 3).map((m, i) => `${i + 1}. ${m.title}`).join('\n');
   const more = matches.length > 3 ? `…and ${matches.length - 3} more.` : '';
-  const shareText = `${'\u2728'} I just took the 5-minute Discover Your Idea assessment and got some exciting matches that actually fit my skills and lifestyle.\n\nMy top ones:\n${top3}\n${more}\n\n${'\u{1F4AB}'} Curious what yours would be? Takes 5 minutes 👇`;
+  const shareText = `${'\u2728'} I took the 5-minute Discover Your Idea assessment. My top matches:\n${top3}\n${more}\n${'\u{1F4AB}'} Find yours:`;
+
   return (
     <>
       <Header />
