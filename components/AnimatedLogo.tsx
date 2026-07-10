@@ -5,20 +5,30 @@ import { useEffect, useRef, useState } from 'react';
 export default function AnimatedLogo({
   className,
   showTagline = true,
+  animate = true,
 }: {
   className?: string;
   showTagline?: boolean;
+  animate?: boolean;
 }) {
   const svgRef = useRef<SVGSVGElement>(null);
-  const [play, setPlay] = useState(false);
+  const [inView, setInView] = useState(false);
 
   useEffect(() => {
+    if (!animate) return;
+
     const el = svgRef.current;
     if (!el) return;
+
+    if (typeof IntersectionObserver === 'undefined') {
+      setInView(true);
+      return;
+    }
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setPlay(true);
+          setInView(true);
           observer.disconnect();
         }
       },
@@ -26,14 +36,23 @@ export default function AnimatedLogo({
     );
     observer.observe(el);
     return () => observer.disconnect();
-  }, []);
+  }, [animate]);
+
+  // animate=false → static finished state (no observer, no animation class)
+  // animate=true + not in view → start position, no play class
+  // animate=true + in view → play class triggers keyframes
+  const svgClass = !animate
+    ? `${className ?? ''} done`.trimStart()
+    : inView
+    ? `${className ?? ''} play`.trimStart()
+    : className;
 
   return (
     <svg
       ref={svgRef}
       xmlns="http://www.w3.org/2000/svg"
       viewBox={showTagline ? "65 75 840 381" : "65 75 840 335"}
-      className={play ? `${className ?? ''} play`.trimStart() : className}
+      className={svgClass}
       role="img"
       aria-label="IdeaToPlan — Shape your future. Start today."
     >
@@ -94,10 +113,18 @@ export default function AnimatedLogo({
       )}
 
       <style>{`
-        /* Hop up the stairs: bar tops are y=300, 240, 180; star floats 40px above each */
+        /* Star parked at start position (first bar) until animation fires */
         .star-mover {
           transform: translate(106px, 262px);
         }
+        .star-shine {
+          transform-box: fill-box;
+          transform-origin: center;
+          transform: scale(0.55);
+          opacity: 0.85;
+        }
+
+        /* Viewport-triggered animation */
         .play .star-mover {
           animation: star-hop 2.6s forwards;
         }
@@ -111,13 +138,6 @@ export default function AnimatedLogo({
           100% { transform: translate(250px, 140px); }
         }
 
-        /* Shine: small and dim while hopping, then burst bright at the top */
-        .star-shine {
-          transform-box: fill-box;
-          transform-origin: center;
-          transform: scale(0.55);
-          opacity: 0.85;
-        }
         .play .star-shine {
           animation: star-flare 2.6s forwards;
         }
@@ -128,10 +148,14 @@ export default function AnimatedLogo({
           100%    { transform: scale(1); opacity: 1; filter: brightness(1); }
         }
 
-        /* Accessibility: skip motion, show the finished logo */
+        /* Static finished state (animate=false prop) */
+        .done .star-mover { transform: translate(250px, 140px); }
+        .done .star-shine  { transform: scale(1); opacity: 1; }
+
+        /* Accessibility: skip motion, show finished state */
         @media (prefers-reduced-motion: reduce) {
-          .star-mover, .play .star-mover { animation: none; transform: translate(250px, 140px); }
-          .star-shine, .play .star-shine { animation: none; transform: scale(1); }
+          .star-mover,      .play .star-mover { animation: none; transform: translate(250px, 140px); }
+          .star-shine,      .play .star-shine { animation: none; transform: scale(1); opacity: 1; }
         }
       `}</style>
     </svg>

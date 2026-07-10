@@ -2,6 +2,7 @@
 
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
+import ShareButtons from '@/components/ShareButtons';
 import { useState, useEffect, useRef } from 'react';
 import { ArrowLeft, ArrowRight, Loader2 } from 'lucide-react';
 
@@ -293,8 +294,6 @@ export default function QuizPage() {
   const [email, setEmail] = useState('');
   const [emailLoading, setEmailLoading] = useState(false);
   const [emailError, setEmailError] = useState('');
-  const [copied, setCopied] = useState(false);
-
   const topRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -601,7 +600,7 @@ export default function QuizPage() {
           />
           <div ref={topRef} className="relative max-w-2xl mx-auto px-4 py-10">
             <h1
-              className="mb-1"
+              className="mb-1 text-center"
               style={{
                 fontFamily: "'Cormorant Garamond', Georgia, serif",
                 fontWeight: 700,
@@ -612,9 +611,19 @@ export default function QuizPage() {
             >
               Your online work matches
             </h1>
-            <p className="text-gray-500 mb-8 text-sm">
+            <p className="text-gray-500 mb-4 text-sm text-center">
               Based on your skills, values, and lifestyle goals — here are your top 7 paths.
             </p>
+
+            {resultId && (
+              <div className="mb-8">
+                <ShareButtons
+                  url={`https://www.quityourlifeandtravel.com/results/${resultId}`}
+                  title="My Business Matches"
+                  text={`My top business match: ${matches[0]?.title ?? 'a new business idea'}. Find yours:`}
+                />
+              </div>
+            )}
 
             <div className="mb-4">
               <MatchCard match={matches[0]} index={0} />
@@ -632,9 +641,13 @@ export default function QuizPage() {
               {locked && (
                 <div className="absolute inset-0 flex items-start justify-center pt-8">
                   <div className="bg-white rounded-2xl shadow-xl p-8 mx-4 w-full max-w-md text-center border border-gray-100">
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">Unlock your full results</h3>
+                    <h3 className="text-xl font-bold text-gray-900 mb-2">
+                      Your #1 Match is {matches[0]?.title ?? 'ready'}. You are naturally wired for this.
+                    </h3>
                     <p className="text-gray-500 text-sm mb-6">
-                      Enter your email to reveal all 7 matches — no spam, unsubscribe any time.
+                      I&apos;ve mapped 6 more paths that fit your profile, each with clear
+                      first moves to make. Where should I send your full Career Identity
+                      Dossier?
                     </p>
                     <form onSubmit={submitEmail} className="space-y-3">
                       <input
@@ -651,7 +664,7 @@ export default function QuizPage() {
                         className="w-full py-3 font-semibold rounded-lg transition-all hover:brightness-105 disabled:opacity-60"
                         style={GOLD_BUTTON_STYLE}
                       >
-                        {emailLoading ? 'Revealing...' : 'Reveal my matches'}
+                        {emailLoading ? 'Unlocking...' : 'Enter Email to Unlock Your Full Report'}
                       </button>
                     </form>
                     {emailError && (
@@ -681,27 +694,6 @@ export default function QuizPage() {
               </div>
             )}
 
-            {resultId && (
-              <div className="mt-6 text-center">
-                <p className="text-xs text-gray-400 mb-1.5">Shareable link</p>
-                <div className="inline-flex items-center gap-2 bg-white/70 border border-gray-200 rounded-lg px-3 py-2 max-w-full">
-                  <span className="text-xs text-gray-600 font-mono truncate">
-                    https://www.quityourlifeandtravel.com/results/{resultId}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      navigator.clipboard.writeText(`https://www.quityourlifeandtravel.com/results/${resultId}`);
-                      setCopied(true);
-                      setTimeout(() => setCopied(false), 2000);
-                    }}
-                    className="text-xs px-2 py-1 rounded border border-gray-200 text-gray-500 hover:text-gray-700 hover:border-gray-300 transition-colors flex-shrink-0"
-                  >
-                    {copied ? 'Copied!' : 'Copy'}
-                  </button>
-                </div>
-              </div>
-            )}
           </div>
         </div>
         <Footer />

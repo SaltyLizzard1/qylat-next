@@ -3,7 +3,7 @@ export default function DiscoverYourIdea() {
     'linear-gradient(135deg, #8B6914 0%, #E8C84A 35%, #F5E070 55%, #C9A030 75%, #8B6914 100%)';
 
   const chips = [
-    '5 quick questions',
+    '5-minute assessment',
     '7 personalised matches',
     'Location-independent paths',
     'No experience required',
@@ -29,11 +29,11 @@ export default function DiscoverYourIdea() {
 
         {/* Eyebrow badge */}
         <span
-          className="inline-block font-sans text-xs font-bold uppercase tracking-[0.2em] px-4 py-1.5 rounded-full mb-6"
+          className="inline-block font-sans text-xs font-semibold uppercase tracking-[0.2em] px-4 py-1.5 rounded-full mb-6"
           style={{
-            background: 'rgba(200,160,48,0.15)',
-            color: '#8B6914',
-            border: '1px solid rgba(200,160,48,0.35)',
+            background: '#3A281A',
+            color: '#FBF6E3',
+            border: '1px solid rgba(58,40,26,0.9)',
           }}
         >
           Free Skills Assessment
@@ -45,20 +45,20 @@ export default function DiscoverYourIdea() {
             fontFamily: "'Cormorant Garamond', Georgia, serif",
             fontWeight: 700,
             fontSize: 'clamp(2rem, 5vw, 3rem)',
-            color: '#2D5016',
+            color: '#2D1A00',
             lineHeight: 1.15,
             marginBottom: '1rem',
           }}
         >
-          What Are You Actually<br className="hidden sm:block" /> Built to Do?
+          What Are You Built to Do?
         </h2>
 
         {/* Body copy */}
-        <p className="text-gray-600 text-lg leading-relaxed mb-4 max-w-xl mx-auto">
-          It has never been easier to build a business around your exact skills and lifestyle.
-          Answer 5 questions and walk away with 7 real, matched paths — tailored to your
-          strengths, values, and income goal.
-        </p>
+        <div className="text-gray-600 text-lg leading-relaxed mb-4 max-w-xl mx-auto space-y-3">
+          <p>Maybe you&apos;ve outgrown your career. Maybe you&apos;re dreaming about something different. Maybe you just know there&apos;s more.</p>
+          <p>Let&apos;s figure out what that &ldquo;more&rdquo; looks like.</p>
+          <p>Answer five simple questions and discover the paths that best match your skills, values, and goals.</p>
+        </div>
 
         {/* Feature chips */}
         <div className="flex flex-wrap justify-center gap-2 mb-8">
@@ -67,9 +67,9 @@ export default function DiscoverYourIdea() {
               key={chip}
               className="font-sans text-sm px-3 py-1 rounded-full"
               style={{
-                background: 'rgba(45,80,22,0.08)',
-                color: '#2D5016',
-                border: '1px solid rgba(45,80,22,0.15)',
+                background: '#FBF6E3',
+                color: '#3A281A',
+                border: '1px solid rgba(107,76,8,0.18)',
               }}
             >
               {chip}
@@ -88,12 +88,13 @@ export default function DiscoverYourIdea() {
             boxShadow: '0 8px 32px rgba(139,105,20,0.35)',
           }}
         >
-          Find My Matches →
+          Start My Assessment →
         </a>
 
         {/* Reassurance */}
         <p className="mt-4 text-sm text-gray-500">
-          Free. Takes 2 minutes. No email required to start.
+          Free to start. Instant result for your top match. No email required
+          to see where you rank.
         </p>
       </div>
     </section>
