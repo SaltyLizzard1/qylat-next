@@ -81,9 +81,7 @@ export default function ShareButtons({ url, title, text }: ShareButtonsProps) {
     setTimeout(() => setIgCopied(false), 4000);
   };
 
-  const encodedText = encodeURIComponent(text);
-  const encodedUrl = encodeURIComponent(url);
-  const encodedFull = encodeURIComponent(`${text} ${url}`);
+  const payload = encodeURIComponent(`${text} ${url}`);
 
   return (
     <div className="flex flex-col items-center gap-3">
@@ -104,17 +102,17 @@ export default function ShareButtons({ url, title, text }: ShareButtonsProps) {
           {copied ? <Check className="w-4 h-4" /> : <Link2 className="w-4 h-4" />}
         </IconBtn>
 
-        <IconBtn label="Share via SMS" href={`sms:?&body=${encodedFull}`}>
+        <IconBtn label="Share via SMS" href={`sms:?&body=${payload}`}>
           <MessageSquare className="w-4 h-4" />
         </IconBtn>
 
-        <IconBtn label="Share on WhatsApp" href={`https://wa.me/?text=${encodedFull}`} color="#25D366">
+        <IconBtn label="Share on WhatsApp" href={`https://wa.me/?text=${payload}`} color="#25D366">
           <FaWhatsapp size={16} />
         </IconBtn>
 
         <IconBtn
           label="Share on X"
-          href={`https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedText}`}
+          href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`}
           color="#000000"
         >
           <FaXTwitter size={16} />
@@ -122,7 +120,7 @@ export default function ShareButtons({ url, title, text }: ShareButtonsProps) {
 
         <IconBtn
           label="Share on Facebook"
-          href={`https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`}
+          href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`}
           color="#1877F2"
         >
           <FaFacebookF size={16} />

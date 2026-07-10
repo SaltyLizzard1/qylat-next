@@ -14,8 +14,7 @@ type Props = { params: Promise<{ id: string }> };
 export default async function Image({ params }: Props) {
   const { id } = await params;
 
-  let topTitle = 'Discover Your Business Match';
-  let incomeRange = '';
+  let matches: Match[] = [];
 
   try {
     const { supabase } = await import('../../../lib/supabase');
@@ -26,13 +25,18 @@ export default async function Image({ params }: Props) {
       .single();
 
     if (data?.matches) {
-      const matches = data.matches as Match[];
-      if (matches[0]?.title) topTitle = matches[0].title;
-      if (matches[0]?.incomeRange) incomeRange = matches[0].incomeRange;
+      matches = data.matches as Match[];
     }
   } catch {
     // fall through to generic branding
   }
+
+  const topTitle = matches[0]?.title ?? 'Discover Your Business Match';
+  const incomeRange = matches[0]?.incomeRange ?? '';
+  const match2 = matches[1]?.title;
+  const match3 = matches[2]?.title;
+  const moreCount = Math.max(0, matches.length - 3);
+  const titleFontSize = topTitle.length > 50 ? '48px' : topTitle.length > 35 ? '58px' : '68px';
 
   return new ImageResponse(
     (
@@ -42,36 +46,130 @@ export default async function Image({ params }: Props) {
           height: '630px',
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-          background: 'linear-gradient(135deg, #0d0d0f 0%, #17140c 100%)',
-          padding: '60px',
+          background: 'linear-gradient(180deg, #0d0d0f 0%, #17140c 100%)',
+          padding: '52px 72px 60px',
           position: 'relative',
         }}
       >
-        {/* Top label */}
+        {/* Eyebrow */}
         <div
           style={{
-            position: 'absolute',
-            top: '48px',
-            left: '60px',
             color: '#C9A030',
-            fontSize: '14px',
+            fontSize: '13px',
             fontWeight: 700,
             letterSpacing: '0.15em',
             textTransform: 'uppercase',
             display: 'flex',
+            marginBottom: '44px',
           }}
         >
-          DISCOVER YOUR IDEA
+          MY BUSINESS MATCHES · 5-MINUTE ASSESSMENT
         </div>
 
-        {/* Site name top right */}
+        {/* Framing line */}
+        <div
+          style={{
+            color: '#cfc9b8',
+            fontSize: '28px',
+            display: 'flex',
+            marginBottom: '8px',
+          }}
+        >
+          My #1 match:
+        </div>
+
+        {/* Top match title */}
+        <div
+          style={{
+            color: '#FBF6E3',
+            fontSize: titleFontSize,
+            fontWeight: 700,
+            lineHeight: 1.1,
+            display: 'flex',
+            flexWrap: 'wrap',
+            maxWidth: '1056px',
+            marginBottom: '16px',
+          }}
+        >
+          {topTitle}
+        </div>
+
+        {/* Income range */}
+        {incomeRange && (
+          <div
+            style={{
+              color: '#cfc9b8',
+              fontSize: '24px',
+              display: 'flex',
+              marginBottom: '28px',
+            }}
+          >
+            Income range: {incomeRange}
+          </div>
+        )}
+
+        {/* Also matched + more count */}
+        {(match2 || match3 || moreCount > 0) && (
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '8px',
+              marginTop: incomeRange ? '0' : '24px',
+            }}
+          >
+            {match2 && (
+              <div
+                style={{
+                  color: '#a89f8a',
+                  fontSize: '22px',
+                  display: 'flex',
+                  width: '1056px',
+                  overflow: 'hidden',
+                  whiteSpace: 'nowrap',
+                  textOverflow: 'ellipsis',
+                }}
+              >
+                Also matched: {match2}
+              </div>
+            )}
+            {match3 && (
+              <div
+                style={{
+                  color: '#a89f8a',
+                  fontSize: '22px',
+                  display: 'flex',
+                  width: '1056px',
+                  overflow: 'hidden',
+                  whiteSpace: 'nowrap',
+                  textOverflow: 'ellipsis',
+                }}
+              >
+                Also matched: {match3}
+              </div>
+            )}
+            {moreCount > 0 && (
+              <div
+                style={{
+                  color: '#E8C84A',
+                  fontSize: '24px',
+                  fontWeight: 700,
+                  display: 'flex',
+                  marginTop: '4px',
+                }}
+              >
+                + {moreCount} more paths matched to my skills and values
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Bottom-left site URL */}
         <div
           style={{
             position: 'absolute',
-            top: '48px',
-            right: '60px',
+            bottom: '20px',
+            left: '72px',
             color: '#a89f8a',
             fontSize: '13px',
             display: 'flex',
@@ -80,44 +178,7 @@ export default async function Image({ params }: Props) {
           quityourlifeandtravel.com
         </div>
 
-        {/* Main content */}
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            textAlign: 'center',
-            gap: '20px',
-            maxWidth: '1000px',
-          }}
-        >
-          <div
-            style={{
-              color: '#FBF6E3',
-              fontSize: topTitle.length > 40 ? '52px' : '64px',
-              fontWeight: 700,
-              lineHeight: 1.1,
-              display: 'flex',
-              flexWrap: 'wrap',
-              justifyContent: 'center',
-            }}
-          >
-            {topTitle}
-          </div>
-          {incomeRange && (
-            <div
-              style={{
-                color: '#cfc9b8',
-                fontSize: '26px',
-                display: 'flex',
-              }}
-            >
-              Income range: {incomeRange}
-            </div>
-          )}
-        </div>
-
-        {/* Bottom gold bar */}
+        {/* Gold bar */}
         <div
           style={{
             position: 'absolute',

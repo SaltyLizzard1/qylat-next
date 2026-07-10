@@ -109,7 +109,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
   const canonicalUrl = `${BASE_URL}/results/${id}`;
   const title = 'My Business Matches | Quit Your Life and Travel';
-  const description = 'See the business ideas this quiz matched — then discover yours in 5 minutes.';
+  const description = 'See the business ideas this assessment matched — then discover yours in 5 minutes.';
 
   return {
     title,
@@ -141,7 +141,9 @@ export default async function ResultsPage({ params }: Props) {
 
   const matches = (data.matches ?? []) as Match[];
   const canonicalUrl = `${BASE_URL}/results/${id}`;
-  const shareText = `My top business match: ${matches[0]?.title ?? 'a new business idea'}. Find yours:`;
+  const top3 = matches.slice(0, 3).map((m, i) => `${i + 1}. ${m.title}`).join('\n');
+  const more = matches.length > 3 ? `…and ${matches.length - 3} more.` : '';
+  const shareText = `${'\u2728'} I took the 5-minute Discover Your Idea assessment. My top matches:\n${top3}\n${more}\n${'\u{1F4AB}'} Find yours:`;
 
   return (
     <>
@@ -218,7 +220,7 @@ export default async function ResultsPage({ params }: Props) {
               Want your own matches?
             </p>
             <p className="text-sm text-gray-600 mb-5">
-              Answer 5 quick questions and get 7 online work paths matched to your skills and lifestyle.
+              Answer five simple questions and discover the paths that best match your skills, values, and goals.
             </p>
             <a
               href="/assessment"
