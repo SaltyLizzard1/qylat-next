@@ -574,7 +574,7 @@ export default function QuizPage() {
             style={{ background: GOLD_GRADIENT }}
           />
           <div className="relative text-center max-w-sm w-full">
-            {/* <LeapLoader className="mb-4" /> */}
+            <LeapLoader className="mb-4" />
             <p className="text-lg font-semibold text-gray-800 transition-all duration-500 min-h-[3.5rem] flex items-center justify-center">
               {LOADING_MESSAGES[loadingMsgIndex]}
             </p>
@@ -635,7 +635,7 @@ export default function QuizPage() {
             {resultId && (
               <div className="mb-8">
                 <ShareButtons
-                  url={`https://www.quityourlifeandtravel.com/results/${resultId}`}
+                  url={`https://www.quityourlifeandtravel.com/assessment`}
                   title="My Business Matches"
                   text={shareText}
                 />
