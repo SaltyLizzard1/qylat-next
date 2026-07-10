@@ -91,7 +91,7 @@ export default async function Image({ params }: Props) {
               paddingTop: '4px',
             }}
           >
-            THE DISCOVER YOUR IDEA ASSESSMENT
+            DISCOVER YOUR IDEA ASSESSMENT
           </div>
         </div>
 
@@ -227,7 +227,7 @@ export default async function Image({ params }: Props) {
               display: 'flex',
             }}
           >
-            quityourlifeandtravel.com
+            quityourlifeandtravel.com/assessment
           </div>
         </div>
 
