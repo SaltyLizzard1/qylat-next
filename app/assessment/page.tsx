@@ -5,7 +5,6 @@ import Footer from '../../components/Footer';
 import ShareButtons from '@/components/ShareButtons';
 import { useState, useEffect, useRef } from 'react';
 import { ArrowLeft, ArrowRight, Sparkles } from 'lucide-react';
-// import LeapLoader from '../../components/LeapLoader';
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -574,7 +573,6 @@ export default function QuizPage() {
             style={{ background: GOLD_GRADIENT }}
           />
           <div className="relative text-center max-w-sm w-full">
-            <LeapLoader className="mb-4" />
             <p className="text-lg font-semibold text-gray-800 transition-all duration-500 min-h-[3.5rem] flex items-center justify-center">
               {LOADING_MESSAGES[loadingMsgIndex]}
             </p>

@@ -18,7 +18,7 @@ const FAQS: FaqItem[] = [
       <>
         They are two entry points into the same ecosystem. QYLAT helps you figure out the
         work and life you&apos;re built for; IdeaToPlan turns that direction into a clear,
-        professional business plan. You can start with either one — they&apos;re designed to
+        professional business plan. You can start with either one. They&apos;re designed to
         work together, not as separate businesses.
       </>
     ),
@@ -27,7 +27,7 @@ const FAQS: FaqItem[] = [
     question: 'What is the free Discover Your Idea assessment?',
     answer: (
       <>
-        It&apos;s a short assessment — five questions, about two minutes — that matches your
+        It&apos;s a short assessment, five questions, about two minutes, that matches your
         skills, values, and lifestyle goals to seven real online income paths. It&apos;s free
         and no email is required to start.
       </>
@@ -73,7 +73,7 @@ const FAQS: FaqItem[] = [
     question: 'Is any of this professional advice?',
     answer: (
       <>
-        No. Everything here — including the assessment, plans, and coaching — is informational
+        No. Everything here, including the assessment, plans, and coaching, is informational
         and educational. It is not legal, financial, tax, immigration, or medical advice. You
         remain responsible for your own decisions, and we recommend consulting licensed
         professionals before acting on anything significant. See our{' '}

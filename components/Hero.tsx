@@ -22,8 +22,12 @@ export default function Hero() {
             <span className="block">Design One That Actually Fits.</span>
           </h1>
 
-          <p className="font-cormorant font-normal mx-auto mb-10 max-w-2xl text-lg sm:text-xl md:text-2xl leading-relaxed text-white/90 drop-shadow-md">
+          <p className="font-cormorant font-normal mx-auto mb-4 max-w-2xl text-lg sm:text-xl md:text-2xl leading-relaxed text-white/90 drop-shadow-md">
             Stop waiting for the perfect moment and start building the life you actually want.
+          </p>
+
+          <p className="font-sans mx-auto mb-10 max-w-2xl text-sm sm:text-base md:text-lg leading-relaxed text-white/80 drop-shadow-md">
+            Start with the free 5-minute assessment. Instant top match, no email needed to begin.
           </p>
 
           <div className="flex justify-center">
@@ -33,7 +37,7 @@ export default function Hero() {
               style={{
                 background: 'linear-gradient(135deg, #8B6914 0%, #E8C84A 35%, #F5E070 55%, #C9A030 75%, #8B6914 100%)',
                 color: '#2D1A00',
-                border: '1.5px solid #7A5C0A',
+                border: '1.5px solid #2D1A00',
                 boxShadow: '0 4px 24px rgba(0,0,0,0.35)',
               }}
             >

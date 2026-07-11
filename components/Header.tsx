@@ -11,14 +11,11 @@ type NavItem =
   | { label: string; type: 'link'; href: string };
 
 const NAV: NavItem[] = [
-  { label: 'Home', type: 'scroll', id: 'hero' },
   { label: 'My Story', type: 'link', href: '/story' },
   { label: 'Discover Your Idea', type: 'scroll', id: 'discover-your-idea' },
   { label: 'Idea To Plan', type: 'scroll', id: 'idea-to-plan' },
   { label: 'Work With Me', type: 'scroll', id: 'work-with-me' },
-  { label: 'FAQ', type: 'scroll', id: 'faq' },
   { label: 'Leap Log', type: 'scroll', id: 'the-leap-log' },
-  { label: 'About', type: 'scroll', id: 'about' },
 ];
 
 export default function Header() {
@@ -67,6 +64,15 @@ export default function Header() {
     scrollToSectionById(id, { afterMobileMenuClose: fromMenu });
   };
 
+  const handleLogoClick = () => {
+    setIsMobileMenuOpen(false);
+    if (window.location.pathname === '/') {
+      scrollToSection('hero');
+      return;
+    }
+    router.push('/');
+  };
+
   const handleNavClick = (item: NavItem) => {
     setIsMobileMenuOpen(false);
 
@@ -80,8 +86,7 @@ export default function Header() {
       return;
     }
 
-    const href = item.id === 'hero' ? '/' : `/#${item.id}`;
-    router.push(href);
+    router.push(`/#${item.id}`);
   };
 
   const headerBg = 'bg-[#92A882]';
@@ -109,7 +114,7 @@ export default function Header() {
           {/* LOGO */}
           <button
             type="button"
-            onClick={() => scrollToSection('hero')}
+            onClick={handleLogoClick}
             className="flex items-center flex-none text-left rounded-lg py-0 pr-2 ml-4 hover:bg-white/5 transition-colors focus:outline-none"
             aria-label="QYLAT"
           >
