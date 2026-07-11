@@ -34,13 +34,13 @@ export default function HomePage() {
       <Divider />
       <StoryTeaser />
       <Divider />
-      <LeadMagnet />
+      <DiscoverYourIdea />
       <Divider />
       <LeapLog />
       <Divider />
-      <WorkWithMe />
+      <LeadMagnet />
       <Divider />
-      <DiscoverYourIdea />
+      <WorkWithMe />
       <Divider />
       <IdeaToPlan />
       <Divider />
