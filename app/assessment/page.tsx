@@ -360,7 +360,7 @@ export default function QuizPage() {
     setError('');
 
     try {
-      const webhookUrl = process.env.NEXT_PUBLIC_N8N_QUIZ_WEBHOOK_URL ?? '/api/quiz';
+      const webhookUrl = '/api/quiz';
       const res = await fetch(webhookUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
