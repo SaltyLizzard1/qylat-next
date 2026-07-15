@@ -89,7 +89,7 @@ export default function Header() {
     router.push(`/#${item.id}`);
   };
 
-  const headerBg = 'bg-[#92A882]';
+  const headerBg = 'bg-[#171310]';
 
   const navPill =
     'rounded-full px-4 py-1 text-sm font-semibold whitespace-nowrap ' +

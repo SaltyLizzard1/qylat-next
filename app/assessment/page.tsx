@@ -630,7 +630,7 @@ export default function QuizPage() {
               Based on your skills, values, and lifestyle goals — here are your top 7 paths.
             </p>
 
-            {resultId && (
+            {!locked && resultId && (
               <div className="mb-8">
                 <ShareButtons
                   url={`https://www.quityourlifeandtravel.com/assessment`}

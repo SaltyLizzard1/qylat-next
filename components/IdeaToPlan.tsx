@@ -28,7 +28,7 @@ const steps = [
   {
     icon: Rocket,
     title: 'Get Your Plan',
-    description: 'Delivered within 72 hours. Expedited 48-hour delivery is available.',
+    description: 'Your polished, ready-to-use PDF plan, delivered within 72 hours.',
   },
 ];
 
@@ -195,7 +195,7 @@ export default function IdeaToPlan() {
               IdeaToPlan is the business-planning arm of the QYLAT ecosystem. QYLAT helps you
               find the right idea; IdeaToPlan turns it into a clear, professional plan you can
               take to lenders, investors, or your own roadmap. Delivered within 72 hours.
-              Expedited 48-hour delivery is available.
+              Need it faster? Just ask.
             </p>
           </div>
 
@@ -220,14 +220,15 @@ export default function IdeaToPlan() {
           </div>
 
           {/* CTA */}
-          <button
-            type="button"
-            onClick={() => setShowForm(true)}
-            className="inline-block font-sans rounded-full px-12 py-4 text-lg font-semibold transition-all duration-300 hover:scale-[1.03] hover:shadow-md active:scale-[0.98] min-w-[260px]"
+          <a
+            href="https://ideatoplan.to"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block font-sans rounded-full px-12 py-4 text-lg font-semibold transition-all duration-300 hover:scale-[1.03] hover:shadow-md active:scale-[0.98] min-w-[260px] text-center"
             style={goldBtn}
           >
-            Share Your Idea
-          </button>
+            Share Your Idea →
+          </a>
 
           {/* Soft pricing line */}
           <p className="mt-3 text-sm" style={{ color: '#a89f8a' }}>
