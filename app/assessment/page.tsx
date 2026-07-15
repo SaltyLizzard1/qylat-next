@@ -633,7 +633,7 @@ export default function QuizPage() {
             {!locked && resultId && (
               <div className="mb-8">
                 <ShareButtons
-                  url={`https://www.quityourlifeandtravel.com/assessment`}
+                  url={`https://www.quityourlifeandtravel.com/results/${resultId}`}
                   title="My Business Matches"
                   text={shareText}
                 />
