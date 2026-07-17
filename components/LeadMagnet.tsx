@@ -32,7 +32,7 @@ export default function LeadMagnet() {
   return (
     <section
       id="lead-magnet"
-      className="bg-[#2D5016] py-5 px-6"
+      className="bg-[#92A882] py-5 px-6"
     >
       <div className="max-w-3xl mx-auto">
         {status === 'success' ? (
@@ -63,7 +63,7 @@ export default function LeadMagnet() {
             className="flex flex-col sm:flex-row items-center gap-3"
           >
             <p
-              className="text-white/90 text-center sm:text-left sm:whitespace-nowrap shrink-0"
+              className="text-[#2D1A00] text-center sm:text-left sm:whitespace-nowrap shrink-0"
               style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1rem' }}
             >
               Not sure where to start? Grab the free 60-Day Leap Kit
@@ -74,7 +74,7 @@ export default function LeadMagnet() {
               placeholder="Your email address"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="flex-1 w-full px-4 py-2 rounded-full bg-white/15 border border-white/30 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-[#E8C84A] text-sm"
+              className="flex-1 w-full px-4 py-2 rounded-full bg-white/70 border border-[#2D1A00]/20 text-[#2D1A00] placeholder-[#2D1A00]/40 focus:outline-none focus:ring-2 focus:ring-[#E8C84A] text-sm"
             />
             <button
               type="submit"

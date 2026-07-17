@@ -23,7 +23,7 @@ function FooterNewsletter() {
 
   if (status === 'success') {
     return (
-      <p className="text-[#2C3340] font-semibold text-sm py-3">
+      <p className="text-[#2D1A00] font-semibold text-sm py-3">
         You&apos;re in. Check your inbox for the welcome email.
       </p>
     );
@@ -38,7 +38,7 @@ function FooterNewsletter() {
           placeholder="Email address"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="flex-1 min-w-0 px-3 py-2 rounded-full bg-white/90 border border-white/80 text-[#2C3340] placeholder-[#2C3340]/40 focus:outline-none focus:ring-2 focus:ring-[#E8C84A]/60 text-sm"
+          className="flex-1 min-w-0 px-3 py-2 rounded-full bg-white/90 border border-white/80 text-[#2D1A00] placeholder-[#2D1A00]/40 focus:outline-none focus:ring-2 focus:ring-[#E8C84A]/60 text-sm"
         />
         <button
           type="submit"
@@ -65,29 +65,29 @@ export default function Footer() {
   return (
     <footer
       id="site-footer"
-      className="bg-[#92A882] text-[#2C3340] rounded-t-[1.75rem] pt-3 pb-2 shadow-[0_-8px_30px_rgba(0,0,0,0.06)] border-t border-[#7a8f6c]/60"
+      className="bg-[#92A882] text-[#2D1A00] rounded-t-[1.75rem] pt-3 pb-2 shadow-[0_-8px_30px_rgba(0,0,0,0.06)] border-t border-[#7a8f6c]/60"
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid md:grid-cols-2 gap-x-12 gap-y-3">
           {/* Left: title, tagline, copyright, legal links */}
           <div>
-            <h3 className="text-lg font-bold mb-1 text-[#2C3340]">Quit Your Life and Travel</h3>
-            <p className="text-[#2C3340]/75 text-sm leading-relaxed mb-1">
+            <h3 className="text-lg font-bold mb-1 text-[#2D1A00]">Quit Your Life and Travel</h3>
+            <p className="text-[#2D1A00]/75 text-sm leading-relaxed mb-1">
               Stop waiting for permission. Start designing a life that actually fits.
             </p>
-            <p className="text-[#2C3340]/50 text-xs">
+            <p className="text-[#2D1A00]/50 text-xs">
               © 2026 Quit Your Life and Travel. All rights reserved.
             </p>
-            <p className="text-[#2C3340]/50 text-xs mt-0.5">
-              <a href="/privacy" className="underline underline-offset-2 hover:text-[#2C3340]/80 transition-colors">
+            <p className="text-[#2D1A00]/50 text-xs mt-0.5">
+              <a href="/privacy" className="underline underline-offset-2 hover:text-[#2D1A00]/80 transition-colors">
                 Privacy Policy
               </a>
               <span className="mx-2">·</span>
-              <a href="/terms" className="underline underline-offset-2 hover:text-[#2C3340]/80 transition-colors">
+              <a href="/terms" className="underline underline-offset-2 hover:text-[#2D1A00]/80 transition-colors">
                 Terms of Service
               </a>
               <span className="mx-2">·</span>
-              <a href="/#faq" className="underline underline-offset-2 hover:text-[#2C3340]/80 transition-colors">
+              <a href="/#faq" className="underline underline-offset-2 hover:text-[#2D1A00]/80 transition-colors">
                 FAQ
               </a>
             </p>
@@ -115,7 +115,7 @@ export default function Footer() {
               </a>
               <a href="mailto:liz@quityourlifeandtravel.com"
                 className="w-8 h-8 rounded-full flex items-center justify-center transition-opacity hover:opacity-80"
-                style={{ background: '#4CAF50' }} aria-label="Email">
+                style={{ background: '#2D1A00' }} aria-label="Email">
                 <Mail className="w-4 h-4 text-white" />
               </a>
             </div>

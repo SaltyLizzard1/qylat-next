@@ -94,14 +94,14 @@ export default function Header() {
 
   const navPill =
     'rounded-full px-4 py-1 text-sm font-semibold whitespace-nowrap ' +
-    'bg-white text-[#2C3340] border border-white/80 ' +
-    'shadow-sm hover:bg-[#DED18F] hover:text-[#2C3340] hover:border-[#DED18F] ' +
+    'bg-white text-[#2D1A00] border border-white/80 ' +
+    'shadow-sm hover:bg-[#DED18F] hover:text-[#2D1A00] hover:border-[#DED18F] ' +
     'active:scale-[0.97] transition-all duration-200';
 
   const navPillMobile =
     'w-full text-center rounded-full px-5 py-2.5 font-semibold text-base ' +
-    'bg-white text-[#2C3340] border border-white/80 ' +
-    'shadow-sm hover:bg-[#DED18F] hover:text-[#2C3340] hover:border-[#DED18F] transition-all';
+    'bg-white text-[#2D1A00] border border-white/80 ' +
+    'shadow-sm hover:bg-[#DED18F] hover:text-[#2D1A00] hover:border-[#DED18F] transition-all';
 
   return (
     <header
@@ -153,7 +153,7 @@ export default function Header() {
           {/* MOBILE HAMBURGER */}
           <button
             type="button"
-            className="md:hidden p-2 rounded-full bg-white text-[#2C3340] border border-white/80 shadow-sm ml-auto"
+            className="md:hidden p-2 rounded-full bg-white text-[#2D1A00] border border-white/80 shadow-sm ml-auto"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             aria-label="Toggle menu"
           >
