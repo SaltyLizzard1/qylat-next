@@ -19,7 +19,7 @@ const heading = {
   color: ESPRESSO_DEEP,
 } as const;
 
-const KIT_FORM_URL = 'https://app.kit.com/forms/afc2a0b2d2/subscriptions';
+const KIT_FORM_URL = 'https://app.kit.com/forms/9243576/subscriptions';
 
 // ── Types ───────────────────────────────────────────────────────────────────
 
@@ -29,6 +29,36 @@ interface LineItem {
   amount: number;
   hint?: string;
 }
+
+// ── Baseline defaults: generous Chiang Mai planning numbers ─────────────────
+
+const MONTHLY_DEFAULTS: LineItem[] = [
+  { id: 'rent', label: 'Rent (single person condo or apartment)', amount: 280, hint: 'Around 8,000 to 10,000 baht. This uses the top of that range.' },
+  { id: 'electric', label: 'Electricity', amount: 85 },
+  { id: 'internet', label: 'Home internet (optional)', amount: 20 },
+  { id: 'phone', label: 'Phone and SIM', amount: 20 },
+  { id: 'groceries', label: 'Groceries', amount: 200, hint: 'Food is the most flexible line there is. Street food stretches it. Western dining spends it.' },
+  { id: 'dining', label: 'Dining out and cafes', amount: 200 },
+  { id: 'transport', label: 'Motorbike rental and gas', amount: 145, hint: 'Renting runs about 4,500 baht a month plus roughly 150 baht a week in gas.' },
+  { id: 'coworking', label: 'Coworking or cafe work sessions', amount: 60, hint: 'Easy to cut if you work from home.' },
+  { id: 'entertainment', label: 'Entertainment and social', amount: 300, hint: 'This is my real number. Plenty of people spend less. Cut it to fit your life.' },
+  { id: 'laundry', label: 'Laundry', amount: 40, hint: 'About 300 baht a week.' },
+  { id: 'misc', label: 'Miscellaneous', amount: 100 },
+  { id: 'insurance', label: 'Health insurance', amount: 180, hint: 'Get quotes before you leave. Average is $100 to $200 a month.' },
+];
+
+const SETUP_DEFAULTS: LineItem[] = [
+  { id: 'hotels', label: 'First stop: hotels', amount: 450 },
+  { id: 'food', label: 'First stop: food', amount: 150 },
+  { id: 'localtransport', label: 'First stop: local transport', amount: 75 },
+  { id: 'activities', label: 'First stop: activities and misc', amount: 100 },
+  { id: 'transit', label: 'Transit stop: hotel, food, and transport', amount: 150 },
+  { id: 'flight', label: 'Flight to Thailand', amount: 800 },
+  { id: 'temphousing', label: 'Temporary housing (first 2 weeks)', amount: 400 },
+  { id: 'bikepurchase', label: 'Motorbike purchase (if buying instead of renting)', amount: 0, hint: 'Renting is already in your monthly costs. Buying runs $700 or more.' },
+  { id: 'license', label: 'License and medical if required', amount: 75 },
+  { id: 'gear', label: 'Gear and safety equipment', amount: 150 },
+];
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -92,7 +122,58 @@ function LineItemRow({
   );
 }
 
-function SectionCard({
+function BufferRow({
+  pct,
+  onPctChange,
+  amount,
+  note,
+}: {
+  pct: number;
+  onPctChange: (v: number) => void;
+  amount: number;
+  note: string;
+}) {
+  return (
+    <div className="py-3 border-b" style={{ borderColor: 'rgba(58,40,26,0.12)' }}>
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex-1">
+          <label className="text-[15px] block font-medium" style={{ color: ESPRESSO_DEEP }}>
+            Buffer for the unknowns
+          </label>
+          <span className="text-xs" style={{ color: 'rgba(58,40,26,0.55)' }}>
+            {note}
+          </span>
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center">
+            <input
+              type="number"
+              inputMode="numeric"
+              min="0"
+              max="100"
+              value={pct}
+              onChange={(e) => onPctChange(Number(e.target.value) || 0)}
+              className="w-14 rounded-lg px-2 py-2 text-right text-[15px] focus:outline-none"
+              style={{
+                background: '#fff',
+                border: '1px solid rgba(58,40,26,0.2)',
+                color: ESPRESSO_DEEP,
+              }}
+            />
+            <span className="text-sm ml-1" style={{ color: 'rgba(58,40,26,0.55)' }}>
+              %
+            </span>
+          </div>
+          <span className="text-[15px] font-semibold w-20 text-right" style={{ color: ESPRESSO_DEEP }}>
+            {currency(amount)}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SectionShell({
   eyebrow,
   title,
   subtitle,
@@ -109,7 +190,7 @@ function SectionCard({
     <section className="py-14 px-6 print:hidden" style={{ background: bg }}>
       <div className="max-w-2xl mx-auto">
         <span
-          className="inline-block font-sans text-xs font-semibold uppercase tracking-[0.2em] px-4 py-1.5 rounded-full mb-5"
+          className="inline-block text-xs font-semibold uppercase tracking-[0.2em] px-4 py-1.5 rounded-full mb-5"
           style={{ background: ESPRESSO, color: CREAM }}
         >
           {eyebrow}
@@ -147,58 +228,14 @@ function SectionCard({
 // ── Main component ──────────────────────────────────────────────────────────
 
 export default function LeapCalculator() {
-  const [setupItems, setSetupItems] = useState<LineItem[]>([
-    { id: 'hotels', label: 'First stop: hotels', amount: 0 },
-    { id: 'food', label: 'First stop: food', amount: 0 },
-    { id: 'localtransport', label: 'First stop: local transport', amount: 0 },
-    { id: 'activities', label: 'First stop: activities and misc', amount: 0 },
-    { id: 'transit', label: 'Transit stop: hotel, food, and transport', amount: 0 },
-    { id: 'flight', label: 'Flight to final destination', amount: 0 },
-    { id: 'temphousing', label: 'Temporary housing at destination (first 2 weeks)', amount: 0 },
-    { id: 'transport', label: 'Transport purchase (motorbike, scooter, or rental)', amount: 0 },
-    { id: 'license', label: 'License and medical if required', amount: 0 },
-    { id: 'gear', label: 'Gear and safety equipment', amount: 0 },
-    {
-      id: 'setupbuffer',
-      label: 'Buffer for unexpected expenses',
-      amount: 0,
-      hint: "Liz's rule: add 20%. Luggage breaks. Visa fees cost more than listed. It always happens.",
-    },
-  ]);
+  const [cash, setCash] = useState(0);
+  const [debt, setDebt] = useState(0);
 
-  const [monthlyItems, setMonthlyItems] = useState<LineItem[]>([
-    { id: 'rent', label: 'Rent', amount: 0 },
-    { id: 'utilities', label: 'Utilities and electricity', amount: 0 },
-    { id: 'groceries', label: 'Food and groceries', amount: 0 },
-    { id: 'dining', label: 'Dining out and cafes', amount: 0 },
-    { id: 'fuel', label: 'Transportation and fuel', amount: 0 },
-    { id: 'phone', label: 'Phone and SIM', amount: 0 },
-    { id: 'coworking', label: 'Coworking or cafe work sessions', amount: 0 },
-    { id: 'social', label: 'Entertainment and social', amount: 0 },
-    { id: 'laundry', label: 'Laundry and misc', amount: 0 },
-    {
-      id: 'insurance',
-      label: 'Health insurance',
-      amount: 0,
-      hint: 'Get quotes before you leave. Average is $100 to $200 a month.',
-    },
-    {
-      id: 'storage',
-      label: 'Storage unit back home (if applicable)',
-      amount: 0,
-      hint: 'A monthly cost you carry until you deal with it.',
-    },
-    { id: 'debtpay', label: 'Debt payments', amount: 0 },
-    { id: 'monthlybuffer', label: 'Buffer: 20% of total for unknowns', amount: 0 },
-  ]);
+  const [monthlyItems, setMonthlyItems] = useState<LineItem[]>(MONTHLY_DEFAULTS);
+  const [setupItems, setSetupItems] = useState<LineItem[]>(SETUP_DEFAULTS);
+  const [monthlyBufferPct, setMonthlyBufferPct] = useState(20);
+  const [setupBufferPct, setSetupBufferPct] = useState(25);
 
-  const [cashItems, setCashItems] = useState<LineItem[]>([
-    { id: 'checking', label: 'Checking and savings accounts', amount: 0 },
-    { id: 'investments', label: 'Investment accounts (liquid)', amount: 0 },
-    { id: 'otherliquid', label: 'Other liquid assets', amount: 0 },
-  ]);
-
-  const [creditDebt, setCreditDebt] = useState(0);
   const [monthlyIncome, setMonthlyIncome] = useState(0);
   const [incomeStartMonth, setIncomeStartMonth] = useState(4);
 
@@ -209,19 +246,27 @@ export default function LeapCalculator() {
     (setter: React.Dispatch<React.SetStateAction<LineItem[]>>) => (id: string, amount: number) =>
       setter((items) => items.map((it) => (it.id === id ? { ...it, amount } : it)));
 
-  const totalSetup = useMemo(() => setupItems.reduce((s, i) => s + i.amount, 0), [setupItems]);
-  const totalMonthly = useMemo(() => monthlyItems.reduce((s, i) => s + i.amount, 0), [monthlyItems]);
-  const totalCash = useMemo(() => cashItems.reduce((s, i) => s + i.amount, 0), [cashItems]);
-  const netCash = totalCash - creditDebt - totalSetup;
+  const monthlySubtotal = useMemo(
+    () => monthlyItems.reduce((s, i) => s + i.amount, 0),
+    [monthlyItems]
+  );
+  const monthlyBuffer = Math.round((monthlySubtotal * monthlyBufferPct) / 100);
+  const totalMonthly = monthlySubtotal + monthlyBuffer;
+
+  const setupSubtotal = useMemo(() => setupItems.reduce((s, i) => s + i.amount, 0), [setupItems]);
+  const setupBuffer = Math.round((setupSubtotal * setupBufferPct) / 100);
+  const totalSetup = setupSubtotal + setupBuffer;
+
+  const netCash = cash - debt - totalSetup;
 
   const runway = useMemo(() => {
     if (totalMonthly <= 0) return { months: null as number | null, indefinite: false, upfront: netCash <= 0 };
     if (netCash <= 0) return { months: 0, indefinite: false, upfront: true };
-    let cash = netCash;
+    let remaining = netCash;
     for (let m = 1; m <= 60; m++) {
-      cash -= totalMonthly;
-      if (m >= incomeStartMonth) cash += monthlyIncome;
-      if (cash <= 0) return { months: m, indefinite: false, upfront: false };
+      remaining -= totalMonthly;
+      if (m >= incomeStartMonth) remaining += monthlyIncome;
+      if (remaining <= 0) return { months: m, indefinite: false, upfront: false };
     }
     return { months: 60, indefinite: true, upfront: false };
   }, [netCash, totalMonthly, monthlyIncome, incomeStartMonth]);
@@ -236,6 +281,11 @@ export default function LeapCalculator() {
         ? '36+ months'
         : `${runway.months} months`;
 
+  const hasCash = cash > 0;
+
+  const breakdownItems = monthlyItems.filter((i) => i.amount > 0);
+  const maxMonthlyItem = Math.max(1, ...breakdownItems.map((i) => i.amount));
+
   const handleDownload = () => {
     window.print();
   };
@@ -246,16 +296,14 @@ export default function LeapCalculator() {
     try {
       const res = await fetch(KIT_FORM_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
           email_address: email,
-          fields: {
-            calc_setup_cost: totalSetup,
-            calc_monthly_cost: totalMonthly,
-            calc_net_cash: netCash,
-            calc_runway_months: runway.months ?? 0,
-          },
-        }),
+          'fields[calc_setup_cost]': String(totalSetup),
+          'fields[calc_monthly_cost]': String(totalMonthly),
+          'fields[calc_net_cash]': String(netCash),
+          'fields[calc_runway_months]': String(runway.months ?? 0),
+        }).toString(),
       });
       if (res.ok) {
         setEmailStatus('success');
@@ -267,9 +315,6 @@ export default function LeapCalculator() {
       setEmailStatus('error');
     }
   };
-
-  const breakdownItems = monthlyItems.filter((i) => i.amount > 0);
-  const maxMonthlyItem = Math.max(1, ...breakdownItems.map((i) => i.amount));
 
   return (
     <div className="font-sans">
@@ -288,7 +333,7 @@ export default function LeapCalculator() {
         }
       `}</style>
 
-      {/* Hero */}
+      {/* Hero + the one question */}
       <section className="py-16 px-6 text-center print:hidden" style={{ background: CREAM }}>
         <span
           className="inline-block text-xs font-semibold uppercase tracking-[0.2em] px-4 py-1.5 rounded-full mb-6"
@@ -305,51 +350,102 @@ export default function LeapCalculator() {
             margin: '0 auto 1rem',
           }}
         >
-          How Much Do You Actually Need to Leap?
+          How Much Do You Need to Leap? Start With What You Have.
         </h1>
-        <p className="max-w-xl mx-auto text-lg mb-2" style={{ color: 'rgba(58,40,26,0.8)' }}>
-          Plug in your real numbers. Watch your runway change as you type. No email required to see
-          your result.
+        <p className="max-w-xl mx-auto text-lg mb-8" style={{ color: 'rgba(58,40,26,0.8)' }}>
+          You do not need to know what Thailand costs. I already filled that in from living here.
+          Just answer one question.
         </p>
-        <p className="max-w-xl mx-auto text-sm italic" style={{ color: 'rgba(58,40,26,0.6)' }}>
-          My real numbers: $2,720 to get to Chiang Mai and $1,838 a month once I was here. I left
-          with $35k. After setup costs, that gave me 17 months of runway. Knowing that number is
-          what made the leap feel possible instead of terrifying.
+
+        <div
+          className="max-w-md mx-auto rounded-2xl p-6 text-left"
+          style={{
+            background: '#fff',
+            border: '1px solid rgba(58,40,26,0.12)',
+            boxShadow: '0 8px 30px rgba(58,40,26,0.08)',
+          }}
+        >
+          <label className="block text-lg font-semibold mb-2" style={{ color: ESPRESSO_DEEP }}>
+            How much do you have?
+          </label>
+          <div className="flex items-center gap-2">
+            <span className="text-xl" style={{ color: 'rgba(58,40,26,0.55)' }}>
+              $
+            </span>
+            <input
+              type="number"
+              inputMode="numeric"
+              min="0"
+              placeholder="Cash you are willing to spend"
+              value={cash === 0 ? '' : cash}
+              onChange={(e) => setCash(e.target.value === '' ? 0 : Number(e.target.value))}
+              className="flex-1 rounded-xl px-4 py-3 text-xl focus:outline-none focus:ring-2 focus:ring-[#C9A030]"
+              style={{
+                background: CREAM,
+                border: '1px solid rgba(58,40,26,0.2)',
+                color: ESPRESSO_DEEP,
+              }}
+            />
+          </div>
+          <p className="text-xs mt-2" style={{ color: 'rgba(58,40,26,0.55)' }}>
+            Savings, checking, anything you can actually get to, but only what you are truly
+            willing to spend down. Retirement accounts, property, and investments you want to
+            keep do not count.
+          </p>
+          <div className="mt-4">
+            <LineItemRow
+              label="Credit card debt (optional, subtracted)"
+              hint="Pay this down before you go if possible."
+              value={debt}
+              onChange={setDebt}
+            />
+          </div>
+        </div>
+
+        {/* Instant runway answer */}
+        {hasCash && (
+          <div className="max-w-md mx-auto mt-6">
+            <div
+              className="rounded-2xl px-6 py-5"
+              style={{ background: DARK_GRADIENT, border: '1px solid rgba(232,200,74,0.3)' }}
+            >
+              {runway.upfront ? (
+                <p style={{ ...heading, color: '#F5E070', fontSize: '1.15rem' }}>
+                  Getting there costs about {currency(totalSetup)}, which is more than your
+                  spendable cash right now. Knowing that today is the whole point. Scroll down
+                  and adjust.
+                </p>
+              ) : (
+                <>
+                  <p className="text-white/70 text-sm mb-1">That gives you roughly</p>
+                  <p style={{ ...heading, color: '#F5E070', fontSize: 'clamp(2rem,6vw,3rem)', lineHeight: 1 }}>
+                    {runway.indefinite ? '36+' : runway.months} months
+                  </p>
+                  <p className="text-white/70 text-sm mt-1">
+                    in Chiang Mai, after about {currency(totalSetup)} to get there and
+                    {' '}{currency(totalMonthly)} a month to live. Generous estimates, on purpose.
+                  </p>
+                </>
+              )}
+            </div>
+            <p className="text-xs mt-3" style={{ color: 'rgba(58,40,26,0.6)' }}>
+              Every number behind this is below, already filled in. Adjust anything to fit your life.
+            </p>
+          </div>
+        )}
+
+        <p className="max-w-xl mx-auto text-sm italic mt-8" style={{ color: 'rgba(58,40,26,0.6)' }}>
+          My real numbers: I left with $35k. Setup cost me $2,720 and life here runs $1,838 a
+          month. Knowing my runway is what made the leap feel possible instead of terrifying.
         </p>
       </section>
 
-      {/* Step 1: Setup and travel */}
-      <SectionCard
-        eyebrow="Step 1 · Setup and Travel"
-        title="What Your Arrival Actually Costs"
-        subtitle="One-time costs to get from your front door to settled at your destination."
+      {/* Monthly baseline */}
+      <SectionShell
+        eyebrow="The Baseline · Monthly"
+        title="What Life in Chiang Mai Costs"
+        subtitle="Pre-filled with generous planning numbers from actually living here. Adjust any line to match your style."
         bg={SAGE}
-      >
-        {setupItems.map((item) => (
-          <LineItemRow
-            key={item.id}
-            label={item.label}
-            hint={item.hint}
-            value={item.amount}
-            onChange={(v) => updateItem(setSetupItems)(item.id, v)}
-          />
-        ))}
-        <div className="flex items-center justify-between py-4">
-          <span className="font-semibold" style={{ color: ESPRESSO_DEEP }}>
-            Total setup cost
-          </span>
-          <span className="text-xl font-bold" style={{ color: ESPRESSO_DEEP }}>
-            {currency(totalSetup)}
-          </span>
-        </div>
-      </SectionCard>
-
-      {/* Step 2: Monthly living */}
-      <SectionCard
-        eyebrow="Step 2 · Monthly Living"
-        title="What Life Costs Once You Are There"
-        subtitle="Recurring costs, month to month, once you have landed."
-        bg={CREAM}
       >
         {monthlyItems.map((item) => (
           <LineItemRow
@@ -360,6 +456,12 @@ export default function LeapCalculator() {
             onChange={(v) => updateItem(setMonthlyItems)(item.id, v)}
           />
         ))}
+        <BufferRow
+          pct={monthlyBufferPct}
+          onPctChange={setMonthlyBufferPct}
+          amount={monthlyBuffer}
+          note="Auto-calculated so it cannot be forgotten. Something always costs more than you planned."
+        />
         <div className="flex items-center justify-between py-4">
           <span className="font-semibold" style={{ color: ESPRESSO_DEEP }}>
             Total monthly cost
@@ -368,51 +470,78 @@ export default function LeapCalculator() {
             {currency(totalMonthly)}
           </span>
         </div>
-      </SectionCard>
+        <p className="text-xs pb-4" style={{ color: 'rgba(58,40,26,0.55)' }}>
+          For honesty: my real month runs $1,838. This baseline lands a little above that on
+          purpose. Plan generous, get surprised in the good direction.
+        </p>
+      </SectionShell>
 
-      {/* Step 3: Net cash */}
-      <SectionCard
-        eyebrow="Step 3 · Your Real Number"
-        title="Know Your Actual Cash"
-        subtitle="Only count money you are willing to spend down. Anything you want to keep untouched does not belong in this number."
-        bg={SAGE}
+      {/* Setup baseline */}
+      <SectionShell
+        eyebrow="The Baseline · Getting There"
+        title="What Your Arrival Costs"
+        subtitle="One-time costs from your front door to settled in Thailand, pre-filled and editable."
+        bg={CREAM}
       >
-        {cashItems.map((item) => (
+        {setupItems.map((item) => (
           <LineItemRow
             key={item.id}
             label={item.label}
+            hint={item.hint}
             value={item.amount}
-            onChange={(v) => updateItem(setCashItems)(item.id, v)}
+            onChange={(v) => updateItem(setSetupItems)(item.id, v)}
           />
         ))}
-        <LineItemRow
-          label="Credit card debt (subtracted)"
-          hint="Pay this down before you go if possible."
-          value={creditDebt}
-          onChange={setCreditDebt}
+        <BufferRow
+          pct={setupBufferPct}
+          onPctChange={setSetupBufferPct}
+          amount={setupBuffer}
+          note="Be generous here. Luggage breaks. You end up buying shoes. Visa fees cost more than listed. Something always does."
         />
-        <div
-          className="flex items-center justify-between py-3 border-b"
-          style={{ borderColor: 'rgba(58,40,26,0.12)' }}
-        >
-          <span className="text-[15px]" style={{ color: 'rgba(58,40,26,0.7)' }}>
-            Setup cost (automatic, from step 1)
-          </span>
-          <span className="text-[15px]" style={{ color: ESPRESSO_DEEP }}>
-            &minus; {currency(totalSetup)}
-          </span>
-        </div>
         <div className="flex items-center justify-between py-4">
           <span className="font-semibold" style={{ color: ESPRESSO_DEEP }}>
-            Net cash available for runway
+            Total setup cost
           </span>
           <span className="text-xl font-bold" style={{ color: ESPRESSO_DEEP }}>
-            {currency(netCash)}
+            {currency(totalSetup)}
           </span>
         </div>
-      </SectionCard>
+        <p className="text-xs pb-4" style={{ color: 'rgba(58,40,26,0.55)' }}>
+          I spent $2,720 getting here and skipped the buffer. Do not be me.
+        </p>
+      </SectionShell>
 
-      <div className="max-w-2xl mx-auto px-6 -mt-6 mb-2 print:hidden">
+      {/* Net cash summary */}
+      <div className="max-w-2xl mx-auto px-6 -mt-4 mb-2 print:hidden">
+        <div
+          className="rounded-xl px-5 py-4"
+          style={{ background: '#fff', border: '1px solid rgba(58,40,26,0.15)' }}
+        >
+          <div className="flex justify-between py-1 text-[15px]" style={{ color: ESPRESSO }}>
+            <span>Your cash</span>
+            <span>{currency(cash)}</span>
+          </div>
+          {debt > 0 && (
+            <div className="flex justify-between py-1 text-[15px]" style={{ color: ESPRESSO }}>
+              <span>Credit card debt</span>
+              <span>&minus; {currency(debt)}</span>
+            </div>
+          )}
+          <div className="flex justify-between py-1 text-[15px]" style={{ color: ESPRESSO }}>
+            <span>Setup cost</span>
+            <span>&minus; {currency(totalSetup)}</span>
+          </div>
+          <div
+            className="flex justify-between py-2 mt-1 border-t font-semibold"
+            style={{ borderColor: 'rgba(58,40,26,0.15)', color: ESPRESSO_DEEP }}
+          >
+            <span>Net cash for your runway</span>
+            <span>{currency(netCash)}</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-2xl mx-auto px-6 mt-4 mb-2 print:hidden">
         <div
           className="rounded-xl px-4 py-3 flex gap-2 items-start text-sm"
           style={{
@@ -424,13 +553,13 @@ export default function LeapCalculator() {
           <Info size={16} className="mt-0.5 shrink-0" />
           <span>
             Assets you are keeping, like retirement accounts, property, or investments you do not
-            want to sell, do not go in the boxes above. This is only the money you are actually
-            willing to spend.
+            want to sell, stay out of this math. This is only the money you are actually willing
+            to spend.
           </span>
         </div>
       </div>
 
-      {/* Step 4: Runway dashboard */}
+      {/* Runway dashboard */}
       <section className="py-16 px-6 print:hidden" style={{ background: DARK_GRADIENT }}>
         <div className="max-w-3xl mx-auto text-center">
           <span
@@ -441,17 +570,17 @@ export default function LeapCalculator() {
               border: '1px solid rgba(232,200,74,0.35)',
             }}
           >
-            Step 4 · Your Runway Dashboard
+            Your Runway Dashboard
           </span>
 
-          {runway.upfront ? (
+          {!hasCash ? (
             <p style={{ ...heading, color: '#F5E070', fontSize: 'clamp(1.4rem,4vw,2rem)' }}>
-              Your setup cost is bigger than your available cash right now. Adjust your numbers
-              above, or give yourself more time to save. Knowing that today is the whole point.
+              Enter what you have at the top of the page and your full dashboard appears here.
             </p>
-          ) : totalMonthly <= 0 ? (
+          ) : runway.upfront ? (
             <p style={{ ...heading, color: '#F5E070', fontSize: 'clamp(1.4rem,4vw,2rem)' }}>
-              Add your monthly costs above to see your runway.
+              Your setup cost is bigger than your available cash right now. Adjust the baseline
+              above, or give yourself more time to save. Knowing that today is the whole point.
             </p>
           ) : (
             <>
@@ -647,11 +776,11 @@ export default function LeapCalculator() {
           QuitYourLifeAndTravel.com &middot; a planning estimate, not financial advice
         </p>
         {[
-          ['Total setup cost', currency(totalSetup)],
-          ['Total monthly living cost', currency(totalMonthly)],
-          ['Total cash', currency(totalCash)],
-          ['Credit card debt', creditDebt > 0 ? `\u2212 ${currency(creditDebt)}` : currency(0)],
-          ['Net cash available for runway', currency(netCash)],
+          ['My cash', currency(cash)],
+          ['Credit card debt', debt > 0 ? `\u2212 ${currency(debt)}` : currency(0)],
+          ['Setup cost (with buffer)', currency(totalSetup)],
+          ['Monthly living cost (with buffer)', currency(totalMonthly)],
+          ['Net cash for runway', currency(netCash)],
         ].map(([k, v]) => (
           <div
             key={k}
@@ -683,6 +812,10 @@ export default function LeapCalculator() {
                 <span style={{ color: ESPRESSO_DEEP }}>{currency(item.amount)}</span>
               </div>
             ))}
+            <div className="flex justify-between py-1 text-sm">
+              <span style={{ color: ESPRESSO }}>Buffer ({monthlyBufferPct}%)</span>
+              <span style={{ color: ESPRESSO_DEEP }}>{currency(monthlyBuffer)}</span>
+            </div>
           </>
         )}
         <p className="text-xs mt-8" style={{ color: 'rgba(58,40,26,0.55)' }}>
@@ -694,15 +827,25 @@ export default function LeapCalculator() {
       <section className="py-16 px-6 text-center print:hidden" style={{ background: CREAM }}>
         <div className="max-w-lg mx-auto">
           <h3 style={{ ...heading, fontSize: 'clamp(1.6rem,4vw,2.2rem)', marginBottom: '0.75rem' }}>
-            Want This Saved as Your Own Leap Plan Kit?
+            Want the Plan That Goes With the Numbers?
           </h3>
           <p className="mb-6" style={{ color: 'rgba(58,40,26,0.75)' }}>
-            I will send you the full 60-Day Leap Kit, the exact system I used to pack up my life
+            I will send you the free 60-Day Leap Kit, the exact system I used to pack up my life
             and move to Thailand.
           </p>
           {emailStatus === 'success' ? (
             <p style={{ ...heading, color: ESPRESSO_DEEP, fontSize: '1.2rem' }}>
-              Check your inbox. Your Leap Kit is on its way.
+              Check your inbox. Your Leap Kit is on its way. Already subscribed or want it
+              now?{' '}
+              <a
+                href="/60-day-leap-plan.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline"
+                style={{ color: ESPRESSO_DEEP }}
+              >
+                Download it here.
+              </a>
             </p>
           ) : (
             <form

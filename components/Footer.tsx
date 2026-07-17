@@ -11,10 +11,10 @@ function FooterNewsletter() {
     e.preventDefault();
     setStatus('loading');
     try {
-      const res = await fetch('https://app.kit.com/forms/8d474f67f9/subscriptions', {
+      const res = await fetch('https://app.kit.com/forms/9498737/subscriptions', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email_address: email }),
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ email_address: email }).toString(),
       });
       if (res.ok) { setStatus('success'); setEmail(''); }
       else setStatus('error');

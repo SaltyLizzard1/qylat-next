@@ -12,6 +12,7 @@ type NavItem =
 
 const NAV: NavItem[] = [
   { label: 'My Story', type: 'link', href: '/story' },
+  { label: 'Leap Calculator', type: 'link', href: '/calculator' },
   { label: 'Discover Your Idea', type: 'scroll', id: 'discover-your-idea' },
   { label: 'Idea To Plan', type: 'scroll', id: 'idea-to-plan' },
   { label: 'Work With Me', type: 'scroll', id: 'work-with-me' },
@@ -89,7 +90,7 @@ export default function Header() {
     router.push(`/#${item.id}`);
   };
 
-  const headerBg = 'bg-[#171310]';
+  const headerBg = 'bg-[#92A882]';
 
   const navPill =
     'rounded-full px-4 py-1 text-sm font-semibold whitespace-nowrap ' +

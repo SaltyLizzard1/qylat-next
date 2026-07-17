@@ -115,10 +115,10 @@ export default function ResultsGate({ matches, canonicalUrl }: { matches: Match[
     setEmailError('');
 
     try {
-      await fetch('https://app.kit.com/forms/260ddc6f2c/subscriptions', {
+      await fetch('https://app.kit.com/forms/9562904/subscriptions', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email_address: email.trim() }),
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ email_address: email.trim() }).toString(),
       });
       setUnlocked(true);
     } catch (err) {

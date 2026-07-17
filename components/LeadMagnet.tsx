@@ -11,11 +11,11 @@ export default function LeadMagnet() {
     setStatus('loading');
     try {
       const res = await fetch(
-        'https://app.kit.com/forms/afc2a0b2d2/subscriptions',
+        'https://app.kit.com/forms/9243576/subscriptions',
         {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email_address: email }),
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({ email_address: email }).toString(),
         }
       );
       if (res.ok) {
@@ -45,7 +45,17 @@ export default function LeadMagnet() {
               color: '#E8C84A',
             }}
           >
-            Check your inbox — your 60-Day Leap Kit is on its way.
+            Check your inbox. Your 60-Day Leap Kit is on its way. Already subscribed or want
+            it now?{' '}
+            <a
+              href="/60-day-leap-plan.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline underline-offset-2 hover:opacity-80 transition-opacity"
+              style={{ color: '#FBF6E3' }}
+            >
+              Download it here.
+            </a>
           </p>
         ) : (
           <form
