@@ -35,7 +35,7 @@ export default function StoryHero() {
 
       {/* Headline */}
       <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
-        <p className="text-sm uppercase tracking-[0.28em] text-amber-300 font-semibold">My Story</p>
+        <p className="text-sm uppercase tracking-[0.28em] font-semibold" style={{ color: '#E8C84A' }}>My Story</p>
         <h1
           style={headingFont}
           className="mt-4 max-w-4xl text-4xl md:text-6xl font-bold tracking-tight leading-tight text-white"

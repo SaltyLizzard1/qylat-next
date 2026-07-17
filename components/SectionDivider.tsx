@@ -1,5 +1,5 @@
 type SectionDividerProps = {
-  /** CSS color (e.g. #ffffff, #ecfdf5) for the wave so it matches the next section. */
+  /** CSS color (e.g. #ffffff, #EBF0E6) for the wave so it matches the next section. */
   bottomFill?: string;
 };
 

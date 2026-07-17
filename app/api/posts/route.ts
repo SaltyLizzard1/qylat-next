@@ -42,6 +42,9 @@ export async function GET() {
       heroImageUrl: post.heroImage
         ? urlFor(post.heroImage).width(800).url()
         : null,
+      heroCardUrl: post.heroImage
+        ? urlFor(post.heroImage).width(800).height(600).fit('crop').url()
+        : null,
       heroFit: post.heroFit === 'contain' ? ('contain' as const) : ('cover' as const),
       gallery: Array.isArray(post.gallery)
         ? post.gallery.map((img: Record<string, unknown>) => ({

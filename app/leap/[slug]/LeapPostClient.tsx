@@ -9,11 +9,6 @@ import { posts, type Post } from '../../../data/posts';
 import { useSanityPosts, type SanityPost } from '../../../lib/useSanityPosts';
 import { SanityPostContent } from '../../../lib/SanityPostContent';
 import Comments from '../../../components/Comments';
-import {
-  postHeroObjectFitClass,
-  postHeroObjectPositionClass,
-  postHeroObjectPositionStyle,
-} from '../../../utils/postHeroImage';
 
 function sanityToPost(sp: SanityPost): Post {
   return {
@@ -76,32 +71,35 @@ export default function LeapPostClient({ slug, initialPost }: { slug: string; in
 
   if (!post) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-pulse text-gray-400">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center" style={{ background: '#FBF6E3' }}>
+        <div className="animate-pulse" style={{ color: 'rgba(58,40,26,0.6)' }}>Loading...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen" style={{ background: '#FBF6E3' }}>
       <div className="max-w-4xl mx-auto px-4 py-8">
         <a
           href="/#the-leap-log"
-          className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 mb-6"
+          className="inline-flex items-center gap-1.5 text-sm hover:opacity-70 transition-opacity mb-6"
+          style={{ color: 'rgba(58,40,26,0.6)' }}
         >
           <ArrowLeft className="w-4 h-4" /> Back to The Leap Log
         </a>
 
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+        <div
+          className="bg-white rounded-2xl shadow-sm overflow-hidden"
+          style={{ border: '1px solid rgba(58,40,26,0.12)' }}
+        >
           {post.image && (
-            <div className="w-full max-h-[400px] overflow-hidden bg-gray-100">
+            <div className="w-full" style={{ background: '#EBF0E6' }}>
               <Image
                 src={post.image}
                 alt={post.title}
                 width={1200}
                 height={400}
-                className={`h-[400px] max-h-[400px] w-full ${postHeroObjectFitClass(post)} ${postHeroObjectPositionClass(post, 'modal')}`.trimEnd()}
-                style={postHeroObjectPositionStyle(post)}
+                className="w-full h-auto"
                 loading="eager"
               />
             </div>
@@ -111,16 +109,26 @@ export default function LeapPostClient({ slug, initialPost }: { slug: string; in
             ref={headerRef}
             className="mb-8 px-6 pt-6 text-center sm:px-8 md:px-10"
           >
-            <p className="text-sm font-medium text-gray-500">
+            <p className="text-sm font-medium" style={{ color: 'rgba(58,40,26,0.6)' }}>
               {post.date}
               {post.readTime ? ` · ${post.readTime}` : ''}
             </p>
-            <h1 className="mt-2 text-3xl font-bold text-emerald-900 md:text-4xl">
+            <h1
+              className="mt-2 text-3xl md:text-4xl"
+              style={{
+                fontFamily: "'Cormorant Garamond', Georgia, serif",
+                fontWeight: 700,
+                color: '#2D1A00',
+              }}
+            >
               {post.title}
             </h1>
           </header>
 
-          <article className="border-t border-gray-100 px-6 py-6 sm:px-8 md:px-10 md:py-10">
+          <article
+            className="px-6 py-6 sm:px-8 md:px-10 md:py-10"
+            style={{ borderTop: '1px solid rgba(58,40,26,0.12)' }}
+          >
             {post.content ? (
               post.content({ onTakeLeapClick: () => router.push('/') })
             ) : (

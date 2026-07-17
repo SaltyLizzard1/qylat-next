@@ -5,18 +5,31 @@ import { Mail } from 'lucide-react';
 import Header from '../../components/Header';
 import { images } from '../../config/images';
 
+const GOLD_BTN = {
+  background: 'linear-gradient(135deg, #8B6914 0%, #E8C84A 35%, #F5E070 55%, #C9A030 75%, #8B6914 100%)',
+  color: '#2D1A00',
+  border: '1.5px solid #2D1A00',
+} as const;
+
 export default function ThankYouPage() {
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-b from-emerald-50 to-white">
+    <div className="min-h-screen flex flex-col" style={{ background: '#FBF6E3' }}>
       <Header />
 
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-20 text-center">
         <div className="max-w-xl mx-auto">
-          <h1 className="text-4xl md:text-5xl font-extrabold text-emerald-900 tracking-tight mb-6">
+          <h1
+            className="text-4xl md:text-5xl mb-6"
+            style={{
+              fontFamily: "'Cormorant Garamond', Georgia, serif",
+              fontWeight: 700,
+              color: '#2D1A00',
+            }}
+          >
             You&apos;re in. Welcome to the community!
           </h1>
 
-          <div className="text-lg text-gray-600 leading-relaxed space-y-4 mb-10">
+          <div className="text-lg leading-relaxed space-y-4 mb-10" style={{ color: '#3A281A' }}>
             <p>
               You just joined a group of people who are done waiting for the right
               moment and ready to build a life that actually fits. That&apos;s worth
@@ -27,12 +40,15 @@ export default function ThankYouPage() {
               Jump in, share where you are in your journey and connect with people
               who get it.
             </p>
-            <p className="font-semibold text-emerald-800">We are so glad you&apos;re here.</p>
+            <p className="font-semibold" style={{ color: '#2D1A00' }}>
+              We are so glad you&apos;re here.
+            </p>
           </div>
 
           <a
             href="/#the-leap-log"
-            className="inline-block bg-orange-500 hover:bg-orange-600 text-white text-lg font-semibold px-8 py-4 rounded-full transition-all transform hover:scale-105 shadow-lg mb-10"
+            className="inline-block font-sans text-lg font-semibold px-8 py-4 rounded-full transition-all duration-300 hover:scale-[1.03] active:scale-[0.98] shadow-lg mb-10"
+            style={GOLD_BTN}
           >
             👉 To The Leap Log
           </a>
@@ -74,13 +90,14 @@ export default function ThankYouPage() {
             <a
               href="mailto:liz@quityourlifeandtravel.com"
               aria-label="Email"
-              className="w-12 h-12 rounded-full flex items-center justify-center text-white transition-transform hover:scale-110 shadow-md bg-orange-500 hover:bg-orange-600"
+              className="w-12 h-12 rounded-full flex items-center justify-center text-white transition-transform hover:scale-110 shadow-md"
+              style={{ backgroundColor: '#3A281A' }}
             >
               <Mail className="w-5 h-5" />
             </a>
           </div>
 
-          <div className="mt-16 pt-8 border-t border-gray-100">
+          <div className="mt-16 pt-8" style={{ borderTop: '1px solid rgba(58,40,26,0.12)' }}>
             <Image
               src={images.logo}
               alt="Quit Your Life and Travel"

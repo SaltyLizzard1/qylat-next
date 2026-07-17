@@ -5,7 +5,7 @@ const headingFont = { fontFamily: "'Cormorant Garamond', Georgia, serif" };
 
 export default function StoryTeaser() {
   return (
-    <section className="bg-slate-50 py-16">
+    <section className="py-16" style={{ background: '#FBF6E3' }}>
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
           <div className="relative rounded-3xl overflow-hidden">
@@ -28,14 +28,14 @@ export default function StoryTeaser() {
             </video>
           </div>
           <div>
-            <p className="text-sm uppercase tracking-[0.28em] text-amber-800 font-semibold">My Story</p>
+            <p className="text-sm uppercase tracking-[0.28em] font-semibold" style={{ color: '#8B6914' }}>My Story</p>
             <h2 style={headingFont} className="mt-4 text-3xl md:text-4xl font-bold tracking-tight leading-tight">
               Somewhere on a two-hour Monday commute, I decided the next year would not look like this.
             </h2>
-            <p className="mt-5 text-lg leading-relaxed text-slate-700">
+            <p className="mt-5 text-lg leading-relaxed" style={{ color: '#3A281A' }}>
               Two decades in corporate IT. A one-way ticket to Thailand. A pandemic that took the house, the plan, and six years.
             </p>
-            <p className="mt-2 text-lg font-medium text-slate-900">I left anyway.</p>
+            <p className="mt-2 text-lg font-medium" style={{ color: '#2D1A00' }}>I left anyway.</p>
             <Link
               href="/story"
               className="mt-6 inline-block font-semibold text-lg underline underline-offset-4 transition hover:opacity-70"

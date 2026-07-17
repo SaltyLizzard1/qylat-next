@@ -38,6 +38,7 @@ function toSanityPost(raw: any): SanityPost {
     postType: (raw.postType as SanityPost['postType']) || 'blog',
     excerpt: raw.excerpt || '',
     heroImageUrl: raw.heroImage ? urlFor(raw.heroImage).width(800).url() : null,
+    heroCardUrl: null,
     heroFit: raw.heroFit === 'contain' ? 'contain' : 'cover',
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     gallery: Array.isArray(raw.gallery)

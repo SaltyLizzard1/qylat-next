@@ -390,7 +390,7 @@ export default function IdeaToPlan() {
 
                     {form.planGoal === 'bank-loan' && (
                       <div className="space-y-4 border border-[#8B6914]/20 rounded-xl p-4 bg-[#F8FAFC]">
-                        <p className="text-sm font-semibold" style={{ color: '#B45309' }}>Bank Loan Details</p>
+                        <p className="text-sm font-semibold" style={{ color: '#8B6914' }}>Bank Loan Details</p>
                         <div className="grid sm:grid-cols-2 gap-4">
                           <div>
                             <label className="block text-sm font-semibold text-slate-800 mb-1">Loan amount requested</label>
@@ -426,7 +426,7 @@ export default function IdeaToPlan() {
 
                     {form.planGoal === 'investor' && (
                       <div className="space-y-4 border border-[#8B6914]/20 rounded-xl p-4 bg-[#F8FAFC]">
-                        <p className="text-sm font-semibold" style={{ color: '#B45309' }}>Investor Pitch Details</p>
+                        <p className="text-sm font-semibold" style={{ color: '#8B6914' }}>Investor Pitch Details</p>
                         <div>
                           <label className="block text-sm font-semibold text-slate-800 mb-1">Your background</label>
                           <textarea name="founderBackground" value={form.founderBackground} onChange={handleChange} rows={3}

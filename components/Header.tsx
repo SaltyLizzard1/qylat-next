@@ -107,7 +107,7 @@ export default function Header() {
     <header
       ref={headerRef}
       id={SITE_HEADER_ID}
-      className={`sticky top-0 left-0 right-0 z-50 border-b border-[#7a8f6c]/60 transition-shadow duration-300 ${headerBg} ${scrolled ? 'shadow-md backdrop-blur-md' : 'shadow-sm'}`}
+      className={`sticky top-0 left-0 right-0 z-50 transition-shadow duration-300 ${headerBg} ${scrolled ? 'shadow-md backdrop-blur-md' : 'shadow-sm'}`}
     >
       <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-12">
         <div className="flex justify-between items-center py-1">
@@ -179,6 +179,14 @@ export default function Header() {
           </nav>
         </div>
       )}
+
+      {/* Gold gradient bottom edge */}
+      <div
+        style={{
+          height: '3px',
+          background: 'linear-gradient(135deg, #8B6914 0%, #E8C84A 35%, #F5E070 55%, #C9A030 75%, #8B6914 100%)',
+        }}
+      />
 
     </header>
   );

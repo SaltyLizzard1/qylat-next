@@ -1,20 +1,13 @@
 import Image from 'next/image';
 import type { Post } from '../data/posts';
-import {
-  postHeroObjectFitClass,
-  postHeroObjectPositionClass,
-  postHeroObjectPositionStyle,
-} from '../utils/postHeroImage';
 
 type PostCardProps = {
   post: Post;
   onOpenPost: (slug: string) => void;
+  priority?: boolean;
 };
 
-export default function PostCard({ post, onOpenPost }: PostCardProps) {
-  const heroPositionStyle = postHeroObjectPositionStyle(post);
-  const cardImageObjectPosition = postHeroObjectPositionClass(post, 'card');
-
+export default function PostCard({ post, onOpenPost, priority = false }: PostCardProps) {
   return (
     <div className="h-auto">
       <article className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group h-auto flex flex-col">
@@ -22,18 +15,19 @@ export default function PostCard({ post, onOpenPost }: PostCardProps) {
           <button
             type="button"
             onClick={() => post.content && onOpenPost(post.slug)}
-            className="block w-full overflow-hidden bg-gray-100 text-left disabled:cursor-default"
+            className="block w-full overflow-hidden text-left disabled:cursor-default"
+            style={{ background: '#EBF0E6' }}
             disabled={!post.content}
           >
-            <div className="relative w-full h-80 overflow-hidden">
+            <div className="relative w-full aspect-[4/3] overflow-hidden">
               <Image
                 src={post.image}
                 alt={post.title}
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
-                className={`${postHeroObjectFitClass(post)} group-hover:scale-105 transition-transform duration-300 ${cardImageObjectPosition}`.trimEnd()}
-                style={heroPositionStyle}
-                loading="lazy"
+                className="object-cover group-hover:scale-105 transition-transform duration-300"
+                priority={priority}
+                loading={priority ? 'eager' : 'lazy'}
               />
             </div>
           </button>

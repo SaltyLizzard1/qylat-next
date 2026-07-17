@@ -23,7 +23,7 @@ function sanityToPost(sp: SanityPost): Post {
         })
       : '',
     excerpt: sp.excerpt || '',
-    image: sp.heroImageUrl || '',
+    image: sp.heroCardUrl || sp.heroImageUrl || '',
     heroFit: sp.heroFit === 'contain' ? 'contain' : 'cover',
     postType: sp.postType,
     // Keep the Portable Text body so the post can be matched/rendered even if
@@ -98,8 +98,8 @@ export default function LeapLog() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-8 mb-8">
-          {allPosts.map((post) => (
-            <PostCard key={post.id} post={post} onOpenPost={openPost} />
+          {allPosts.map((post, index) => (
+            <PostCard key={post.id} post={post} onOpenPost={openPost} priority={index === 0} />
           ))}
         </div>
       </div>
