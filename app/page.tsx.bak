@@ -8,8 +8,9 @@ import StoryTeaser from '../components/StoryTeaser';
 import WorkWithMe from '../components/WorkWithMe';
 import DiscoverYourIdea from '../components/DiscoverYourIdea';
 import IdeaToPlan from '../components/IdeaToPlan';
-import LeapCalculatorTeaser from '../components/LeapCalculatorTeaser';
+import FAQ from '../components/FAQ';
 import LeapLog from '../components/LeapLog';
+import About from '../components/About';
 import Footer from '../components/Footer';
 import { scrollToSectionById } from '../utils/scrollToSection';
 
@@ -33,15 +34,17 @@ export default function HomePage() {
       <Divider />
       <StoryTeaser />
       <Divider />
-      <LeapCalculatorTeaser />
-      <Divider />
       <DiscoverYourIdea />
-      <Divider />
-      <IdeaToPlan />
       <Divider />
       <LeadMagnet />
       <Divider />
       <WorkWithMe />
+      <Divider />
+      <IdeaToPlan />
+      <Divider />
+      <FAQ />
+      <Divider />
+      <About />
       <Divider />
       <LeapLog />
       <Footer />

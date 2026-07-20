@@ -87,7 +87,11 @@ export default function Footer() {
                 Terms of Service
               </a>
               <span className="mx-2">·</span>
-              <a href="/#faq" className="underline underline-offset-2 hover:text-[#2D1A00]/80 transition-colors">
+              <a href="/about" className="underline underline-offset-2 hover:text-[#2D1A00]/80 transition-colors">
+                About
+              </a>
+              <span className="mx-2">·</span>
+              <a href="/faq" className="underline underline-offset-2 hover:text-[#2D1A00]/80 transition-colors">
                 FAQ
               </a>
             </p>
