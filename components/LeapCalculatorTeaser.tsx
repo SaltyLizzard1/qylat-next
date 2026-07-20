@@ -63,7 +63,12 @@ export default function LeapCalculatorTeaser() {
             <span
               key={chip}
               className="text-xs font-sans font-medium px-3 py-1.5 rounded-full"
-              style={{ background: 'rgba(58,40,26,0.06)', color: '#3A281A' }}
+              style={{
+                background: '#FFFFFF',
+                color: '#3A281A',
+                border: '1px solid rgba(58,40,26,0.3)',
+                boxShadow: '0 2px 8px rgba(58,40,26,0.08)',
+              }}
             >
               {chip}
             </span>

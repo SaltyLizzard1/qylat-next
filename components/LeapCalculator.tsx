@@ -301,8 +301,8 @@ function SectionShell({
           className="rounded-2xl px-6 py-2"
           style={{
             background: '#fff',
-            border: '1px solid rgba(58,40,26,0.1)',
-            boxShadow: '0 8px 30px rgba(58,40,26,0.06)',
+            border: '1px solid rgba(58,40,26,0.22)',
+            boxShadow: '0 8px 30px rgba(58,40,26,0.14)',
           }}
         >
           {children}
@@ -451,8 +451,8 @@ export default function LeapCalculator() {
           className="max-w-md mx-auto rounded-2xl p-6 text-left"
           style={{
             background: '#fff',
-            border: '1px solid rgba(58,40,26,0.12)',
-            boxShadow: '0 8px 30px rgba(58,40,26,0.08)',
+            border: '1px solid rgba(58,40,26,0.22)',
+            boxShadow: '0 8px 30px rgba(58,40,26,0.14)',
           }}
         >
           <label className="block text-lg font-semibold mb-2" style={{ color: ESPRESSO_DEEP }}>
@@ -579,7 +579,7 @@ export default function LeapCalculator() {
         <div className="max-w-2xl mx-auto">
           <div
             className="rounded-xl px-5 py-4"
-            style={{ background: '#fff', border: '1px solid rgba(58,40,26,0.15)' }}
+            style={{ background: '#fff', border: '1px solid rgba(58,40,26,0.22)', boxShadow: '0 8px 30px rgba(58,40,26,0.14)' }}
           >
             <div className="flex justify-between py-1 text-[15px]" style={{ color: ESPRESSO }}>
               <span>Your cash</span>

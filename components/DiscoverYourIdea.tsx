@@ -67,9 +67,10 @@ export default function DiscoverYourIdea() {
               key={chip}
               className="font-sans text-sm px-3 py-1 rounded-full"
               style={{
-                background: '#FBF6E3',
+                background: '#FFFFFF',
                 color: '#3A281A',
-                border: '1px solid rgba(107,76,8,0.18)',
+                border: '1px solid rgba(58,40,26,0.3)',
+                boxShadow: '0 2px 8px rgba(58,40,26,0.08)',
               }}
             >
               {chip}

@@ -68,7 +68,14 @@ export default function WorkWithMe() {
             your blocks, clarify your wants, and build your first real action plan.
           </p>
 
-          <div className="rounded-lg p-6 mb-8 border border-[#E8C84A]/30 bg-[#F5E070]/8">
+          <div
+            className="rounded-lg p-6 mb-8"
+            style={{
+              background: '#FFFFFF',
+              border: '1px solid rgba(139,105,20,0.35)',
+              boxShadow: '0 8px 24px rgba(58,40,26,0.10)',
+            }}
+          >
             <div className="grid md:grid-cols-2 gap-8 md:gap-10">
               <div>
                 <h4 className="text-xl font-bold text-gray-900 mb-4 text-center">
@@ -100,13 +107,13 @@ export default function WorkWithMe() {
             </div>
           </div>
 
-          <div className="mb-8">
-            <h4 className="text-xl font-bold text-gray-900 mb-4 text-center">What happens in the session:</h4>
-            <ul className="space-y-3">
+          <div className="mb-8 pt-2 border-t" style={{ borderColor: 'rgba(45,80,22,0.15)' }}>
+            <h4 className="text-lg font-semibold text-gray-800 mb-3 mt-4">What happens in the session:</h4>
+            <ul className="space-y-2">
               {sessionFeatures.map((feature, index) => (
                 <li key={index} className="flex items-start">
-                  <Check className="w-6 h-6 mr-3 flex-shrink-0 mt-0.5" style={{ color: '#C9A030' }} />
-                  <span className="text-gray-700">{feature}</span>
+                  <Check className="w-4 h-4 mr-3 flex-shrink-0 mt-0.5" style={{ color: '#8B6914' }} />
+                  <span className="text-gray-600 text-[15px]">{feature}</span>
                 </li>
               ))}
             </ul>
