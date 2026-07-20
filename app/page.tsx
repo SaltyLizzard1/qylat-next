@@ -36,8 +36,6 @@ export default function HomePage() {
       <Divider />
       <DiscoverYourIdea />
       <Divider />
-      <LeapLog />
-      <Divider />
       <LeadMagnet />
       <Divider />
       <WorkWithMe />
@@ -47,6 +45,8 @@ export default function HomePage() {
       <FAQ />
       <Divider />
       <About />
+      <Divider />
+      <LeapLog />
       <Footer />
     </div>
   );

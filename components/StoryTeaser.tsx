@@ -7,7 +7,7 @@ export default function StoryTeaser() {
   return (
     <section
       className="py-16"
-      style={{ background: 'linear-gradient(180deg, #0d0d0f 0%, #17140c 50%, #0d0d0f 100%)' }}
+      style={{ background: 'linear-gradient(180deg, #242826 0%, #2E3230 50%, #242826 100%)' }}
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
@@ -56,6 +56,11 @@ export default function StoryTeaser() {
           opacity: 0.65;
         }
         @media (prefers-reduced-motion: reduce) {
+          .teaser-rain {
+            display: none;
+          }
+        }
+        @media (max-width: 1023px) {
           .teaser-rain {
             display: none;
           }

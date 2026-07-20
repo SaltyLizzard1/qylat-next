@@ -240,7 +240,8 @@ export default function LeapCalculator() {
   const [incomeStartMonth, setIncomeStartMonth] = useState(4);
 
   const [email, setEmail] = useState('');
-  const [emailStatus, setEmailStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [emailStatus, setEmailStatus] = useState<'idle' | 'loading' | 'error'>('idle');
+  const [emailUnlocked, setEmailUnlocked] = useState(false);
 
   const updateItem =
     (setter: React.Dispatch<React.SetStateAction<LineItem[]>>) => (id: string, amount: number) =>
@@ -306,8 +307,10 @@ export default function LeapCalculator() {
         }).toString(),
       });
       if (res.ok) {
-        setEmailStatus('success');
+        setEmailUnlocked(true);
+        setEmailStatus('idle');
         setEmail('');
+        window.print();
       } else {
         setEmailStatus('error');
       }
@@ -750,22 +753,78 @@ export default function LeapCalculator() {
           <h3 style={{ ...heading, fontSize: 'clamp(1.5rem,4vw,2rem)', marginBottom: '0.5rem' }}>
             Take Your Dashboard With You
           </h3>
-          <p className="mb-6" style={{ color: 'rgba(58,40,26,0.75)' }}>
-            Download a one-page summary of your numbers. No email needed. Choose Save as PDF in the
-            print window.
+          {emailUnlocked ? (
+            <>
+              <p className="mb-6" style={{ color: 'rgba(58,40,26,0.75)' }}>
+                Choose Save as PDF in the print window.
+              </p>
+              <button
+                onClick={handleDownload}
+                className="rounded-full px-10 py-3 text-sm font-semibold transition-all duration-300 hover:scale-[1.03] hover:shadow-md active:scale-[0.98]"
+                style={{
+                  background: GOLD_GRADIENT,
+                  color: ESPRESSO_DEEP,
+                  border: '1.5px solid #2D1A00',
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
+                }}
+              >
+                Download My Dashboard
+              </button>
+            </>
+          ) : (
+            <>
+              <p className="mb-6" style={{ color: 'rgba(58,40,26,0.75)' }}>
+                Your dashboard downloads instantly, and I will send you the free 60-Day Leap Kit
+                to go with your numbers.
+              </p>
+              <form
+                onSubmit={handleEmailSubmit}
+                className="flex flex-col sm:flex-row items-center gap-3 justify-center"
+              >
+                <input
+                  type="email"
+                  required
+                  placeholder="Your email address"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="flex-1 w-full sm:w-64 px-4 py-3 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-[#C9A030]"
+                  style={{
+                    background: '#fff',
+                    border: '1px solid rgba(58,40,26,0.2)',
+                    color: ESPRESSO_DEEP,
+                  }}
+                />
+                <button
+                  type="submit"
+                  disabled={emailStatus === 'loading'}
+                  className="rounded-full px-8 py-3 text-sm font-semibold transition-all duration-300 hover:scale-[1.03] hover:shadow-md active:scale-[0.98] whitespace-nowrap shrink-0"
+                  style={{
+                    background: GOLD_GRADIENT,
+                    color: ESPRESSO_DEEP,
+                    border: '1.5px solid #2D1A00',
+                    boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
+                  }}
+                >
+                  {emailStatus === 'loading' ? 'Sending…' : 'Email Me the Kit and Download'}
+                </button>
+              </form>
+              {emailStatus === 'error' && (
+                <p className="text-red-600 text-xs mt-2">Something went wrong. Please try again.</p>
+              )}
+            </>
+          )}
+          <p className="mt-6 text-sm" style={{ color: 'rgba(58,40,26,0.6)' }}>
+            Ready to talk it through instead?{' '}
+            <a
+              href="https://cal.com/qylat/leap-session"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline"
+              style={{ color: ESPRESSO_DEEP }}
+            >
+              Book a Leap Session.
+            </a>
           </p>
-          <button
-            onClick={handleDownload}
-            className="rounded-full px-10 py-3 text-sm font-semibold transition-all duration-300 hover:scale-[1.03] hover:shadow-md active:scale-[0.98]"
-            style={{
-              background: GOLD_GRADIENT,
-              color: ESPRESSO_DEEP,
-              border: '1.5px solid #2D1A00',
-              boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
-            }}
-          >
-            Download My Dashboard
-          </button>
         </div>
       </section>
 
@@ -823,80 +882,6 @@ export default function LeapCalculator() {
         </p>
       </div>
 
-      {/* Email capture */}
-      <section className="py-16 px-6 text-center print:hidden" style={{ background: CREAM }}>
-        <div className="max-w-lg mx-auto">
-          <h3 style={{ ...heading, fontSize: 'clamp(1.6rem,4vw,2.2rem)', marginBottom: '0.75rem' }}>
-            Want the Plan That Goes With the Numbers?
-          </h3>
-          <p className="mb-6" style={{ color: 'rgba(58,40,26,0.75)' }}>
-            I will send you the free 60-Day Leap Kit, the exact system I used to pack up my life
-            and move to Thailand.
-          </p>
-          {emailStatus === 'success' ? (
-            <p style={{ ...heading, color: ESPRESSO_DEEP, fontSize: '1.2rem' }}>
-              Check your inbox. Your Leap Kit is on its way. Already subscribed or want it
-              now?{' '}
-              <a
-                href="/60-day-leap-plan.pdf"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline"
-                style={{ color: ESPRESSO_DEEP }}
-              >
-                Download it here.
-              </a>
-            </p>
-          ) : (
-            <form
-              onSubmit={handleEmailSubmit}
-              className="flex flex-col sm:flex-row items-center gap-3 justify-center"
-            >
-              <input
-                type="email"
-                required
-                placeholder="Your email address"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="flex-1 w-full sm:w-64 px-4 py-3 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-[#C9A030]"
-                style={{
-                  background: '#fff',
-                  border: '1px solid rgba(58,40,26,0.2)',
-                  color: ESPRESSO_DEEP,
-                }}
-              />
-              <button
-                type="submit"
-                disabled={emailStatus === 'loading'}
-                className="rounded-full px-8 py-3 text-sm font-semibold transition-all duration-300 hover:scale-[1.03] hover:shadow-md active:scale-[0.98] whitespace-nowrap shrink-0"
-                style={{
-                  background: GOLD_GRADIENT,
-                  color: ESPRESSO_DEEP,
-                  border: '1.5px solid #2D1A00',
-                  boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
-                }}
-              >
-                {emailStatus === 'loading' ? 'Sending\u2026' : 'Email Me the Kit'}
-              </button>
-            </form>
-          )}
-          {emailStatus === 'error' && (
-            <p className="text-red-600 text-xs mt-2">Something went wrong. Please try again.</p>
-          )}
-          <p className="mt-6 text-sm" style={{ color: 'rgba(58,40,26,0.6)' }}>
-            Ready to talk it through instead?{' '}
-            <a
-              href="https://cal.com/qylat/leap-session"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline"
-              style={{ color: ESPRESSO_DEEP }}
-            >
-              Book a Leap Session.
-            </a>
-          </p>
-        </div>
-      </section>
     </div>
   );
 }

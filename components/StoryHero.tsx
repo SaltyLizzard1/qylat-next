@@ -16,9 +16,9 @@ export default function StoryHero() {
       />
 
       {/* Dark storm overlay */}
-      <div className="absolute inset-0 bg-black/50" />
+      <div className="absolute inset-0" style={{ background: 'rgba(36,40,38,0.55)' }} />
 
-      {/* Real rain video overlay — black background disappears via screen blend */}
+      {/* Real rain video overlay. Its black background disappears via screen blend on desktop; hidden on mobile where blend modes fail. */}
       <video
         className="storm-rain-video absolute inset-0 w-full h-full object-cover pointer-events-none"
         autoPlay
@@ -53,6 +53,11 @@ export default function StoryHero() {
           opacity: 0;
         }
         @media (prefers-reduced-motion: reduce) {
+          .storm-rain-video {
+            display: none;
+          }
+        }
+        @media (max-width: 1023px) {
           .storm-rain-video {
             display: none;
           }

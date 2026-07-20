@@ -32,7 +32,7 @@ const goldBtn = {
   boxShadow: '0 4px 24px rgba(0,0,0,0.35)',
 } as const;
 
-const DARK_BG = 'linear-gradient(180deg, #0d0d0f 0%, #17140c 50%, #0d0d0f 100%)';
+const DARK_BG = 'linear-gradient(180deg, #242826 0%, #2E3230 50%, #242826 100%)';
 
 export default function StoryPage() {
   return (
