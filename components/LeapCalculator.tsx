@@ -12,6 +12,9 @@ const ESPRESSO = '#3A281A';
 const ESPRESSO_DEEP = '#2D1A00';
 const SAGE = '#EBF0E6';
 const CREAM = '#FBF6E3';
+const MONTHLY_BG = '#D6E2C9';
+const SETUP_BG = '#F0E6C8';
+const NET_CASH_BG = '#E4DED0';
 
 const heading = {
   fontFamily: "'Cormorant Garamond', Georgia, serif",
@@ -173,6 +176,90 @@ function BufferRow({
   );
 }
 
+function shortLabel(label: string): string {
+  return label.split(' (')[0];
+}
+
+function ExpenseList({
+  items,
+  onItemChange,
+  bufferPct,
+  onBufferPctChange,
+  bufferAmount,
+  bufferNote,
+  total,
+  totalLabel,
+  footNote,
+  expanded,
+  onToggle,
+}: {
+  items: LineItem[];
+  onItemChange: (id: string, amount: number) => void;
+  bufferPct: number;
+  onBufferPctChange: (v: number) => void;
+  bufferAmount: number;
+  bufferNote: string;
+  total: number;
+  totalLabel: string;
+  footNote?: string;
+  expanded: boolean;
+  onToggle: () => void;
+}) {
+  const previewCount = 3;
+  const previewNames = items.slice(0, previewCount).map((i) => shortLabel(i.label));
+  const remaining = items.length - previewCount;
+
+  return (
+    <div>
+      <div className="flex items-center justify-between py-4">
+        <span className="font-semibold" style={{ color: ESPRESSO_DEEP }}>
+          {totalLabel}
+        </span>
+        <span className="text-xl font-bold" style={{ color: ESPRESSO_DEEP }}>
+          {currency(total)}
+        </span>
+      </div>
+
+      {!expanded && (
+        <p className="text-xs pb-3" style={{ color: 'rgba(58,40,26,0.6)' }}>
+          {previewNames.join(', ')}
+          {remaining > 0 ? `, and ${remaining} more` : ''}
+        </p>
+      )}
+
+      <button
+        type="button"
+        onClick={onToggle}
+        className="text-sm font-semibold underline underline-offset-4 pb-3"
+        style={{ color: '#8B6914' }}
+      >
+        {expanded ? 'Hide details' : 'See what\u2019s included'}
+      </button>
+
+      {expanded && (
+        <div className="mt-1">
+          {items.map((item) => (
+            <LineItemRow
+              key={item.id}
+              label={item.label}
+              hint={item.hint}
+              value={item.amount}
+              onChange={(v) => onItemChange(item.id, v)}
+            />
+          ))}
+          <BufferRow pct={bufferPct} onPctChange={onBufferPctChange} amount={bufferAmount} note={bufferNote} />
+        </div>
+      )}
+
+      {footNote && (
+        <p className="text-xs pb-4 pt-1" style={{ color: 'rgba(58,40,26,0.55)' }}>
+          {footNote}
+        </p>
+      )}
+    </div>
+  );
+}
+
 function SectionShell({
   eyebrow,
   title,
@@ -239,9 +326,11 @@ export default function LeapCalculator() {
   const [monthlyIncome, setMonthlyIncome] = useState(0);
   const [incomeStartMonth, setIncomeStartMonth] = useState(4);
 
+  const [monthlyExpanded, setMonthlyExpanded] = useState(false);
+  const [setupExpanded, setSetupExpanded] = useState(false);
+
   const [email, setEmail] = useState('');
-  const [emailStatus, setEmailStatus] = useState<'idle' | 'loading' | 'error'>('idle');
-  const [emailUnlocked, setEmailUnlocked] = useState(false);
+  const [emailStatus, setEmailStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
 
   const updateItem =
     (setter: React.Dispatch<React.SetStateAction<LineItem[]>>) => (id: string, amount: number) =>
@@ -307,10 +396,8 @@ export default function LeapCalculator() {
         }).toString(),
       });
       if (res.ok) {
-        setEmailUnlocked(true);
-        setEmailStatus('idle');
+        setEmailStatus('success');
         setEmail('');
-        window.print();
       } else {
         setEmailStatus('error');
       }
@@ -320,7 +407,7 @@ export default function LeapCalculator() {
   };
 
   return (
-    <div className="font-sans">
+    <div className="font-sans" style={hasCash ? { paddingBottom: '92px' } : undefined}>
       {/* Print stylesheet: only the summary prints */}
       <style>{`
         @media print {
@@ -448,35 +535,21 @@ export default function LeapCalculator() {
         eyebrow="The Baseline · Monthly"
         title="What Life in Chiang Mai Costs"
         subtitle="Pre-filled with generous planning numbers from actually living here. Adjust any line to match your style."
-        bg={SAGE}
+        bg={MONTHLY_BG}
       >
-        {monthlyItems.map((item) => (
-          <LineItemRow
-            key={item.id}
-            label={item.label}
-            hint={item.hint}
-            value={item.amount}
-            onChange={(v) => updateItem(setMonthlyItems)(item.id, v)}
-          />
-        ))}
-        <BufferRow
-          pct={monthlyBufferPct}
-          onPctChange={setMonthlyBufferPct}
-          amount={monthlyBuffer}
-          note="Auto-calculated so it cannot be forgotten. Something always costs more than you planned."
+        <ExpenseList
+          items={monthlyItems}
+          onItemChange={updateItem(setMonthlyItems)}
+          bufferPct={monthlyBufferPct}
+          onBufferPctChange={setMonthlyBufferPct}
+          bufferAmount={monthlyBuffer}
+          bufferNote="Auto-calculated so it cannot be forgotten. Something always costs more than you planned."
+          total={totalMonthly}
+          totalLabel="Total monthly cost"
+          footNote="For honesty: my real month runs $1,838. This baseline lands a little above that on purpose. Plan generous, get surprised in the good direction."
+          expanded={monthlyExpanded}
+          onToggle={() => setMonthlyExpanded((v) => !v)}
         />
-        <div className="flex items-center justify-between py-4">
-          <span className="font-semibold" style={{ color: ESPRESSO_DEEP }}>
-            Total monthly cost
-          </span>
-          <span className="text-xl font-bold" style={{ color: ESPRESSO_DEEP }}>
-            {currency(totalMonthly)}
-          </span>
-        </div>
-        <p className="text-xs pb-4" style={{ color: 'rgba(58,40,26,0.55)' }}>
-          For honesty: my real month runs $1,838. This baseline lands a little above that on
-          purpose. Plan generous, get surprised in the good direction.
-        </p>
       </SectionShell>
 
       {/* Setup baseline */}
@@ -484,83 +557,70 @@ export default function LeapCalculator() {
         eyebrow="The Baseline · Getting There"
         title="What Your Arrival Costs"
         subtitle="One-time costs from your front door to settled in Thailand, pre-filled and editable."
-        bg={CREAM}
+        bg={SETUP_BG}
       >
-        {setupItems.map((item) => (
-          <LineItemRow
-            key={item.id}
-            label={item.label}
-            hint={item.hint}
-            value={item.amount}
-            onChange={(v) => updateItem(setSetupItems)(item.id, v)}
-          />
-        ))}
-        <BufferRow
-          pct={setupBufferPct}
-          onPctChange={setSetupBufferPct}
-          amount={setupBuffer}
-          note="Be generous here. Luggage breaks. You end up buying shoes. Visa fees cost more than listed. Something always does."
+        <ExpenseList
+          items={setupItems}
+          onItemChange={updateItem(setSetupItems)}
+          bufferPct={setupBufferPct}
+          onBufferPctChange={setSetupBufferPct}
+          bufferAmount={setupBuffer}
+          bufferNote="Be generous here. Luggage breaks. You end up buying shoes. Visa fees cost more than listed. Something always does."
+          total={totalSetup}
+          totalLabel="Total setup cost"
+          footNote="I spent $2,720 getting here and skipped the buffer. Do not be me."
+          expanded={setupExpanded}
+          onToggle={() => setSetupExpanded((v) => !v)}
         />
-        <div className="flex items-center justify-between py-4">
-          <span className="font-semibold" style={{ color: ESPRESSO_DEEP }}>
-            Total setup cost
-          </span>
-          <span className="text-xl font-bold" style={{ color: ESPRESSO_DEEP }}>
-            {currency(totalSetup)}
-          </span>
-        </div>
-        <p className="text-xs pb-4" style={{ color: 'rgba(58,40,26,0.55)' }}>
-          I spent $2,720 getting here and skipped the buffer. Do not be me.
-        </p>
       </SectionShell>
 
       {/* Net cash summary */}
-      <div className="max-w-2xl mx-auto px-6 -mt-4 mb-2 print:hidden">
-        <div
-          className="rounded-xl px-5 py-4"
-          style={{ background: '#fff', border: '1px solid rgba(58,40,26,0.15)' }}
-        >
-          <div className="flex justify-between py-1 text-[15px]" style={{ color: ESPRESSO }}>
-            <span>Your cash</span>
-            <span>{currency(cash)}</span>
-          </div>
-          {debt > 0 && (
-            <div className="flex justify-between py-1 text-[15px]" style={{ color: ESPRESSO }}>
-              <span>Credit card debt</span>
-              <span>&minus; {currency(debt)}</span>
-            </div>
-          )}
-          <div className="flex justify-between py-1 text-[15px]" style={{ color: ESPRESSO }}>
-            <span>Setup cost</span>
-            <span>&minus; {currency(totalSetup)}</span>
-          </div>
+      <section className="py-10 px-6 print:hidden" style={{ background: NET_CASH_BG }}>
+        <div className="max-w-2xl mx-auto">
           <div
-            className="flex justify-between py-2 mt-1 border-t font-semibold"
-            style={{ borderColor: 'rgba(58,40,26,0.15)', color: ESPRESSO_DEEP }}
+            className="rounded-xl px-5 py-4"
+            style={{ background: '#fff', border: '1px solid rgba(58,40,26,0.15)' }}
           >
-            <span>Net cash for your runway</span>
-            <span>{currency(netCash)}</span>
+            <div className="flex justify-between py-1 text-[15px]" style={{ color: ESPRESSO }}>
+              <span>Your cash</span>
+              <span>{currency(cash)}</span>
+            </div>
+            {debt > 0 && (
+              <div className="flex justify-between py-1 text-[15px]" style={{ color: ESPRESSO }}>
+                <span>Credit card debt</span>
+                <span>&minus; {currency(debt)}</span>
+              </div>
+            )}
+            <div className="flex justify-between py-1 text-[15px]" style={{ color: ESPRESSO }}>
+              <span>Setup cost</span>
+              <span>&minus; {currency(totalSetup)}</span>
+            </div>
+            <div
+              className="flex justify-between py-2 mt-1 border-t font-semibold"
+              style={{ borderColor: 'rgba(58,40,26,0.15)', color: ESPRESSO_DEEP }}
+            >
+              <span>Net cash for your runway</span>
+              <span>{currency(netCash)}</span>
+            </div>
+          </div>
+
+          <div
+            className="mt-4 rounded-xl px-4 py-3 flex gap-2 items-start text-sm"
+            style={{
+              background: '#fff',
+              border: '1px dashed rgba(58,40,26,0.25)',
+              color: 'rgba(58,40,26,0.75)',
+            }}
+          >
+            <Info size={16} className="mt-0.5 shrink-0" />
+            <span>
+              Assets you are keeping, like retirement accounts, property, or investments you do
+              not want to sell, stay out of this math. This is only the money you are actually
+              willing to spend.
+            </span>
           </div>
         </div>
-      </div>
-
-      <div className="max-w-2xl mx-auto px-6 mt-4 mb-2 print:hidden">
-        <div
-          className="rounded-xl px-4 py-3 flex gap-2 items-start text-sm"
-          style={{
-            background: '#fff',
-            border: '1px dashed rgba(58,40,26,0.25)',
-            color: 'rgba(58,40,26,0.75)',
-          }}
-        >
-          <Info size={16} className="mt-0.5 shrink-0" />
-          <span>
-            Assets you are keeping, like retirement accounts, property, or investments you do not
-            want to sell, stay out of this math. This is only the money you are actually willing
-            to spend.
-          </span>
-        </div>
-      </div>
+      </section>
 
       {/* Runway dashboard */}
       <section className="py-16 px-6 print:hidden" style={{ background: DARK_GRADIENT }}>
@@ -753,78 +813,22 @@ export default function LeapCalculator() {
           <h3 style={{ ...heading, fontSize: 'clamp(1.5rem,4vw,2rem)', marginBottom: '0.5rem' }}>
             Take Your Dashboard With You
           </h3>
-          {emailUnlocked ? (
-            <>
-              <p className="mb-6" style={{ color: 'rgba(58,40,26,0.75)' }}>
-                Choose Save as PDF in the print window.
-              </p>
-              <button
-                onClick={handleDownload}
-                className="rounded-full px-10 py-3 text-sm font-semibold transition-all duration-300 hover:scale-[1.03] hover:shadow-md active:scale-[0.98]"
-                style={{
-                  background: GOLD_GRADIENT,
-                  color: ESPRESSO_DEEP,
-                  border: '1.5px solid #2D1A00',
-                  boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
-                }}
-              >
-                Download My Dashboard
-              </button>
-            </>
-          ) : (
-            <>
-              <p className="mb-6" style={{ color: 'rgba(58,40,26,0.75)' }}>
-                Your dashboard downloads instantly, and I will send you the free 60-Day Leap Kit
-                to go with your numbers.
-              </p>
-              <form
-                onSubmit={handleEmailSubmit}
-                className="flex flex-col sm:flex-row items-center gap-3 justify-center"
-              >
-                <input
-                  type="email"
-                  required
-                  placeholder="Your email address"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="flex-1 w-full sm:w-64 px-4 py-3 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-[#C9A030]"
-                  style={{
-                    background: '#fff',
-                    border: '1px solid rgba(58,40,26,0.2)',
-                    color: ESPRESSO_DEEP,
-                  }}
-                />
-                <button
-                  type="submit"
-                  disabled={emailStatus === 'loading'}
-                  className="rounded-full px-8 py-3 text-sm font-semibold transition-all duration-300 hover:scale-[1.03] hover:shadow-md active:scale-[0.98] whitespace-nowrap shrink-0"
-                  style={{
-                    background: GOLD_GRADIENT,
-                    color: ESPRESSO_DEEP,
-                    border: '1.5px solid #2D1A00',
-                    boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
-                  }}
-                >
-                  {emailStatus === 'loading' ? 'Sending…' : 'Email Me the Kit and Download'}
-                </button>
-              </form>
-              {emailStatus === 'error' && (
-                <p className="text-red-600 text-xs mt-2">Something went wrong. Please try again.</p>
-              )}
-            </>
-          )}
-          <p className="mt-6 text-sm" style={{ color: 'rgba(58,40,26,0.6)' }}>
-            Ready to talk it through instead?{' '}
-            <a
-              href="https://cal.com/qylat/leap-session"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline"
-              style={{ color: ESPRESSO_DEEP }}
-            >
-              Book a Leap Session.
-            </a>
+          <p className="mb-6" style={{ color: 'rgba(58,40,26,0.75)' }}>
+            Download a one-page summary of your numbers. No email needed. Choose Save as PDF in the
+            print window.
           </p>
+          <button
+            onClick={handleDownload}
+            className="rounded-full px-10 py-3 text-sm font-semibold transition-all duration-300 hover:scale-[1.03] hover:shadow-md active:scale-[0.98]"
+            style={{
+              background: GOLD_GRADIENT,
+              color: ESPRESSO_DEEP,
+              border: '1.5px solid #2D1A00',
+              boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
+            }}
+          >
+            Download My Dashboard
+          </button>
         </div>
       </section>
 
@@ -882,6 +886,109 @@ export default function LeapCalculator() {
         </p>
       </div>
 
+      {/* Email capture */}
+      <section className="py-16 px-6 text-center print:hidden" style={{ background: CREAM }}>
+        <div className="max-w-lg mx-auto">
+          <h3 style={{ ...heading, fontSize: 'clamp(1.6rem,4vw,2.2rem)', marginBottom: '0.75rem' }}>
+            Want the Plan That Goes With the Numbers?
+          </h3>
+          <p className="mb-6" style={{ color: 'rgba(58,40,26,0.75)' }}>
+            I will send you the free 60-Day Leap Kit, the exact system I used to pack up my life
+            and move to Thailand.
+          </p>
+          {emailStatus === 'success' ? (
+            <p style={{ ...heading, color: ESPRESSO_DEEP, fontSize: '1.2rem' }}>
+              Check your inbox. Your Leap Kit is on its way. Already subscribed or want it
+              now?{' '}
+              <a
+                href="/60-day-leap-plan.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline"
+                style={{ color: ESPRESSO_DEEP }}
+              >
+                Download it here.
+              </a>
+            </p>
+          ) : (
+            <form
+              onSubmit={handleEmailSubmit}
+              className="flex flex-col sm:flex-row items-center gap-3 justify-center"
+            >
+              <input
+                type="email"
+                required
+                placeholder="Your email address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="flex-1 w-full sm:w-64 px-4 py-3 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-[#C9A030]"
+                style={{
+                  background: '#fff',
+                  border: '1px solid rgba(58,40,26,0.2)',
+                  color: ESPRESSO_DEEP,
+                }}
+              />
+              <button
+                type="submit"
+                disabled={emailStatus === 'loading'}
+                className="rounded-full px-8 py-3 text-sm font-semibold transition-all duration-300 hover:scale-[1.03] hover:shadow-md active:scale-[0.98] whitespace-nowrap shrink-0"
+                style={{
+                  background: GOLD_GRADIENT,
+                  color: ESPRESSO_DEEP,
+                  border: '1.5px solid #2D1A00',
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
+                }}
+              >
+                {emailStatus === 'loading' ? 'Sending\u2026' : 'Email Me the Kit'}
+              </button>
+            </form>
+          )}
+          {emailStatus === 'error' && (
+            <p className="text-red-600 text-xs mt-2">Something went wrong. Please try again.</p>
+          )}
+          <p className="mt-6 text-sm" style={{ color: 'rgba(58,40,26,0.6)' }}>
+            Ready to talk it through instead?{' '}
+            <a
+              href="https://cal.com/qylat/leap-session"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline"
+              style={{ color: ESPRESSO_DEEP }}
+            >
+              Book a Leap Session.
+            </a>
+          </p>
+        </div>
+      </section>
+
+      {hasCash && (
+        <div
+          className="print:hidden fixed bottom-0 left-0 right-0 z-40 px-6"
+          style={{
+            background: DARK_GRADIENT,
+            borderTop: '1px solid rgba(232,200,74,0.25)',
+            paddingBottom: 'max(env(safe-area-inset-bottom), 0.75rem)',
+            paddingTop: '0.75rem',
+          }}
+        >
+          <div className="max-w-2xl mx-auto flex items-center justify-between gap-4">
+            {runway.upfront ? (
+              <p className="text-sm" style={{ color: '#F5E070' }}>
+                Setup cost is more than your available cash right now. Adjust the numbers above.
+              </p>
+            ) : (
+              <>
+                <div>
+                  <p style={{ ...heading, color: '#F5E070', fontSize: '1.4rem', lineHeight: 1 }}>
+                    {runway.indefinite ? '36+' : runway.months} months
+                  </p>
+                  <p className="text-xs text-white/60">of runway at {currency(totalMonthly)}/mo</p>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
