@@ -1,9 +1,9 @@
 export const images = {
   day0: '/images/day-0-leaving-office.png',
-  sixtyDay: '/images/plane-ticket-schedule.jpg',
+  sixtyDay: '/images/plane-ticket-schedule.png',
   lettingGo: '/mountainofclothes.jpg',
   sorting: '/mountainofclothes.jpg',
-  baliAtm: '/images/bali-atm.jpg',
+  baliAtm: '/images/bali-atm.png',
   about: '/FB_Pic.jpg',
   hero: '/images/rice-fields.jpg',
   wetWipes: '/images/bathroom-travel-sign.jpg',
