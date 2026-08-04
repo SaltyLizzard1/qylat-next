@@ -16,10 +16,17 @@ export async function POST(req: Request) {
     if (!webhookUrl) {
       return Response.json({ error: 'Webhook not configured' }, { status: 500 });
     }
+    const webhookSecret = process.env.N8N_WEBHOOK_SECRET;
+    if (!webhookSecret) {
+      console.warn('N8N_WEBHOOK_SECRET is not set; sending request without X-Webhook-Secret header');
+    }
 
     const res = await fetch(webhookUrl, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        ...(webhookSecret ? { 'X-Webhook-Secret': webhookSecret } : {}),
+      },
       body: JSON.stringify(body),
       signal: AbortSignal.timeout(175_000),
     });
