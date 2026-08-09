@@ -49,10 +49,35 @@ Body: Inter / system sans
 - Header nav order: My Story, Leap Calculator, Discover Your Idea, Idea To Plan,
   Work With Me, Leap Log
 - Every route gets a `layout.tsx` with full metadata: title, description, canonical,
-  openGraph AND twitter blocks (missing OG metadata is a known past bug class)
+  openGraph AND twitter blocks. See Social previews below; the `images` array is the
+  part that gets forgotten and it fails silently
 - Interactive components are `'use client'`
 - Email capture posts to the existing Kit form: `https://app.kit.com/forms/afc2a0b2d2/subscriptions`
 - Free tools and content always appear before paid offers in page flow
+
+## Social previews (Open Graph)
+
+- `public/images/og-default.jpg` (1200x630) is the social share image.
+  `public/images/rice-fields.jpg` (640x640) is the homepage hero and is preloaded
+  in `app/layout.tsx`. Two separate files on purpose. Never point one at the other,
+  and never overwrite rice-fields.jpg with a wide crop
+- Any route that declares an `openGraph` block MUST include its own `images` array.
+  Next.js merges metadata shallowly, so a child `openGraph` replaces the root one
+  entirely and silently strips the inherited image. This is exactly what broke
+  /calculator: correct-looking metadata, no og:image shipped
+- Same rule for the `twitter` block. Declaring it without `images` leaves no image
+- Always give OG images explicit `width`, `height` and `alt`. Facebook renders the
+  large banner card only at 1200x630 (1.91:1); a square image gets center-cropped
+  and loses the top and bottom of the composition
+- Verify in the Facebook Sharing Debugger, then confirm on a phone. Press
+  "Scrape Again"; the initial Debug only shows the cached copy, which can be weeks
+  old. Facebook caches www and non-www as separate entries, so scrape both
+- NEVER diagnose OG problems in the Messenger panel inside Facebook desktop. It
+  shows domain text with no card even when metadata is correct and other surfaces
+  render fine. It has already cost one full debugging session
+- Share direct URLs only. Google's native share button wraps links in a
+  `share.google` redirect, which breaks previews
+- The debugger's missing `fb:app_id` warning is harmless. Ignore it
 
 ## Workflow
 
