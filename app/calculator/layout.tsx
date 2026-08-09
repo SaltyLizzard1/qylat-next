@@ -16,10 +16,10 @@ export const metadata: Metadata = {
     type: 'website',
     images: [
       {
-        url: 'https://www.quityourlifeandtravel.com/images/rice-fields.jpg',
-        width: 640,
-        height: 640,
-        alt: 'Rice fields in Thailand',
+        url: 'https://www.quityourlifeandtravel.com/images/og-default.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Rice terraces at sunset in northern Thailand',
       },
     ],
   },
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     title: 'Leap Runway Calculator | Quit Your Life and Travel',
     description:
       'Plug in your real numbers and find out exactly how many months of runway you have. Free. No email required.',
-    images: ['https://www.quityourlifeandtravel.com/images/rice-fields.jpg'],
+    images: ['https://www.quityourlifeandtravel.com/images/og-default.jpg'],
   },
 };
 

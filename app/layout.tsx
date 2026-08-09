@@ -29,14 +29,23 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'How to Move Abroad and Build a Location-Independent Life | QYLAT',
     description: 'Your mind tells you too old, too broke, too scared. It\'s lying. The life you\'ve always wanted is there, waiting for you. Here\'s how to build it.',
-    images: ['https://www.quityourlifeandtravel.com/images/rice-fields.jpg'],
+    url: 'https://www.quityourlifeandtravel.com',
+    siteName: 'Quit Your Life and Travel',
     type: 'website',
+    images: [
+      {
+        url: 'https://www.quityourlifeandtravel.com/images/og-default.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Rice terraces at sunset in northern Thailand',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'How to Move Abroad and Build a Location-Independent Life | QYLAT',
     description: 'Your mind tells you too old, too broke, too scared. It\'s lying. The life you\'ve always wanted is there, waiting for you. Here\'s how to build it.',
-    images: ['https://www.quityourlifeandtravel.com/images/rice-fields.jpg'],
+    images: ['https://www.quityourlifeandtravel.com/images/og-default.jpg'],
   },
 };
 
