@@ -9,15 +9,14 @@ const GOLD_LIGHT = '#F5E070';
 
 // Logo silhouette, short to tall, left to right.
 const BAR_MAX = [30, 46, 62];
-const BAR_MIN = [4, 6, 8];
 
-// Progress never passes this on the timer alone. Only a real
-// completion takes it to 100. A bar that fills to 100 while the
-// request is still open is a lie, and people notice.
+// Progress never passes this on the timer alone. Only a real completion
+// takes it to 100. A bar that fills to 100 while the request is still
+// open is a lie, and people notice.
 const CAP = 90;
 
-// How far the star overlaps into the top of the tallest bar.
-const STAR_OVERLAP = 8;
+// Star clearance above the tallest bar.
+const STAR_LIFT = 6;
 
 const STAGES: Array<[string, string]> = [
   ['Reading your answers', 'This takes about 60 to 90 seconds'],
@@ -32,8 +31,9 @@ type Props = {
   /** Typical run time in ms. Stages are paced across this. */
   expectedMs?: number;
   /**
-   * Set true when the real response arrives. The bars complete and the
-   * star lands. Leave undefined if the parent simply unmounts instead.
+   * Set true when the real response arrives. The bars settle into the
+   * logo and the star lands. Give it roughly 900ms before switching
+   * away so the moment is visible.
    */
   isComplete?: boolean;
   /** Override the stage copy. */
@@ -76,27 +76,19 @@ export default function AssessmentLoader({
     return () => clearInterval(tick);
   }, [expectedMs, isComplete, stages.length]);
 
-  // Let the bars finish their transition before the star lands.
+  // Let the bars settle before the star lands.
   useEffect(() => {
     if (!isComplete) {
       setStarIn(false);
       return;
     }
-    const id = setTimeout(() => setStarIn(true), 400);
+    const id = setTimeout(() => setStarIn(true), 450);
     return () => clearTimeout(id);
   }, [isComplete]);
 
   const progress = isComplete ? 100 : pct;
-  const fraction = Math.max(0, Math.min(1, progress / 100));
-
-  // All three bars grow together so the ascending logo shape holds
-  // at every moment rather than assembling only at the end.
-  const barHeight = (i: number) =>
-    Math.round(BAR_MIN[i] + (BAR_MAX[i] - BAR_MIN[i]) * fraction);
-
   const heading = isComplete ? 'Your results are ready' : stages[stageIndex][0];
   const sub = isComplete ? '' : overrun ? OVERRUN_NOTE : stages[stageIndex][1];
-
   const barColors = [GOLD_DEEP, GOLD_MID, GOLD_BRIGHT];
 
   return (
@@ -113,16 +105,24 @@ export default function AssessmentLoader({
       }}
     >
       <style>{`
-        @keyframes qylBreathe {
-          0%, 100% { opacity: 0.78; }
-          50% { opacity: 1; }
-        }
+        /* Each bar oscillates within its own band around its logo
+           height, so the ascending silhouette holds at every frame. */
+        @keyframes qylPulse1 { 0%, 100% { height: 17px; } 50% { height: 30px; } }
+        @keyframes qylPulse2 { 0%, 100% { height: 25px; } 50% { height: 46px; } }
+        @keyframes qylPulse3 { 0%, 100% { height: 34px; } 50% { height: 62px; } }
         @keyframes qylShine {
           0%, 100% { filter: drop-shadow(0 0 2px rgba(245, 224, 112, 0.9)); }
           50% { filter: drop-shadow(0 0 10px rgba(245, 224, 112, 1)); }
         }
+        .qyl-bar-1 { animation: qylPulse1 1.5s ease-in-out infinite; }
+        .qyl-bar-2 { animation: qylPulse2 1.5s ease-in-out 0.18s infinite; }
+        .qyl-bar-3 { animation: qylPulse3 1.5s ease-in-out 0.36s infinite; }
+        .qyl-settled {
+          animation: none !important;
+          transition: height 0.5s cubic-bezier(0.34, 1.4, 0.64, 1);
+        }
         @media (prefers-reduced-motion: reduce) {
-          .qyl-bar { animation: none !important; opacity: 1 !important; }
+          .qyl-bar-1, .qyl-bar-2, .qyl-bar-3 { animation: none !important; }
           .qyl-star { animation: none !important; }
         }
       `}</style>
@@ -133,31 +133,25 @@ export default function AssessmentLoader({
           display: 'flex',
           alignItems: 'flex-end',
           gap: '8px',
-          height: '88px',
+          height: '100px',
         }}
       >
         {barColors.map((color, i) => {
           const bar = (
             <div
               key={i}
-              className="qyl-bar"
+              className={`qyl-bar-${i + 1}${isComplete ? ' qyl-settled' : ''}`}
               style={{
                 display: 'block',
                 width: '15px',
                 borderRadius: '2px',
                 background: color,
-                height: `${barHeight(i)}px`,
-                transition: 'height 0.9s cubic-bezier(0.4, 0, 0.2, 1)',
-                animation: isComplete
-                  ? 'none'
-                  : `qylBreathe 2s ease-in-out ${i * 0.25}s infinite`,
-                opacity: isComplete ? 1 : undefined,
+                ...(isComplete ? { height: `${BAR_MAX[i]}px` } : null),
               }}
             />
           );
 
-          // The star belongs to the tallest bar, so it is nested with it
-          // and tracks the top edge as that bar grows.
+          // The star belongs to the tallest bar, so it is nested with it.
           if (i !== barColors.length - 1) return bar;
 
           return (
@@ -169,14 +163,14 @@ export default function AssessmentLoader({
                   position: 'absolute',
                   left: '50%',
                   marginLeft: '-13px',
-                  bottom: `${barHeight(2) - STAR_OVERLAP}px`,
+                  bottom: `${BAR_MAX[2] + STAR_LIFT}px`,
                   opacity: starIn ? 1 : 0,
                   transform: starIn
                     ? 'scale(1) rotate(0deg)'
                     : 'scale(0.2) rotate(-50deg)',
                   transformOrigin: 'center',
                   transition:
-                    'opacity 0.45s ease-out, transform 0.65s cubic-bezier(0.34, 1.56, 0.64, 1), bottom 0.9s cubic-bezier(0.4, 0, 0.2, 1)',
+                    'opacity 0.45s ease-out, transform 0.65s cubic-bezier(0.34, 1.56, 0.64, 1)',
                   animation: starIn ? 'qylShine 2.4s ease-in-out infinite' : 'none',
                   pointerEvents: 'none',
                 }}
