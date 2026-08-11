@@ -23,7 +23,7 @@ export default function TermsPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
-      <main className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
+      <main className="max-w-3xl mx-auto px-4 sm:px-6 pt-6 pb-12">
         <h1 className="font-cormorant text-4xl md:text-5xl font-bold text-gray-900 mb-2">Terms of Service</h1>
         <p className="text-sm text-gray-500 mb-10">Effective date: {EFFECTIVE_DATE}</p>
 

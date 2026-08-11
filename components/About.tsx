@@ -9,7 +9,7 @@ export default function About() {
       id="about"
       className="scroll-mt-28 bg-white border-t border-gray-100 pb-6 md:pb-8"
     >
-      <div className="max-w-2xl mx-auto px-6 pt-10 md:pt-12 text-center">
+      <div className="max-w-2xl mx-auto px-6 pt-6 text-center">
         <Image
           src={images.about}
           alt="Liz"

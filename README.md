@@ -247,7 +247,7 @@ All sections share these values — do not deviate without updating all sections
 |---|---|
 | **n8n instance** | `n8n.ideatoplan.to` — both sites POST to workflows here |
 | **Skills Matcher workflow** | ID `FFl62g1qFu7hf8Dd` — identical webhook URL in both `/api/quiz` routes |
-| **Supabase project** | `yglmlnfsyzsvozxirlpo` — both write `quiz_submissions`, `trend_cache` |
+| **Supabase project** | `yglmlnfsyzsvozxirlpo` — shared project; sites write separate tables (see Supabase Tables section) |
 | **Kit account** | Same ConvertKit account; quiz form ID is the same |
 | **IdeaToPlan logo file** | Copied from `ideatoplan2/logos/export/png/logo-2048.png` into QYLAT's `/public/ideatoplan-logo.png` |
 
@@ -287,13 +287,16 @@ Both sites have a `/quiz` page connected to the same n8n workflow. Key differenc
 
 ## Supabase Tables
 
-| Table | Written by | Read by | Purpose |
-|---|---|---|---|
-| `quiz_submissions` | n8n (service role) | — | Logs every quiz submission for analytics |
-| `trend_cache` | n8n (service role) | n8n (anon) | Caches Perplexity trend data hourly |
-| `idea_submissions` | n8n (service role) | — | Logs IdeaToPlan form submissions |
+Supabase project `yglmlnfsyzsvozxirlpo` is shared by QYLAT and IdeaToPlan. Both sites write `quiz_results`, distinguished by a `site` column. The remaining tables are each written by only one app. RLS is enabled on all six tables.
 
-RLS is enabled on all tables. Service role can write; anon can only read `trend_cache`.
+| Table | Written by | Access posture |
+|---|---|---|
+| `quiz_results` | QYLAT and IdeaToPlan apps (service role), tagged by `site` column | RLS on, no policies (service-role only) |
+| `stripe_redemptions` | IdeaToPlan app (service role) | RLS on, no policies (service-role only) |
+| `rate_limits` | IdeaToPlan app (service role) | RLS on, no policies (service-role only) |
+| `idea_submissions` | n8n (service role) | analytics log, not read by site code |
+| `quiz_submissions` | n8n (service role) | analytics log, not read by site code |
+| `trend_cache` | n8n Trend Cache Refresher (service role) | RLS on, public-read policy; read by QYLAT |
 
 ---
 

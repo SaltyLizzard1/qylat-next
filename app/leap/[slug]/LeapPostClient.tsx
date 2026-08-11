@@ -79,7 +79,7 @@ export default function LeapPostClient({ slug, initialPost }: { slug: string; in
 
   return (
     <div className="min-h-screen" style={{ background: '#FBF6E3' }}>
-      <div className="max-w-4xl mx-auto px-4 py-8">
+      <div className="max-w-4xl mx-auto px-4 pt-4 pb-8">
         <a
           href="/#the-leap-log"
           className="inline-flex items-center gap-1.5 text-sm hover:opacity-70 transition-opacity mb-6"

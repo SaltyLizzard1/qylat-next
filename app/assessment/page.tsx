@@ -288,6 +288,7 @@ export default function QuizPage() {
   const [matches, setMatches] = useState<Match[]>([]);
   const [resultId, setResultId] = useState<string | undefined>(undefined);
   const [error, setError] = useState('');
+  const [loaderComplete, setLoaderComplete] = useState(false);
 
   const [email, setEmail] = useState('');
   const [emailLoading, setEmailLoading] = useState(false);
@@ -325,6 +326,7 @@ export default function QuizPage() {
   async function submitQuiz() {
     setStage('loading');
     setError('');
+    setLoaderComplete(false);
 
     try {
       const webhookUrl = '/api/quiz';
@@ -350,7 +352,8 @@ export default function QuizPage() {
 
       setMatches(parsed);
       if (data.resultId) setResultId(data.resultId);
-      setStage('results');
+      setLoaderComplete(true);
+      setTimeout(() => setStage('results'), 900);
     } catch (err) {
       if (process.env.NODE_ENV === 'development') console.error('Quiz error:', err);
       setError('Something went wrong fetching your results. Please try again.');
@@ -540,7 +543,7 @@ export default function QuizPage() {
             style={{ background: GOLD_GRADIENT }}
           />
           <div className="relative w-full max-w-sm">
-            <AssessmentLoader expectedMs={75000} />
+            <AssessmentLoader expectedMs={75000} isComplete={loaderComplete} />
           </div>
         </div>
         <Footer />

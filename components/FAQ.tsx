@@ -128,7 +128,7 @@ export default function FAQ() {
   return (
     <section
       id="faq"
-      className="scroll-mt-28 relative overflow-hidden py-12 md:py-14 px-6"
+      className="scroll-mt-28 relative overflow-hidden pt-6 pb-12 md:pb-14 px-6"
       style={{ background: '#EBF0E6' }}
     >
       <div

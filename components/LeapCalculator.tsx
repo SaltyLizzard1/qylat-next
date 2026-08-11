@@ -424,7 +424,7 @@ export default function LeapCalculator() {
       `}</style>
 
       {/* Hero + the one question */}
-      <section className="py-16 px-6 text-center print:hidden" style={{ background: CREAM }}>
+      <section className="pt-6 pb-16 px-6 text-center print:hidden" style={{ background: CREAM }}>
         <span
           className="inline-block text-xs font-semibold uppercase tracking-[0.2em] px-4 py-1.5 rounded-full mb-6"
           style={{ background: ESPRESSO, color: CREAM }}
