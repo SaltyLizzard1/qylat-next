@@ -221,7 +221,7 @@ export default function IdeaToPlan() {
 
           {/* CTA */}
           <a
-            href="https://ideatoplan.to"
+            href="https://ideatoplan.to/#pricing"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-block font-sans rounded-full px-12 py-4 text-lg font-semibold transition-all duration-300 hover:scale-[1.03] hover:shadow-md active:scale-[0.98] min-w-[260px] text-center"
