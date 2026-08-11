@@ -18,6 +18,98 @@ and the top of the funnel that feeds IdeaToPlan (ideatoplan.to, separate repo).
 - Deployed on Vercel Hobby plan: cron jobs limited to once daily
 - No new dependencies without asking. Charts and visuals are pure CSS/JSX
 
+## Shared infrastructure with IdeaToPlan
+
+QYLAT shares two things with the IdeaToPlan repo (`ideaToPlan2`): one Supabase
+project (`yglmlnfsyzsvozxirlpo`, Postgres 17, free tier) and one self-hosted n8n
+instance (`n8n.ideatoplan.to`, Docker on a DigitalOcean droplet at
+157.245.10.179).
+
+A change here can break IdeaToPlan. Before touching anything that talks to
+Supabase or n8n, consider the other repo.
+
+**Both repos contain a file called `components/IdeaToPlan.tsx` and they are
+entirely different files.** QYLAT's is the marketing section with the "Share Your
+Idea" CTA. IdeaToPlan's is the paid submission form. Confirm which repo is open
+before editing or reporting on that filename.
+
+## n8n webhooks require authentication
+
+The n8n webhooks enforce a header at the router, before any workflow node runs.
+Any code calling them must send:
+
+```
+X-Webhook-Secret: <process.env.N8N_WEBHOOK_SECRET>
+```
+
+Without it the request gets 403. Paths: `quiz-match-v2` (QYLAT and IdeaToPlan
+both call this), `idea-submission-v2`, `site-alert-v1`.
+
+QYLAT's caller is `app/api/quiz/route.ts`, using a conditional spread so a
+missing env var degrades to a `console.warn` rather than a throw.
+
+`N8N_WEBHOOK_SECRET` must be set in Vercel for **Production and Preview**. Env
+var changes need a **fresh deploy from the latest commit**, not the Redeploy
+button on an older deployment, which rebuilds the old commit.
+
+`quiz-match-v2` has a second webhook node for CORS preflight (OPTIONS) with
+authentication deliberately off, because browsers cannot send custom auth headers
+on a preflight. Do not add auth to that node.
+
+## n8n version and deployment
+
+Running `n8nio/n8n:2.20.9`, pinned deliberately, bound to `127.0.0.1:5678`,
+`--restart unless-stopped`. Roughly 13 minors behind. Do not suggest `latest` and
+do not upgrade without a droplet snapshot first. Stay on 2.x, since v3.0 has
+breaking changes.
+
+No docker-compose file exists. The full `docker run` command is recorded only in
+the project notes.
+
+n8n distinguishes draft from published. Node changes require Save **and**
+Publish, and the two can differ silently. Workflow settings (Error Workflow,
+timezone, caller policy) are the exception and apply immediately on save.
+
+## Supabase
+
+- QYLAT writes `quiz_results` and reads `trend_cache` and `rate_limits` via the
+  **service role key over the REST API** (`lib/supabase.ts`). That key reaches
+  all six tables in the shared project, including IdeaToPlan's payment records,
+  so treat it accordingly
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` exists in the environment. Anything
+  `NEXT_PUBLIC_` is inlined into the client bundle if referenced in client code,
+  so do not introduce a browser-side Supabase client without first checking what
+  RLS actually permits for `anon`
+- Rate limiting goes through the `check_rate_limit` RPC, granted to
+  `service_role` only. Do not re-grant to `anon` or `authenticated`
+- An event trigger (`ensure_rls`) automatically enables RLS on any new table
+  created in `public`. It adds no policies, so a new table is immediately locked
+  to `service_role` until policies are written. Expect this rather than treating
+  it as a bug
+- Rate limit keys must stay **route-prefixed**. QYLAT uses `qylat-quiz:`;
+  IdeaToPlan uses `quiz:`, `submit-idea:`, `verify-payment:`, `subscribe:`.
+  Dropping the prefix would let QYLAT traffic lock users out of IdeaToPlan's paid
+  submission path
+- The QYLAT quiz limiter **fails closed** (an RPC error returns 429) and does not
+  alert. IdeaToPlan's fails open with a `notify()` call. Deliberate divergence,
+  unresolved
+- Free tier includes **no automated backups**. Nightly `pg_dump` runs on the
+  droplet at 03:15 UTC to Cloudflare R2. Do not assume a restore point exists
+  beyond that
+- Supabase's direct connection host is IPv6 only. Anything connecting from IPv4
+  must use the Session pooler with user `postgres.yglmlnfsyzsvozxirlpo`
+
+## Monitoring
+
+Three UptimeRobot HTTP monitors at 5-minute intervals cover `ideatoplan.to`,
+`n8n.ideatoplan.to`, and `quityourlifeandtravel.com`.
+
+`app/api/cron/health/route.ts` runs daily at 07:00 UTC per `vercel.json`, gated
+by `CRON_SECRET`, and alerts via Resend from
+`noreply@send.quityourlifeandtravel.com`. It HEADs the n8n webhooks and treats
+404 as dead, 405 as alive. It only checks that a webhook path is registered, not
+that executions succeed, so a workflow can fail every run while this stays green.
+
 ## Brand tokens (defined inline per component, not in a shared file)
 
 Gold gradient: linear-gradient(135deg, #8B6914 0%, #E8C84A 35%, #F5E070 55%, #C9A030 75%, #8B6914 100%)
@@ -32,7 +124,8 @@ Body: Inter / system sans
 
 ## Copy rules (apply to ALL text: page copy, UI labels, alt text, comments in copy)
 
-- NEVER use em dashes anywhere. Use commas, periods, colons, or the word "and"
+- NEVER use em dashes anywhere. Use commas, periods, colons, or the word "and".
+  This applies to code, comments and commit messages too, not just page copy
 - Site copy is prose, not bullet points
 - Founder voice: first person, direct, positive and forward-looking, never raw or grief-focused
 - Liz's timeline always reads "six years" - do not vary it
@@ -79,7 +172,19 @@ Body: Inter / system sans
   `share.google` redirect, which breaks previews
 - The debugger's missing `fb:app_id` warning is harmless. Ignore it
 
+## Environment
+
+- Windows and PowerShell. Use `curl.exe` not `curl`, since `curl` is an alias for
+  `Invoke-WebRequest` and takes different arguments. Backtick, not backslash, for
+  line continuation. Use `-LiteralPath` for Next.js dynamic route files, since
+  square brackets are wildcards without it
+- Passwords and secrets containing `@` break URI-style connection strings, since
+  the parser splits on the last `@`. Use separate variables rather than a URI
+
 ## Workflow
 
 - For any multi-file or structural change, propose a plan first and wait for approval
 - Keep diffs reviewable: one concern per change
+- Deliver website work as paste-ready prompts with complete files, not FROM/TO snippets
+- Stage only relevant files per commit. New untracked files need a separate
+  `git add`, since `git commit -a` omits them
