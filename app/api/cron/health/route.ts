@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
-const ALERT_TO = 'liz@quityourlifeandtravel.com';
+const ALERT_TO = 'liz@ideatoplan.to';
 const ALERT_FROM = 'noreply@send.quityourlifeandtravel.com';
 
 // Max age for the trend cache before we consider it stale.
