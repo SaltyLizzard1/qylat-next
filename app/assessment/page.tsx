@@ -3,6 +3,7 @@
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import ShareButtons from '@/components/ShareButtons';
+import AssessmentLoader from '@/components/AssessmentLoader';
 import { useState, useEffect, useRef } from 'react';
 import { ArrowLeft, ArrowRight, Sparkles } from 'lucide-react';
 
@@ -103,17 +104,6 @@ const WORK_STYLE_PAIRS = [
 
 const HOURS_OPTIONS = ['<5', '5–10', '10–20', '20–30', '30+'];
 const INCOME_OPTIONS = ['$500–$1,000', '$1,000–$2,500', '$2,500–$5,000', '$5,000–$10,000', '$10,000+'];
-
-const LOADING_MESSAGES = [
-  'Reading your skills and strengths...',
-  'Mapping them to online work that fits your life...',
-  'Checking which markets are crowded and which are open...',
-  'Finding your unique angle in each one...',
-  'Writing your personalised first steps...',
-  'Almost there — putting it all together...',
-];
-
-const LOADING_DURATION_MS = 75000;
 
 const GOLD_GRADIENT =
   'linear-gradient(135deg, #8B6914 0%, #E8C84A 35%, #F5E070 55%, #C9A030 75%, #8B6914 100%)';
@@ -295,8 +285,6 @@ export default function QuizPage() {
     incomeTarget: '',
   });
 
-  const [loadingMsgIndex, setLoadingMsgIndex] = useState(0);
-  const [progress, setProgress] = useState(0);
   const [matches, setMatches] = useState<Match[]>([]);
   const [resultId, setResultId] = useState<string | undefined>(undefined);
   const [error, setError] = useState('');
@@ -305,27 +293,6 @@ export default function QuizPage() {
   const [emailLoading, setEmailLoading] = useState(false);
   const [emailError, setEmailError] = useState('');
   const topRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (stage !== 'loading') {
-      setLoadingMsgIndex(0);
-      setProgress(0);
-      return;
-    }
-    const start = Date.now();
-    const id = setInterval(() => {
-      const elapsed = Date.now() - start;
-      const pct = Math.min(95, (elapsed / LOADING_DURATION_MS) * 95);
-      setProgress(pct);
-      const msgStep = LOADING_MESSAGES.length - 1;
-      const idx = Math.min(
-        msgStep,
-        Math.floor((elapsed / LOADING_DURATION_MS) * msgStep)
-      );
-      setLoadingMsgIndex(idx);
-    }, 200);
-    return () => clearInterval(id);
-  }, [stage]);
 
   useEffect(() => {
     topRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -572,19 +539,8 @@ export default function QuizPage() {
             className="pointer-events-none absolute -bottom-16 -left-16 w-64 h-64 rounded-full opacity-10"
             style={{ background: GOLD_GRADIENT }}
           />
-          <div className="relative text-center max-w-sm w-full">
-            <p className="text-lg font-semibold text-gray-800 transition-all duration-500 min-h-[3.5rem] flex items-center justify-center">
-              {LOADING_MESSAGES[loadingMsgIndex]}
-            </p>
-            <div className="w-full h-2 bg-gray-200 rounded-full mt-4 overflow-hidden">
-              <div
-                className="h-full rounded-full transition-all duration-300 ease-out"
-                style={{ width: `${progress}%`, backgroundImage: GOLD_GRADIENT }}
-              />
-            </div>
-            <p className="text-sm text-gray-500 mt-3">
-              This takes about 60–90 seconds — we&apos;re building something tailored to you
-            </p>
+          <div className="relative w-full max-w-sm">
+            <AssessmentLoader expectedMs={75000} />
           </div>
         </div>
         <Footer />
@@ -700,7 +656,9 @@ export default function QuizPage() {
                   turns your match into a clear, professional business plan.
                 </p>
                 <a
-                  href="/#idea-to-plan"
+                  href="https://ideatoplan.to/#pricing"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="inline-block px-8 py-3 font-semibold rounded-lg transition-all hover:brightness-105"
                   style={GOLD_BUTTON_STYLE}
                 >
@@ -730,7 +688,7 @@ export default function QuizPage() {
           className="pointer-events-none absolute -bottom-16 -left-16 w-64 h-64 rounded-full opacity-10"
           style={{ background: GOLD_GRADIENT }}
         />
-        <div ref={topRef} className="max-w-xl mx-auto px-4 py-10">
+        <div ref={topRef} className="max-w-xl mx-auto px-4 pt-6 pb-10">
           <h1
             className="mb-2 text-center"
             style={{
