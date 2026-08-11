@@ -29,7 +29,7 @@ export default function DiscoverYourIdea() {
 
         {/* Eyebrow badge */}
         <span
-          className="inline-block font-sans text-xs font-semibold uppercase tracking-[0.2em] px-4 py-1.5 rounded-full mb-6"
+          className="inline-block font-sans text-xs font-semibold uppercase tracking-[0.2em] pl-4 pr-[calc(1rem-0.2em)] py-1.5 rounded-full mb-6"
           style={{
             background: '#3A281A',
             color: '#FBF6E3',
