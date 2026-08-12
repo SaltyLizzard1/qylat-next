@@ -14,7 +14,7 @@ export default function LeapCalculatorTeaser() {
   return (
     <section
       id="leap-calculator"
-      className="relative overflow-hidden py-20 px-6"
+      className="scroll-mt-28 relative overflow-hidden py-20 px-6"
       style={{ background: '#FBF6E3' }}
     >
       <div
