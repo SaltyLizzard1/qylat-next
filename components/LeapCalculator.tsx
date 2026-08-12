@@ -466,7 +466,7 @@ export default function LeapCalculator() {
               type="number"
               inputMode="numeric"
               min="0"
-              placeholder="Cash you are willing to spend"
+              placeholder="Spendable cash"
               value={cash === 0 ? '' : cash}
               onChange={(e) => setCash(e.target.value === '' ? 0 : Number(e.target.value))}
               className="flex-1 min-w-0 rounded-xl px-4 py-3 text-xl focus:outline-none focus:ring-2 focus:ring-[#C9A030]"

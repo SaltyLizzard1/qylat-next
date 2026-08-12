@@ -207,3 +207,5 @@ Body: Inter / system sans
 - Deliver website work as paste-ready prompts with complete files, not FROM/TO snippets
 - Stage only relevant files per commit. New untracked files need a separate
   `git add`, since `git commit -a` omits them
+
+Scroll Behavior:  scrollToSectionById must measure targets via the offsetTop chain, never getBoundingClientRect, because Framer Motion entrance animations translate sections 24px until first viewed.
