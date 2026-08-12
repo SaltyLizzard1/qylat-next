@@ -34,7 +34,7 @@ export async function POST(req: Request) {
     const text = await res.text();
     if (!res.ok) {
       console.error('n8n quiz webhook error:', res.status, text);
-      return Response.json({ error: `Upstream error: ${res.status}`, detail: text }, { status: 502 });
+      return Response.json({ error: 'Something went wrong generating your results. Please try again.' }, { status: 502 });
     }
 
     let data: unknown;
@@ -42,7 +42,7 @@ export async function POST(req: Request) {
       data = JSON.parse(text);
     } catch {
       console.error('n8n response was not JSON:', text);
-      return Response.json({ error: 'Invalid response from workflow', detail: text }, { status: 502 });
+      return Response.json({ error: 'Something went wrong generating your results. Please try again.' }, { status: 502 });
     }
 
     const matches = Array.isArray(data) ? data : (data as Record<string, unknown>).matches ?? (data as Record<string, unknown>).result ?? [];
@@ -70,7 +70,7 @@ export async function POST(req: Request) {
 
     let resultId: string | undefined;
     try {
-      if (!safeToStore) throw new Error('Matches failed validation — skipping persistence');
+      if (!safeToStore) throw new Error('Matches failed validation, skipping persistence');
       const { supabase } = await import('../../../lib/supabase');
       const id = crypto.randomUUID().replace(/-/g, '').slice(0, 12);
       const { error } = await supabase.from('quiz_results').insert({ id, matches, site: 'qylat' });
@@ -90,6 +90,6 @@ export async function POST(req: Request) {
     return Response.json(responsePayload);
   } catch (err) {
     console.error('Quiz API error:', err);
-    return Response.json({ error: 'Internal error', detail: String(err) }, { status: 500 });
+    return Response.json({ error: 'Internal error' }, { status: 500 });
   }
 }
