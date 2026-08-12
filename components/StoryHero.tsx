@@ -6,7 +6,7 @@ const headingFont = { fontFamily: "'Cormorant Garamond', Georgia, serif" };
 
 export default function StoryHero() {
   return (
-    <section className="relative h-[70vh] min-h-[500px] w-full overflow-hidden">
+    <section className="relative h-[55vh] min-h-[340px] md:h-[70vh] md:min-h-[500px] w-full overflow-hidden">
       <Image
         src="/My Story/traffic.png"
         alt="Bumper to bumper morning commute"

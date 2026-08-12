@@ -469,7 +469,7 @@ export default function LeapCalculator() {
               placeholder="Cash you are willing to spend"
               value={cash === 0 ? '' : cash}
               onChange={(e) => setCash(e.target.value === '' ? 0 : Number(e.target.value))}
-              className="flex-1 rounded-xl px-4 py-3 text-xl focus:outline-none focus:ring-2 focus:ring-[#C9A030]"
+              className="flex-1 min-w-0 rounded-xl px-4 py-3 text-xl focus:outline-none focus:ring-2 focus:ring-[#C9A030]"
               style={{
                 background: CREAM,
                 border: '1px solid rgba(58,40,26,0.2)',
@@ -921,7 +921,7 @@ export default function LeapCalculator() {
                 placeholder="Your email address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="flex-1 w-full sm:w-64 px-4 py-3 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-[#C9A030]"
+                className="flex-1 min-w-0 w-full sm:w-64 px-4 py-3 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-[#C9A030]"
                 style={{
                   background: '#fff',
                   border: '1px solid rgba(58,40,26,0.2)',

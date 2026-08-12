@@ -98,7 +98,7 @@ export default function Footer() {
           </div>
 
           {/* Right: newsletter form, then social icons */}
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 min-w-0">
             <FooterNewsletter />
             <div className="flex space-x-3 justify-center">
               <a href="https://www.instagram.com/liz_alfond/" target="_blank" rel="noopener noreferrer"

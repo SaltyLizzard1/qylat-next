@@ -18,6 +18,25 @@ and the top of the funnel that feeds IdeaToPlan (ideatoplan.to, separate repo).
 - Deployed on Vercel Hobby plan: cron jobs limited to once daily
 - No new dependencies without asking. Charts and visuals are pure CSS/JSX
 
+## Component naming: story sections
+
+- `components/StoryTeaser.tsx` is the dark commute block on the HOMEPAGE.
+  On mobile the text block renders first and the photo second (order-1/order-2
+  swap at lg). Mobile padding is py-8, desktop py-16.
+- `components/StoryHero.tsx` is the storm hero at the top of the /STORY page
+  (rain video, lightning). Mobile height is 55vh with a 340px floor; desktop
+  is 70vh with a 500px floor.
+- These are different files on different pages. Never assume "story teaser"
+  means /story. Confirm which page before editing.
+
+## Mobile overflow rule
+
+- Any input inside a flex row must include min-w-0 or it will refuse to
+  shrink and push the layout past the screen edge on small phones.
+- Grid children that contain flex rows (like the footer newsletter column)
+  need min-w-0 for the same reason. Verified fix pattern in Footer.tsx and
+  LeapCalculator.tsx, August 2026.
+
 ## Shared infrastructure with IdeaToPlan
 
 QYLAT shares two things with the IdeaToPlan repo (`ideaToPlan2`): one Supabase
