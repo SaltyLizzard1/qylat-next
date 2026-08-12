@@ -3,7 +3,7 @@ export const SITE_HEADER_ID = 'site-header';
 
 function headerBufferPx(): number {
   if (typeof window === 'undefined') return 0;
-  return window.innerWidth < 768 ? 28 : 0;
+  return window.innerWidth < 768 ? 4 : 0;
 }
 
 /**
