@@ -160,7 +160,7 @@ export default function IdeaToPlan() {
     <>
       <section
         id="idea-to-plan"
-        className="scroll-mt-28 relative overflow-hidden pt-4 pb-6 md:pt-5 md:pb-6 px-6"
+        className="relative overflow-hidden pt-4 pb-6 md:pt-5 md:pb-6 px-6"
         style={{ background: 'linear-gradient(180deg, #0d0d0f 0%, #17140c 50%, #0d0d0f 100%)' }}
       >
         <div

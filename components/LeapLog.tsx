@@ -82,7 +82,7 @@ export default function LeapLog() {
     <MotionConfig reducedMotion="user">
     <motion.section
       id="the-leap-log"
-      className="pt-2 pb-10 md:pt-3 md:pb-14 bg-gradient-to-b from-white to-gray-50/80 scroll-mt-28"
+      className="pt-2 pb-10 md:pt-3 md:pb-14 bg-gradient-to-b from-white to-gray-50/80"
       initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] }}

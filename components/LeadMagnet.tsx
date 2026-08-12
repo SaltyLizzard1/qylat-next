@@ -32,7 +32,7 @@ export default function LeadMagnet() {
   return (
     <section
       id="lead-magnet"
-      className="scroll-mt-28 bg-[#92A882] py-5 px-6"
+      className="bg-[#92A882] py-5 px-6"
     >
       <div className="max-w-3xl mx-auto">
         {status === 'success' ? (

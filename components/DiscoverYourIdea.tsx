@@ -12,7 +12,7 @@ export default function DiscoverYourIdea() {
   return (
     <section
       id="discover-your-idea"
-      className="scroll-mt-28 relative overflow-hidden py-20 px-6"
+      className="relative overflow-hidden py-20 px-6"
       style={{ background: '#EBF0E6' }}
     >
       {/* Decorative background circles */}
