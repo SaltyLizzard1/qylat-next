@@ -16,6 +16,7 @@ export default function DiscoverYourIdea() {
       style={{ background: '#EBF0E6' }}
     >
       {/* Decorative background circles */}
+      {/*
       <div
         className="pointer-events-none absolute -top-24 -right-24 w-96 h-96 rounded-full opacity-20"
         style={{ background: goldGradient }}
@@ -24,6 +25,7 @@ export default function DiscoverYourIdea() {
         className="pointer-events-none absolute -bottom-16 -left-16 w-64 h-64 rounded-full opacity-10"
         style={{ background: goldGradient }}
       />
+      */}
 
       <div className="relative max-w-2xl mx-auto text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
 
