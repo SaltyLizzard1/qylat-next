@@ -6,12 +6,12 @@ const headingFont = { fontFamily: "'Cormorant Garamond', Georgia, serif" };
 export default function StoryTeaser() {
   return (
     <section
-      className="py-16"
+      className="py-8 md:py-16"
       style={{ background: 'linear-gradient(180deg, #242826 0%, #2E3230 50%, #242826 100%)' }}
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
-          <div className="relative rounded-3xl overflow-hidden">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10 items-center">
+          <div className="relative rounded-3xl overflow-hidden order-2 lg:order-1">
             <Image
               src="/My Story/traffic.png"
               alt="Bumper to bumper morning commute"
@@ -30,7 +30,7 @@ export default function StoryTeaser() {
               <source src="/rain-overlay.mp4" type="video/mp4" />
             </video>
           </div>
-          <div>
+          <div className="order-1 lg:order-2">
             <p className="text-sm uppercase tracking-[0.28em] font-semibold" style={{ color: '#E8C84A' }}>My Story</p>
             <h2 style={{ ...headingFont, color: '#FBF6E3' }} className="mt-4 text-3xl md:text-4xl font-bold tracking-tight leading-tight">
               Somewhere on a two-hour Monday commute, I decided the next year would not look like this.
