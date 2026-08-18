@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Cormorant_Garamond, Cinzel } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/react';
+import { GoogleAnalytics } from '@next/third-parties/google';
 import './globals.css';
 
 const cormorant = Cormorant_Garamond({
@@ -67,6 +68,7 @@ export default function RootLayout({
       <body suppressHydrationWarning>
         {children}
         <Analytics />
+        <GoogleAnalytics gaId="G-XKZ53T022C" />
       </body>
     </html>
   );
