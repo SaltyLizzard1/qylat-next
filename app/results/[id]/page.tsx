@@ -71,7 +71,7 @@ export default async function ResultsPage({ params }: Props) {
         className="relative overflow-hidden"
         style={{
           background: 'linear-gradient(180deg, #0d0d0f 0%, #17140c 65%, #17140c 100%)',
-          padding: '4rem 1.5rem 5rem',
+          padding: '4rem 1.5rem 2.5rem',
         }}
       >
         {/* Radial gold glow */}
