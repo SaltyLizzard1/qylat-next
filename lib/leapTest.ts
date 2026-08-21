@@ -381,8 +381,8 @@ export const ARCHETYPE_COPY: Record<Archetype, ArchetypeCopy> = {
     nextMoveLine:
       'Your next move: see what this actually costs, then decide if you want it.',
     bottleneckDimension: null,
-    primaryCta: { label: 'Read the Story', href: '/story' },
-    secondaryCta: { label: 'Open the Leap Calculator', href: '/calculator' },
+    primaryCta: { label: 'Open the Leap Calculator', href: '/calculator' },
+    secondaryCta: { label: 'Read the Story', href: '/story' },
   },
   ready: {
     name: 'The Ready',

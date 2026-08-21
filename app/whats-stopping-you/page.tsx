@@ -133,6 +133,19 @@ export default function LeapTestPage() {
       advanceTimerRef.current = window.setTimeout(() => {
         advanceTimerRef.current = null;
         if (isLastPosition) {
+          // Guard the POST. If any answer slipped through as null or as an
+          // out-of-range value, the API returns 400 and the person loses
+          // all sixteen answers to a generic error. Instead, jump them to
+          // the first bad question so they can recover in place.
+          const firstInvalid = newAnswers.findIndex(
+            (a) => typeof a !== 'number' || !Number.isInteger(a) || a < 0 || a > 3
+          );
+          if (firstInvalid !== -1) {
+            setStep(firstInvalid);
+            setError('This question still needs an answer.');
+            isAdvancingRef.current = false;
+            return;
+          }
           // Leave isAdvancingRef true; submit clears it on error and the
           // successful path unmounts the page, so clearing there is moot.
           void submit(newAnswers);
@@ -147,7 +160,10 @@ export default function LeapTestPage() {
 
   const handleBack = useCallback(() => {
     if (submitting) return;
-    // Cancel any queued advance so a rapid Back during the hold does not fire.
+    // Order matters. Clear the pending timer and reset the advance guard
+    // BEFORE decrementing step. If step decrements first, a still-pending
+    // timer could fire and re-advance or submit against a stale snapshot,
+    // undoing the Back. Do not reorder without re-thinking the race.
     if (advanceTimerRef.current !== null) {
       window.clearTimeout(advanceTimerRef.current);
       advanceTimerRef.current = null;
