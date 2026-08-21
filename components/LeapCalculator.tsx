@@ -7,14 +7,38 @@ import { Plane, Info } from 'lucide-react';
 
 const GOLD_GRADIENT =
   'linear-gradient(135deg, #8B6914 0%, #E8C84A 35%, #F5E070 55%, #C9A030 75%, #8B6914 100%)';
-const DARK_GRADIENT = 'linear-gradient(180deg, #0d0d0f 0%, #17140c 50%, #0d0d0f 100%)';
 const ESPRESSO = '#3A281A';
 const ESPRESSO_DEEP = '#2D1A00';
-const SAGE = '#EBF0E6';
 const CREAM = '#FBF6E3';
-const MONTHLY_BG = '#D6E2C9';
-const SETUP_BG = '#F0E6C8';
-const NET_CASH_BG = '#E4DED0';
+
+// Simplified surface palette. Every light section is PALE_SAGE, full bleed,
+// no alternation. Structure comes from white cards, borders, and the gold
+// separators. DARK_GRADIENT is the accent band, used once or twice per page.
+const PALE_SAGE = '#EBF0E6';
+const DARK_GRADIENT = 'linear-gradient(180deg, #0d0d0f 0%, #17140c 50%, #0d0d0f 100%)';
+
+// Gold text on the DARK surface must use #F5E070 for legibility. #C9A030
+// contrasts 2.07:1 and fails; #F5E070 clears 3.81:1 for large text.
+const LABEL_GOLD = '#F5E070';
+
+// Hint / footnote text opacity. Sole step-down for small print under a
+// field or below a total. Do not go below this for any text.
+const HINT_TEXT = 'rgba(58,40,26,0.72)';
+
+// Card border, row divider and input border derived from the EDGE token
+// (#92745C) at different alphas. Card borders are structural: they carry
+// the sectioning work now that the backdrop no longer alternates.
+const CARD_BORDER = '1.5px solid rgba(146,116,92,0.55)';
+const DIVIDER = 'rgba(146,116,92,0.3)';
+const INPUT_BORDER = '1.5px solid rgba(146,116,92,0.6)';
+
+// Standard QYLAT section separator. Matches the Divider in app/page.tsx.
+const GOLD_SEPARATOR =
+  'linear-gradient(90deg, transparent 0%, #C9A030 25%, #F5E070 50%, #C9A030 75%, transparent 100%)';
+
+function GoldDivider() {
+  return <div className="w-full" style={{ height: '3px', background: GOLD_SEPARATOR }} />;
+}
 
 const heading = {
   fontFamily: "'Cormorant Garamond', Georgia, serif",
@@ -90,20 +114,20 @@ function LineItemRow({
   return (
     <div
       className="flex items-center justify-between gap-4 py-3 border-b"
-      style={{ borderColor: 'rgba(58,40,26,0.12)' }}
+      style={{ borderColor: DIVIDER }}
     >
       <div className="flex-1">
         <label className="text-[15px] block" style={{ color: ESPRESSO }}>
           {label}
         </label>
         {hint && (
-          <span className="text-xs" style={{ color: 'rgba(58,40,26,0.5)' }}>
+          <span className="text-xs" style={{ color: HINT_TEXT }}>
             {hint}
           </span>
         )}
       </div>
       <div className="flex items-center gap-1 shrink-0">
-        <span className="text-sm" style={{ color: 'rgba(58,40,26,0.55)' }}>
+        <span className="text-sm" style={{ color: ESPRESSO }}>
           $
         </span>
         <input
@@ -115,8 +139,8 @@ function LineItemRow({
           onChange={(e) => onChange(e.target.value === '' ? 0 : Number(e.target.value))}
           className="w-28 rounded-lg px-3 py-2 text-right text-[15px] focus:outline-none focus:ring-2 focus:ring-[#C9A030]"
           style={{
-            background: '#fff',
-            border: '1px solid rgba(58,40,26,0.2)',
+            background: '#FFFFFF',
+            border: INPUT_BORDER,
             color: ESPRESSO_DEEP,
           }}
         />
@@ -137,13 +161,13 @@ function BufferRow({
   note: string;
 }) {
   return (
-    <div className="py-3 border-b" style={{ borderColor: 'rgba(58,40,26,0.12)' }}>
+    <div className="py-3 border-b" style={{ borderColor: DIVIDER }}>
       <div className="flex items-center justify-between gap-4">
         <div className="flex-1">
           <label className="text-[15px] block font-medium" style={{ color: ESPRESSO_DEEP }}>
             Buffer for the unknowns
           </label>
-          <span className="text-xs" style={{ color: 'rgba(58,40,26,0.55)' }}>
+          <span className="text-xs" style={{ color: HINT_TEXT }}>
             {note}
           </span>
         </div>
@@ -158,12 +182,12 @@ function BufferRow({
               onChange={(e) => onPctChange(Number(e.target.value) || 0)}
               className="w-14 rounded-lg px-2 py-2 text-right text-[15px] focus:outline-none"
               style={{
-                background: '#fff',
-                border: '1px solid rgba(58,40,26,0.2)',
+                background: '#FFFFFF',
+                border: INPUT_BORDER,
                 color: ESPRESSO_DEEP,
               }}
             />
-            <span className="text-sm ml-1" style={{ color: 'rgba(58,40,26,0.55)' }}>
+            <span className="text-sm ml-1" style={{ color: ESPRESSO }}>
               %
             </span>
           </div>
@@ -221,7 +245,7 @@ function ExpenseList({
       </div>
 
       {!expanded && (
-        <p className="text-xs pb-3" style={{ color: 'rgba(58,40,26,0.6)' }}>
+        <p className="text-xs pb-3" style={{ color: HINT_TEXT }}>
           {previewNames.join(', ')}
           {remaining > 0 ? `, and ${remaining} more` : ''}
         </p>
@@ -233,7 +257,7 @@ function ExpenseList({
         className="text-sm font-semibold underline underline-offset-4 pb-3"
         style={{ color: '#8B6914' }}
       >
-        {expanded ? 'Hide details' : 'See what\u2019s included'}
+        {expanded ? 'Done adjusting' : '+ Adjust these numbers'}
       </button>
 
       {expanded && (
@@ -252,7 +276,7 @@ function ExpenseList({
       )}
 
       {footNote && (
-        <p className="text-xs pb-4 pt-1" style={{ color: 'rgba(58,40,26,0.55)' }}>
+        <p className="text-xs pb-4 pt-1" style={{ color: HINT_TEXT }}>
           {footNote}
         </p>
       )}
@@ -274,7 +298,7 @@ function SectionShell({
   children: React.ReactNode;
 }) {
   return (
-    <section className="py-14 px-6 print:hidden" style={{ background: bg }}>
+    <section className="py-7 px-6 print:hidden" style={{ background: bg }}>
       <div className="max-w-2xl mx-auto">
         <span
           className="inline-block text-xs font-semibold uppercase tracking-[0.2em] px-4 py-1.5 rounded-full mb-5"
@@ -293,7 +317,7 @@ function SectionShell({
           {title}
         </h2>
         {subtitle && (
-          <p className="text-[15px] mb-6" style={{ color: 'rgba(58,40,26,0.75)' }}>
+          <p className="text-[15px] mb-6" style={{ color: ESPRESSO }}>
             {subtitle}
           </p>
         )}
@@ -301,7 +325,7 @@ function SectionShell({
           className="rounded-2xl px-6 py-2"
           style={{
             background: '#fff',
-            border: '1px solid rgba(58,40,26,0.22)',
+            border: CARD_BORDER,
             boxShadow: '0 8px 30px rgba(58,40,26,0.14)',
           }}
         >
@@ -423,35 +447,49 @@ export default function LeapCalculator() {
         }
       `}</style>
 
-      {/* Hero + the one question */}
-      <section className="pt-6 pb-16 px-6 text-center print:hidden" style={{ background: CREAM }}>
+      {/* Hero + the one question, on the PALE_SAGE surface. */}
+      <section
+        className="relative overflow-hidden pt-6 pb-10 px-6 text-center print:hidden"
+        style={{ background: PALE_SAGE }}
+      >
+        {/* Decorative background circles */}
+        <div
+          className="pointer-events-none absolute -top-24 -right-24 w-48 h-48 md:w-96 md:h-96 rounded-full opacity-20"
+          style={{ background: GOLD_GRADIENT }}
+        />
+        <div
+          className="pointer-events-none absolute -bottom-16 -left-16 w-40 h-40 md:w-64 md:h-64 rounded-full opacity-10"
+          style={{ background: GOLD_GRADIENT }}
+        />
+
         <span
-          className="inline-block text-xs font-semibold uppercase tracking-[0.2em] px-4 py-1.5 rounded-full mb-6"
+          className="relative inline-block text-xs font-semibold uppercase tracking-[0.2em] px-4 py-1.5 rounded-full mb-6"
           style={{ background: ESPRESSO, color: CREAM }}
         >
           Free Runway Calculator
         </span>
         <h1
+          className="relative"
           style={{
             ...heading,
-            fontSize: 'clamp(2.2rem, 6vw, 3.4rem)',
+            fontSize: 'clamp(2rem, 5vw, 3rem)',
             lineHeight: 1.1,
-            maxWidth: '40rem',
-            margin: '0 auto 1rem',
+            maxWidth: '48rem',
+            margin: '0 auto 0.75rem',
           }}
         >
-          How Much Do You Need to Leap? Start With What You Have.
+          How Much Do You Need to Leap?
         </h1>
-        <p className="max-w-xl mx-auto text-lg mb-8" style={{ color: 'rgba(58,40,26,0.8)' }}>
-          You do not need to know what Thailand costs. I already filled that in from living here.
-          Just answer one question.
+        <p className="relative max-w-xl mx-auto text-lg mb-6" style={{ color: ESPRESSO }}>
+          Start with what you have. You do not need to know what Thailand costs, I already
+          filled that in from living here.
         </p>
 
         <div
-          className="max-w-md mx-auto rounded-2xl p-6 text-left"
+          className="relative max-w-md mx-auto rounded-2xl p-6 text-left"
           style={{
             background: '#fff',
-            border: '1px solid rgba(58,40,26,0.22)',
+            border: CARD_BORDER,
             boxShadow: '0 8px 30px rgba(58,40,26,0.14)',
           }}
         >
@@ -459,7 +497,7 @@ export default function LeapCalculator() {
             How much do you have?
           </label>
           <div className="flex items-center gap-2">
-            <span className="text-xl" style={{ color: 'rgba(58,40,26,0.55)' }}>
+            <span className="text-xl" style={{ color: ESPRESSO }}>
               $
             </span>
             <input
@@ -471,13 +509,13 @@ export default function LeapCalculator() {
               onChange={(e) => setCash(e.target.value === '' ? 0 : Number(e.target.value))}
               className="flex-1 min-w-0 rounded-xl px-4 py-3 text-xl focus:outline-none focus:ring-2 focus:ring-[#C9A030]"
               style={{
-                background: CREAM,
-                border: '1px solid rgba(58,40,26,0.2)',
+                background: '#FFFFFF',
+                border: INPUT_BORDER,
                 color: ESPRESSO_DEEP,
               }}
             />
           </div>
-          <p className="text-xs mt-2" style={{ color: 'rgba(58,40,26,0.55)' }}>
+          <p className="text-xs mt-2" style={{ color: HINT_TEXT }}>
             Savings, checking, anything you can actually get to, but only what you are truly
             willing to spend down. Retirement accounts, property, and investments you want to
             keep do not count.
@@ -492,50 +530,56 @@ export default function LeapCalculator() {
           </div>
         </div>
 
-        {/* Instant runway answer */}
+        {/* Instant runway answer, a DARK card inside the hero. */}
         {hasCash && (
-          <div className="max-w-md mx-auto mt-6">
+          <div className="relative max-w-md mx-auto mt-6">
             <div
-              className="rounded-2xl px-6 py-5"
+              className="rounded-2xl px-6 py-5 text-left"
               style={{ background: DARK_GRADIENT, border: '1px solid rgba(232,200,74,0.3)' }}
             >
               {runway.upfront ? (
-                <p style={{ ...heading, color: '#F5E070', fontSize: '1.15rem' }}>
-                  Getting there costs about {currency(totalSetup)}, which is more than your
-                  spendable cash right now. Knowing that today is the whole point. Scroll down
-                  and adjust.
-                </p>
+                <>
+                  <p style={{ ...heading, color: '#F5E070', fontSize: '1.15rem' }}>
+                    Getting there costs about {currency(totalSetup)}, which is more than your
+                    spendable cash right now.
+                  </p>
+                  <p style={{ color: CREAM, fontSize: '0.95rem', lineHeight: 1.5, marginTop: '0.5rem' }}>
+                    Knowing that today is the whole point. Scroll down and adjust.
+                  </p>
+                </>
               ) : (
                 <>
-                  <p className="text-white/70 text-sm mb-1">That gives you roughly</p>
+                  <p style={{ color: CREAM, fontSize: '0.95rem', lineHeight: 1.5, marginBottom: '0.25rem' }}>
+                    That gives you roughly
+                  </p>
                   <p style={{ ...heading, color: '#F5E070', fontSize: 'clamp(2rem,6vw,3rem)', lineHeight: 1 }}>
                     {runway.indefinite ? '36+' : runway.months} months
                   </p>
-                  <p className="text-white/70 text-sm mt-1">
+                  <p style={{ color: CREAM, fontSize: '0.95rem', lineHeight: 1.5, marginTop: '0.5rem' }}>
                     in Chiang Mai, after about {currency(totalSetup)} to get there and
                     {' '}{currency(totalMonthly)} a month to live. Generous estimates, on purpose.
                   </p>
                 </>
               )}
             </div>
-            <p className="text-xs mt-3" style={{ color: 'rgba(58,40,26,0.6)' }}>
+            <p className="text-xs mt-3" style={{ color: HINT_TEXT }}>
               Every number behind this is below, already filled in. Adjust anything to fit your life.
             </p>
           </div>
         )}
 
-        <p className="max-w-xl mx-auto text-sm italic mt-8" style={{ color: 'rgba(58,40,26,0.6)' }}>
+        <p className="relative max-w-xl mx-auto text-sm italic mt-8" style={{ color: HINT_TEXT }}>
           My real numbers: I left with $35k. Setup cost me $2,720 and life here runs $1,838 a
           month. Knowing my runway is what made the leap feel possible instead of terrifying.
         </p>
       </section>
 
-      {/* Monthly baseline */}
+      {/* Monthly baseline, on the PALE_SAGE surface. */}
       <SectionShell
-        eyebrow="The Baseline · Monthly"
+        eyebrow="Monthly"
         title="What Life in Chiang Mai Costs"
         subtitle="Pre-filled with generous planning numbers from actually living here. Adjust any line to match your style."
-        bg={MONTHLY_BG}
+        bg={PALE_SAGE}
       >
         <ExpenseList
           items={monthlyItems}
@@ -552,12 +596,12 @@ export default function LeapCalculator() {
         />
       </SectionShell>
 
-      {/* Setup baseline */}
+      {/* Setup baseline, on the PALE_SAGE surface. */}
       <SectionShell
-        eyebrow="The Baseline · Getting There"
+        eyebrow="Getting There"
         title="What Your Arrival Costs"
         subtitle="One-time costs from your front door to settled in Thailand, pre-filled and editable."
-        bg={SETUP_BG}
+        bg={PALE_SAGE}
       >
         <ExpenseList
           items={setupItems}
@@ -574,12 +618,12 @@ export default function LeapCalculator() {
         />
       </SectionShell>
 
-      {/* Net cash summary */}
-      <section className="py-10 px-6 print:hidden" style={{ background: NET_CASH_BG }}>
+      {/* Net cash summary, on the PALE_SAGE surface. */}
+      <section className="py-5 px-6 print:hidden" style={{ background: PALE_SAGE }}>
         <div className="max-w-2xl mx-auto">
           <div
             className="rounded-xl px-5 py-4"
-            style={{ background: '#fff', border: '1px solid rgba(58,40,26,0.22)', boxShadow: '0 8px 30px rgba(58,40,26,0.14)' }}
+            style={{ background: '#fff', border: CARD_BORDER, boxShadow: '0 8px 30px rgba(58,40,26,0.14)' }}
           >
             <div className="flex justify-between py-1 text-[15px]" style={{ color: ESPRESSO }}>
               <span>Your cash</span>
@@ -597,7 +641,7 @@ export default function LeapCalculator() {
             </div>
             <div
               className="flex justify-between py-2 mt-1 border-t font-semibold"
-              style={{ borderColor: 'rgba(58,40,26,0.15)', color: ESPRESSO_DEEP }}
+              style={{ borderColor: DIVIDER, color: ESPRESSO_DEEP }}
             >
               <span>Net cash for your runway</span>
               <span>{currency(netCash)}</span>
@@ -608,8 +652,8 @@ export default function LeapCalculator() {
             className="mt-4 rounded-xl px-4 py-3 flex gap-2 items-start text-sm"
             style={{
               background: '#fff',
-              border: '1px dashed rgba(58,40,26,0.25)',
-              color: 'rgba(58,40,26,0.75)',
+              border: '1px dashed rgba(146,116,92,0.55)',
+              color: ESPRESSO,
             }}
           >
             <Info size={16} className="mt-0.5 shrink-0" />
@@ -622,25 +666,26 @@ export default function LeapCalculator() {
         </div>
       </section>
 
-      {/* Runway dashboard */}
-      <section className="py-16 px-6 print:hidden" style={{ background: DARK_GRADIENT }}>
-        <div className="max-w-3xl mx-auto text-center">
-          <span
-            className="inline-block text-xs font-semibold uppercase tracking-[0.2em] px-4 py-1.5 rounded-full mb-6"
-            style={{
-              background: 'rgba(232,200,74,0.15)',
-              color: '#E8C84A',
-              border: '1px solid rgba(232,200,74,0.35)',
-            }}
-          >
-            Your Runway Dashboard
-          </span>
+      {hasCash && (
+        <>
+          <GoldDivider />
 
-          {!hasCash ? (
-            <p style={{ ...heading, color: '#F5E070', fontSize: 'clamp(1.4rem,4vw,2rem)' }}>
-              Enter what you have at the top of the page and your full dashboard appears here.
-            </p>
-          ) : runway.upfront ? (
+          {/* Runway dashboard, DARK_GRADIENT surface. Only rendered once
+              cash has been entered, so the band never appears empty. */}
+          <section className="py-16 px-6 print:hidden" style={{ background: DARK_GRADIENT }}>
+            <div className="max-w-3xl mx-auto text-center">
+              <span
+                className="inline-block text-xs font-semibold uppercase tracking-[0.2em] px-4 py-1.5 rounded-full mb-6"
+                style={{
+                  background: 'rgba(232,200,74,0.15)',
+                  color: LABEL_GOLD,
+                  border: '1px solid rgba(232,200,74,0.35)',
+                }}
+              >
+                Your Runway Dashboard
+              </span>
+
+              {runway.upfront ? (
             <p style={{ ...heading, color: '#F5E070', fontSize: 'clamp(1.4rem,4vw,2rem)' }}>
               Your setup cost is bigger than your available cash right now. Adjust the baseline
               above, or give yourself more time to save. Knowing that today is the whole point.
@@ -663,7 +708,7 @@ export default function LeapCalculator() {
                   : 'months of runway before you need revenue.'}
               </p>
 
-              {/* Runway strip */}
+              {/* Runway strip. Gold gradient stays gold. */}
               <div className="flex gap-1 justify-center flex-wrap mb-2">
                 {Array.from({ length: stripMonths }).map((_, i) => {
                   const lit = i < litMonths;
@@ -711,7 +756,7 @@ export default function LeapCalculator() {
                 ))}
               </div>
 
-              {/* Monthly breakdown bars */}
+              {/* Monthly breakdown bars. Gold gradient fill, unchanged. */}
               {breakdownItems.length > 0 && (
                 <div
                   className="rounded-2xl p-6 mb-10 text-left"
@@ -801,46 +846,55 @@ export default function LeapCalculator() {
             </>
           )}
 
-          <p className="text-white/40 text-xs mt-10">
-            This is a planning estimate, not financial advice. Your numbers, your decisions.
-          </p>
-        </div>
-      </section>
+              <p className="text-white/40 text-xs mt-10">
+                This is a planning estimate, not financial advice. Your numbers, your decisions.
+              </p>
+            </div>
+          </section>
 
-      {/* Download */}
-      <section className="py-14 px-6 text-center print:hidden" style={{ background: SAGE }}>
-        <div className="max-w-2xl mx-auto">
-          <h3 style={{ ...heading, fontSize: 'clamp(1.5rem,4vw,2rem)', marginBottom: '0.5rem' }}>
-            Take Your Dashboard With You
-          </h3>
-          <p className="mb-6" style={{ color: 'rgba(58,40,26,0.75)' }}>
-            Download a one-page summary of your numbers. No email needed. Choose Save as PDF in the
-            print window.
-          </p>
-          <button
-            onClick={handleDownload}
-            className="rounded-full px-10 py-3 text-sm font-semibold transition-all duration-300 hover:scale-[1.03] hover:shadow-md active:scale-[0.98]"
-            style={{
-              background: GOLD_GRADIENT,
-              color: ESPRESSO_DEEP,
-              border: '1.5px solid #2D1A00',
-              boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
-            }}
-          >
-            Download My Dashboard
-          </button>
-        </div>
-      </section>
+          <GoldDivider />
+        </>
+      )}
+
+      {/* Download, PALE_SAGE. Only shown when there is something to download:
+          gating on cash > 0 (no email required, per site promise). */}
+      {hasCash && (
+        <>
+          <section className="py-14 px-6 text-center print:hidden" style={{ background: PALE_SAGE }}>
+            <div className="max-w-2xl mx-auto">
+              <h3 style={{ ...heading, fontSize: 'clamp(1.5rem,4vw,2rem)', marginBottom: '0.5rem' }}>
+                Take Your Dashboard With You
+              </h3>
+              <p className="mb-6" style={{ color: ESPRESSO }}>
+                Download a one-page summary of your numbers. No email needed. Choose Save as PDF in the
+                print window.
+              </p>
+              <button
+                onClick={handleDownload}
+                className="rounded-full px-10 py-3 text-sm font-semibold transition-all duration-300 hover:scale-[1.03] hover:shadow-md active:scale-[0.98]"
+                style={{
+                  background: GOLD_GRADIENT,
+                  color: ESPRESSO_DEEP,
+                  border: '1.5px solid #2D1A00',
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
+                }}
+              >
+                Download My Dashboard
+              </button>
+            </div>
+          </section>
+        </>
+      )}
 
       {/* Print-only summary */}
       <div id="leap-print-summary" className="hidden p-10" style={{ background: '#fff' }}>
         <p style={{ ...heading, fontSize: '1.6rem', marginBottom: '0.25rem' }}>My Leap Dashboard</p>
-        <p className="text-xs mb-6" style={{ color: 'rgba(58,40,26,0.55)' }}>
+        <p className="text-xs mb-6" style={{ color: HINT_TEXT }}>
           QuitYourLifeAndTravel.com &middot; a planning estimate, not financial advice
         </p>
         {[
           ['My cash', currency(cash)],
-          ['Credit card debt', debt > 0 ? `\u2212 ${currency(debt)}` : currency(0)],
+          ['Credit card debt', debt > 0 ? `− ${currency(debt)}` : currency(0)],
           ['Setup cost (with buffer)', currency(totalSetup)],
           ['Monthly living cost (with buffer)', currency(totalMonthly)],
           ['Net cash for runway', currency(netCash)],
@@ -848,7 +902,7 @@ export default function LeapCalculator() {
           <div
             key={k}
             className="flex justify-between py-2 border-b"
-            style={{ borderColor: 'rgba(58,40,26,0.15)' }}
+            style={{ borderColor: DIVIDER }}
           >
             <span style={{ color: ESPRESSO }}>{k}</span>
             <span className="font-semibold" style={{ color: ESPRESSO_DEEP }}>
@@ -881,18 +935,18 @@ export default function LeapCalculator() {
             </div>
           </>
         )}
-        <p className="text-xs mt-8" style={{ color: 'rgba(58,40,26,0.55)' }}>
+        <p className="text-xs mt-8" style={{ color: HINT_TEXT }}>
           Built with the free Leap Runway Calculator at quityourlifeandtravel.com/calculator
         </p>
       </div>
 
-      {/* Email capture */}
-      <section className="py-16 px-6 text-center print:hidden" style={{ background: CREAM }}>
+      {/* Email capture, PALE_SAGE. */}
+      <section className="py-16 px-6 text-center print:hidden" style={{ background: PALE_SAGE }}>
         <div className="max-w-lg mx-auto">
           <h3 style={{ ...heading, fontSize: 'clamp(1.6rem,4vw,2.2rem)', marginBottom: '0.75rem' }}>
             Want the Plan That Goes With the Numbers?
           </h3>
-          <p className="mb-6" style={{ color: 'rgba(58,40,26,0.75)' }}>
+          <p className="mb-6" style={{ color: ESPRESSO }}>
             I will send you the free 60-Day Leap Kit, the exact system I used to pack up my life
             and move to Thailand.
           </p>
@@ -923,8 +977,8 @@ export default function LeapCalculator() {
                 onChange={(e) => setEmail(e.target.value)}
                 className="flex-1 min-w-0 w-full sm:w-64 px-4 py-3 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-[#C9A030]"
                 style={{
-                  background: '#fff',
-                  border: '1px solid rgba(58,40,26,0.2)',
+                  background: '#FFFFFF',
+                  border: INPUT_BORDER,
                   color: ESPRESSO_DEEP,
                 }}
               />
@@ -939,14 +993,23 @@ export default function LeapCalculator() {
                   boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
                 }}
               >
-                {emailStatus === 'loading' ? 'Sending\u2026' : 'Email Me the Kit'}
+                {emailStatus === 'loading' ? 'Sending…' : 'Email Me the Kit'}
               </button>
             </form>
           )}
           {emailStatus === 'error' && (
-            <p className="text-red-600 text-xs mt-2">Something went wrong. Please try again.</p>
+            <p
+              className="text-xs mt-2 px-3 py-2 rounded-lg"
+              style={{
+                color: '#7a2f2f',
+                background: 'rgba(200, 80, 80, 0.08)',
+                border: '1px solid rgba(200, 80, 80, 0.2)',
+              }}
+            >
+              Something went wrong. Please try again.
+            </p>
           )}
-          <p className="mt-6 text-sm" style={{ color: 'rgba(58,40,26,0.6)' }}>
+          <p className="mt-6 text-sm" style={{ color: ESPRESSO }}>
             Ready to talk it through instead?{' '}
             <a
               href="https://cal.com/qylat/leap-session"
@@ -961,6 +1024,7 @@ export default function LeapCalculator() {
         </div>
       </section>
 
+      {/* Fixed bottom bar, DARK_GRADIENT, matches the dashboard band. */}
       {hasCash && (
         <div
           className="print:hidden fixed bottom-0 left-0 right-0 z-40 px-6"

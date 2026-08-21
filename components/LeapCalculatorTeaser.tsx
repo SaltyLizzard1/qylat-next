@@ -18,11 +18,11 @@ export default function LeapCalculatorTeaser() {
       style={{ background: '#FBF6E3' }}
     >
       <div
-        className="pointer-events-none absolute -top-24 -left-24 w-96 h-96 rounded-full opacity-20"
+        className="pointer-events-none absolute -top-24 -right-24 w-48 h-48 md:w-96 md:h-96 rounded-full opacity-20"
         style={{ background: goldGradient }}
       />
       <div
-        className="pointer-events-none absolute -bottom-16 -right-16 w-64 h-64 rounded-full opacity-10"
+        className="pointer-events-none absolute -bottom-16 -left-16 w-40 h-40 md:w-64 md:h-64 rounded-full opacity-10"
         style={{ background: goldGradient }}
       />
 
@@ -77,7 +77,7 @@ export default function LeapCalculatorTeaser() {
 
         <Link
           href="/calculator"
-          className="inline-block font-sans rounded-full px-12 py-4 text-lg font-semibold transition-all duration-300 hover:scale-[1.03] hover:shadow-md active:scale-[0.98]"
+          className="inline-block font-sans whitespace-nowrap rounded-full px-8 md:px-12 py-4 text-base md:text-lg font-semibold transition-all duration-300 hover:scale-[1.03] hover:shadow-md active:scale-[0.98]"
           style={{
             background: goldGradient,
             color: '#2D1A00',

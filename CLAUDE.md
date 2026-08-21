@@ -158,8 +158,8 @@ Body: Inter / system sans
 
 ## Component conventions
 
-- Header nav order: My Story, Leap Calculator, Discover Your Idea, Idea To Plan,
-  Work With Me, Leap Log
+- Header nav order: My Story, What's Stopping You, Leap Calculator, Discover Your Idea,
+  Idea To Plan, Work With Me, Leap Log
 - Every route gets a `layout.tsx` with full metadata: title, description, canonical,
   openGraph AND twitter blocks. See Social previews below; the `images` array is the
   part that gets forgotten and it fails silently

@@ -81,11 +81,11 @@ export default function DiscoverYourIdea() {
         {/* CTA */}
         <a
           href="/assessment"
-          className="inline-block font-sans rounded-full px-12 py-4 text-lg font-semibold transition-all duration-300 hover:scale-[1.03] hover:shadow-md active:scale-[0.98]"
+          className="inline-block font-sans whitespace-nowrap rounded-full px-8 md:px-12 py-4 text-base md:text-lg font-semibold transition-all duration-300 hover:scale-[1.03] hover:shadow-md active:scale-[0.98]"
           style={{
             background: goldGradient,
             color: '#2D1A00',
-            border: '1.5px solid #7A5C0A',
+            border: '1.5px solid #2D1A00',
             boxShadow: '0 8px 32px rgba(139,105,20,0.35)',
           }}
         >

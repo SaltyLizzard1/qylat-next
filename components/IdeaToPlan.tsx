@@ -163,15 +163,6 @@ export default function IdeaToPlan() {
         className="relative overflow-hidden pt-4 pb-6 md:pt-5 md:pb-6 px-6"
         style={{ background: 'linear-gradient(180deg, #0d0d0f 0%, #17140c 50%, #0d0d0f 100%)' }}
       >
-        <div
-          className="pointer-events-none absolute -top-32 -right-32 w-80 h-80 rounded-full opacity-[0.10] hidden md:block"
-          style={{ background: goldGradient }}
-        />
-        <div
-          className="pointer-events-none absolute -bottom-24 -left-24 w-60 h-60 rounded-full opacity-[0.08] hidden md:block"
-          style={{ background: goldGradient }}
-        />
-
         <div className="relative max-w-4xl mx-auto text-center">
 
           {/* Logo */}
@@ -224,7 +215,7 @@ export default function IdeaToPlan() {
             href="https://ideatoplan.to/#pricing"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-block font-sans rounded-full px-12 py-4 text-lg font-semibold transition-all duration-300 hover:scale-[1.03] hover:shadow-md active:scale-[0.98] min-w-[260px] text-center"
+            className="inline-block font-sans whitespace-nowrap rounded-full px-8 md:px-12 py-4 text-base md:text-lg font-semibold transition-all duration-300 hover:scale-[1.03] hover:shadow-md active:scale-[0.98] min-w-0 md:min-w-[260px] text-center"
             style={goldBtn}
           >
             Share Your Idea →

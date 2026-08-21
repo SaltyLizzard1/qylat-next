@@ -191,7 +191,7 @@ function WorkWithMeCTA({ onTakeLeapClick }: { onTakeLeapClick?: () => void }) {
         style={{
           background: 'linear-gradient(135deg, #8B6914 0%, #E8C84A 35%, #F5E070 55%, #C9A030 75%, #8B6914 100%)',
           color: '#2D1A00',
-          border: '1.5px solid #7A5C0A',
+          border: '1.5px solid #2D1A00',
         }}
       >
         Work With Me

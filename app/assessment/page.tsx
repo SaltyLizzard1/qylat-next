@@ -32,6 +32,35 @@ interface Match {
 
 type Stage = 'form' | 'loading' | 'results' | 'unlocked';
 
+// ── Brand tokens (inline per component, matching repo convention) ──────────
+
+const GOLD_GRADIENT =
+  'linear-gradient(135deg, #8B6914 0%, #E8C84A 35%, #F5E070 55%, #C9A030 75%, #8B6914 100%)';
+const ESPRESSO_DEEP = '#2D1A00';
+const ESPRESSO = '#3A281A';
+const SLATE = '#2C3340';
+const CREAM = '#FBF6E3';
+const PALE_SAGE = '#EBF0E6';
+
+const SLATE_SECONDARY = 'rgba(44,51,64,0.72)';
+const SLATE_TERTIARY = 'rgba(44,51,64,0.55)';
+const SLATE_MUTED = 'rgba(44,51,64,0.4)';
+
+const CARD_BORDER = '1px solid rgba(58,40,26,0.12)';
+const PILL_BORDER = 'rgba(58,40,26,0.18)';
+const INPUT_BORDER = 'rgba(58,40,26,0.2)';
+
+const headingFont: React.CSSProperties = {
+  fontFamily: "'Cormorant Garamond', Georgia, serif",
+  fontWeight: 700,
+};
+
+const GOLD_BUTTON_STYLE = {
+  background: GOLD_GRADIENT,
+  color: ESPRESSO_DEEP,
+  border: '1.5px solid #2D1A00',
+} as const;
+
 // ── Constants ──────────────────────────────────────────────────────────────
 
 const HARD_SKILLS = [
@@ -90,7 +119,7 @@ const VALUES = [
   'Financial stability',
   'Learning & growing constantly',
   'Making a big impact',
-  'Autonomy — no boss',
+  'Autonomy, no boss',
   'Recognition & status',
   'Community & belonging',
 ];
@@ -102,22 +131,26 @@ const WORK_STYLE_PAIRS = [
   { a: 'Creating new things', b: 'Improving existing things' },
 ];
 
+// En dashes below are numeric-range punctuation, not em dashes.
 const HOURS_OPTIONS = ['<5', '5–10', '10–20', '20–30', '30+'];
 const INCOME_OPTIONS = ['$500–$1,000', '$1,000–$2,500', '$2,500–$5,000', '$5,000–$10,000', '$10,000+'];
 
-const GOLD_GRADIENT =
-  'linear-gradient(135deg, #8B6914 0%, #E8C84A 35%, #F5E070 55%, #C9A030 75%, #8B6914 100%)';
+// Palette-tinted saturation badges: sage / gold / espresso tints. Same
+// tonal family so they read as related; distinct by hue so the reader
+// can differentiate at a glance. Espresso is a muted tint, not solid,
+// so High does not feel heavier than the other two.
+const SATURATION_STYLES: Record<Match['saturation'], React.CSSProperties> = {
+  Low: { background: 'rgba(146,168,130,0.22)', color: ESPRESSO },
+  Medium: { background: 'rgba(232,200,74,0.22)', color: ESPRESSO_DEEP },
+  High: { background: 'rgba(58,40,26,0.14)', color: ESPRESSO_DEEP },
+};
 
-const GOLD_BUTTON_STYLE = {
-  background: GOLD_GRADIENT,
-  color: '#2D1A00',
-  border: '1.5px solid #7A5C0A',
-} as const;
-
-const SATURATION_COLORS: Record<Match['saturation'], string> = {
-  Low: 'bg-emerald-100 text-emerald-800',
-  Medium: 'bg-yellow-100 text-yellow-800',
-  High: 'bg-red-100 text-red-800',
+// Muted red reserved for error semantics only. Kept out of the palette
+// tokens above so it cannot leak into decorative use.
+const ERROR_STYLE: React.CSSProperties = {
+  color: '#7a2f2f',
+  background: 'rgba(200, 80, 80, 0.08)',
+  border: '1px solid rgba(200, 80, 80, 0.2)',
 };
 
 // ── Pill component ─────────────────────────────────────────────────────────
@@ -133,19 +166,52 @@ function Pill({
   disabled: boolean;
   onClick: () => void;
 }) {
+  const base = 'px-4 py-2 rounded-full border text-sm font-medium transition-all';
+
+  if (selected) {
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        className={`${base} shadow-sm`}
+        style={{
+          background: '#E8C84A',
+          color: ESPRESSO_DEEP,
+          borderColor: ESPRESSO_DEEP,
+        }}
+      >
+        {label}
+      </button>
+    );
+  }
+
+  if (disabled) {
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        disabled
+        className={`${base} cursor-not-allowed`}
+        style={{
+          background: 'rgba(251,246,227,0.55)',
+          color: SLATE_MUTED,
+          borderColor: 'rgba(58,40,26,0.10)',
+        }}
+      >
+        {label}
+      </button>
+    );
+  }
+
   return (
     <button
       type="button"
       onClick={onClick}
-      disabled={disabled && !selected}
-      className={[
-        'px-4 py-2 rounded-full border text-sm font-medium transition-all',
-        selected
-          ? 'border-[#7A5C0A] shadow-sm bg-[#E8C84A] text-[#2D1A00]'
-          : disabled
-          ? 'bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed'
-          : 'bg-white border-gray-300 text-gray-700 hover:border-[#C9A030] hover:text-[#8B6914]',
-      ].join(' ')}
+      className={`${base} bg-white hover:border-[#C9A030] hover:text-[#8B6914]`}
+      style={{
+        color: SLATE,
+        borderColor: PILL_BORDER,
+      }}
     >
       {label}
     </button>
@@ -167,16 +233,33 @@ function EitherOrPair({
 }) {
   const card = (label: string) => {
     const active = value === label;
+    const base =
+      'flex-1 py-5 px-4 rounded-xl border-2 text-sm font-semibold transition-all text-center';
+    if (active) {
+      return (
+        <button
+          type="button"
+          onClick={() => onChange(label)}
+          className={`${base} shadow`}
+          style={{
+            background: CREAM,
+            color: ESPRESSO_DEEP,
+            borderColor: '#C9A030',
+          }}
+        >
+          {label}
+        </button>
+      );
+    }
     return (
       <button
         type="button"
         onClick={() => onChange(label)}
-        className={[
-          'flex-1 py-5 px-4 rounded-xl border-2 text-sm font-semibold transition-all text-center',
-          active
-            ? 'border-[#C9A030] bg-[#FBF6E4] text-[#5C4206] shadow'
-            : 'border-gray-200 bg-white text-gray-600 hover:border-[#E8C84A]',
-        ].join(' ')}
+        className={`${base} bg-white hover:border-[#E8C84A]`}
+        style={{
+          color: SLATE,
+          borderColor: PILL_BORDER,
+        }}
       >
         {label}
       </button>
@@ -186,7 +269,12 @@ function EitherOrPair({
   return (
     <div className="flex gap-3 items-center">
       {card(optionA)}
-      <span className="text-gray-400 text-xs font-bold shrink-0">OR</span>
+      <span
+        className="text-xs font-bold shrink-0"
+        style={{ color: 'rgba(44,51,64,0.5)' }}
+      >
+        OR
+      </span>
       {card(optionB)}
     </div>
   );
@@ -200,7 +288,7 @@ function MatchCard({ match, index }: { match: Match; index: number }) {
       className="rounded-2xl overflow-hidden"
       style={{
         background: '#FFFEFB',
-        border: '1px solid #F0E6D2',
+        border: CARD_BORDER,
         boxShadow: '0 14px 34px rgba(30,20,5,0.09)',
       }}
     >
@@ -208,51 +296,93 @@ function MatchCard({ match, index }: { match: Match; index: number }) {
       <div className="p-6">
         <div className="flex items-start justify-between gap-3 mb-3 flex-wrap">
           <div>
-            <span className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-1 block">
+            <span
+              className="text-xs font-semibold uppercase tracking-wide mb-1 block"
+              style={{ color: SLATE_TERTIARY }}
+            >
               {match.category}
             </span>
-            <h3 className="text-xl font-bold text-gray-900">
+            <h3
+              style={{
+                ...headingFont,
+                color: ESPRESSO_DEEP,
+                fontSize: 'clamp(1.15rem, 2.5vw, 1.35rem)',
+                lineHeight: 1.2,
+              }}
+            >
               {index + 1}. {match.title}
             </h3>
           </div>
           <span
-            className={`text-xs font-semibold px-3 py-1 rounded-full mt-1 shrink-0 ${SATURATION_COLORS[match.saturation]}`}
+            className="text-xs font-semibold px-3 py-1 rounded-full mt-1 shrink-0"
+            style={SATURATION_STYLES[match.saturation]}
           >
             {match.saturation} saturation
           </span>
         </div>
 
-        <p className="text-gray-700 mb-3 leading-relaxed">{match.description}</p>
+        <p className="mb-3 leading-relaxed" style={{ color: SLATE }}>
+          {match.description}
+        </p>
 
-        <p className="text-sm italic border-l-2 border-[#C9A030] pl-4 mb-4" style={{ color: '#3A281A' }}>
+        <p
+          className="text-sm italic border-l-2 pl-4 mb-4"
+          style={{ color: ESPRESSO, borderColor: '#C9A030' }}
+        >
           {match.whyYou}
         </p>
 
         <div className="flex items-center gap-2 mb-4">
-          <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Income range:</span>
-          <span className="text-sm font-bold text-gray-800">{match.incomeRange}</span>
+          <span
+            className="text-xs font-semibold uppercase tracking-wide"
+            style={{ color: SLATE_TERTIARY }}
+          >
+            Income range:
+          </span>
+          <span className="text-sm font-bold" style={{ color: ESPRESSO_DEEP }}>
+            {match.incomeRange}
+          </span>
         </div>
 
         {match.uniqueAngle && (
-          <div className="bg-[#FBF6E4] border border-[#EBD9A0] rounded-lg px-4 py-3 mb-4">
-            <p className="text-xs font-semibold text-[#8B6914] uppercase tracking-wide mb-1">Your unique angle</p>
-            <p className="text-sm text-[#5C4206]">{match.uniqueAngle}</p>
+          <div
+            className="rounded-lg px-4 py-3 mb-4"
+            style={{ background: CREAM, border: '1px solid #EBD9A0' }}
+          >
+            <p
+              className="text-xs font-semibold uppercase tracking-wide mb-1"
+              style={{ color: '#8B6914' }}
+            >
+              Your unique angle
+            </p>
+            <p className="text-sm" style={{ color: ESPRESSO_DEEP }}>
+              {match.uniqueAngle}
+            </p>
           </div>
         )}
 
         <div>
-          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">First steps</p>
+          <p
+            className="text-xs font-semibold uppercase tracking-wide mb-2"
+            style={{ color: SLATE_TERTIARY }}
+          >
+            First steps
+          </p>
           <ol className="space-y-1">
             {match.firstSteps.map((step, i) => (
-              <li key={i} className="flex gap-2 text-sm text-gray-700">
-                <span className="font-bold shrink-0" style={{ color: '#8B6914' }}>{i + 1}.</span>
+              <li key={i} className="flex gap-2 text-sm" style={{ color: SLATE }}>
+                <span className="font-bold shrink-0" style={{ color: '#8B6914' }}>
+                  {i + 1}.
+                </span>
                 {step}
               </li>
             ))}
           </ol>
         </div>
 
-        <p className="text-xs text-gray-400 mt-3">{match.saturationNote}</p>
+        <p className="text-xs mt-3" style={{ color: SLATE_TERTIARY }}>
+          {match.saturationNote}
+        </p>
       </div>
     </div>
   );
@@ -262,11 +392,37 @@ function MatchCard({ match, index }: { match: Match; index: number }) {
 
 function ProgressBar({ step, total }: { step: number; total: number }) {
   return (
-    <div className="w-full bg-gray-100 rounded-full h-1.5 mb-8">
+    <div
+      className="w-full rounded-full h-1.5 mb-8"
+      style={{ background: 'rgba(58,40,26,0.12)' }}
+    >
       <div
         className="h-1.5 rounded-full transition-all duration-500"
         style={{ width: `${(step / total) * 100}%`, backgroundImage: GOLD_GRADIENT }}
       />
+    </div>
+  );
+}
+
+// ── Step heading ───────────────────────────────────────────────────────────
+
+function StepHeading({ title, sub }: { title: string; sub: React.ReactNode }) {
+  return (
+    <div className="mb-6">
+      <h2
+        style={{
+          ...headingFont,
+          color: ESPRESSO_DEEP,
+          fontSize: 'clamp(1.35rem, 3.5vw, 1.65rem)',
+          lineHeight: 1.2,
+          marginBottom: '0.35rem',
+        }}
+      >
+        {title}
+      </h2>
+      <p className="text-sm" style={{ color: SLATE_SECONDARY, lineHeight: 1.5 }}>
+        {sub}
+      </p>
     </div>
   );
 }
@@ -388,8 +544,10 @@ export default function QuizPage() {
     if (step === 1) {
       return (
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-1">Your hard skills</h2>
-          <p className="text-gray-500 mb-6 text-sm">Select everything that applies — be generous.</p>
+          <StepHeading
+            title="Your hard skills"
+            sub="Select everything that applies. Be generous."
+          />
           <div className="flex flex-wrap gap-2">
             {HARD_SKILLS.map((s) => (
               <Pill
@@ -408,11 +566,17 @@ export default function QuizPage() {
     if (step === 2) {
       return (
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-1">Your soft skills</h2>
-          <p className="text-gray-500 mb-6 text-sm">
-            Pick your top 5.{' '}
-            <span className="font-semibold" style={{ color: '#8B6914' }}>{form.softSkills.length}/5 selected</span>
-          </p>
+          <StepHeading
+            title="Your soft skills"
+            sub={
+              <>
+                Pick your top 5.{' '}
+                <span className="font-semibold" style={{ color: '#8B6914' }}>
+                  {form.softSkills.length}/5 selected
+                </span>
+              </>
+            }
+          />
           <div className="flex flex-wrap gap-2">
             {SOFT_SKILLS.map((s) => (
               <Pill
@@ -431,8 +595,7 @@ export default function QuizPage() {
     if (step === 3) {
       return (
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-1">How you like to work</h2>
-          <p className="text-gray-500 mb-6 text-sm">Pick one from each pair.</p>
+          <StepHeading title="How you like to work" sub="Pick one from each pair." />
           <div className="space-y-4">
             {WORK_STYLE_PAIRS.map((pair, i) => (
               <EitherOrPair
@@ -457,11 +620,17 @@ export default function QuizPage() {
     if (step === 4) {
       return (
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-1">What matters most</h2>
-          <p className="text-gray-500 mb-6 text-sm">
-            Pick your top 3.{' '}
-            <span className="font-semibold" style={{ color: '#8B6914' }}>{form.values.length}/3 selected</span>
-          </p>
+          <StepHeading
+            title="What matters most"
+            sub={
+              <>
+                Pick your top 3.{' '}
+                <span className="font-semibold" style={{ color: '#8B6914' }}>
+                  {form.values.length}/3 selected
+                </span>
+              </>
+            }
+          />
           <div className="flex flex-wrap gap-2">
             {VALUES.map((v) => (
               <Pill
@@ -480,12 +649,17 @@ export default function QuizPage() {
     if (step === 5) {
       return (
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-1">The practical part</h2>
-          <p className="text-gray-500 mb-6 text-sm">Realistic expectations make better matches.</p>
+          <StepHeading
+            title="The practical part"
+            sub="Realistic expectations make better matches."
+          />
 
           <div className="space-y-5">
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label
+                className="block text-sm font-semibold mb-2"
+                style={{ color: SLATE }}
+              >
                 Hours available per week
               </label>
               <div className="flex flex-wrap gap-2">
@@ -502,7 +676,10 @@ export default function QuizPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label
+                className="block text-sm font-semibold mb-2"
+                style={{ color: SLATE }}
+              >
                 Monthly income target
               </label>
               <div className="flex flex-wrap gap-2">
@@ -520,7 +697,9 @@ export default function QuizPage() {
           </div>
 
           {error && (
-            <p className="mt-4 text-sm text-red-600 bg-red-50 px-4 py-2 rounded-lg">{error}</p>
+            <p className="mt-4 text-sm px-4 py-2 rounded-lg" style={ERROR_STYLE}>
+              {error}
+            </p>
           )}
         </div>
       );
@@ -533,13 +712,16 @@ export default function QuizPage() {
     return (
       <>
         <Header />
-        <div className="relative overflow-hidden min-h-[calc(100vh-7rem)] flex items-center justify-center px-4" style={{ background: '#EBF0E6' }}>
+        <div
+          className="relative overflow-hidden min-h-[calc(100vh-7rem)] flex items-center justify-center px-4"
+          style={{ background: PALE_SAGE }}
+        >
           <div
-            className="pointer-events-none absolute -top-24 -right-24 w-96 h-96 rounded-full opacity-20"
+            className="pointer-events-none absolute -top-24 -right-24 w-48 h-48 md:w-96 md:h-96 rounded-full opacity-20"
             style={{ background: GOLD_GRADIENT }}
           />
           <div
-            className="pointer-events-none absolute -bottom-16 -left-16 w-64 h-64 rounded-full opacity-10"
+            className="pointer-events-none absolute -bottom-16 -left-16 w-40 h-40 md:w-64 md:h-64 rounded-full opacity-10"
             style={{ background: GOLD_GRADIENT }}
           />
           <div className="relative w-full max-w-sm">
@@ -555,18 +737,21 @@ export default function QuizPage() {
     const locked = stage === 'results';
     const top3 = matches.slice(0, 3).map((m, i) => `${i + 1}. ${m.title}`).join('\n');
     const more = matches.length > 3 ? `…and ${matches.length - 3} more.` : '';
-    const shareText = `${'\u2728'} I took the 5-minute Discover Your Idea assessment. My top matches:\n${top3}\n${more}\n${'\u{1F4AB}'} Find yours:`;
+    const shareText = `${'✨'} I took the 5-minute Discover Your Idea assessment. My top matches:\n${top3}\n${more}\n${'\u{1F4AB}'} Find yours:`;
 
     return (
       <>
         <Header />
-        <div className="relative overflow-hidden min-h-screen" style={{ background: '#EBF0E6' }}>
+        <div
+          className="relative overflow-hidden min-h-screen"
+          style={{ background: PALE_SAGE }}
+        >
           <div
-            className="pointer-events-none absolute -top-24 -right-24 w-96 h-96 rounded-full opacity-20"
+            className="pointer-events-none absolute -top-24 -right-24 w-48 h-48 md:w-96 md:h-96 rounded-full opacity-20"
             style={{ background: GOLD_GRADIENT }}
           />
           <div
-            className="pointer-events-none absolute -bottom-16 -left-16 w-64 h-64 rounded-full opacity-10"
+            className="pointer-events-none absolute -bottom-16 -left-16 w-40 h-40 md:w-64 md:h-64 rounded-full opacity-10"
             style={{ background: GOLD_GRADIENT }}
           />
           <div ref={topRef} className="relative max-w-2xl mx-auto px-4 py-10">
@@ -575,18 +760,20 @@ export default function QuizPage() {
               <h1
                 className="text-center"
                 style={{
-                  fontFamily: "'Cormorant Garamond', Georgia, serif",
-                  fontWeight: 700,
+                  ...headingFont,
                   fontSize: 'clamp(1.75rem, 4vw, 2.5rem)',
-                  color: '#3A281A',
+                  color: ESPRESSO,
                   lineHeight: 1.15,
                 }}
               >
                 My Business Matches
               </h1>
             </div>
-            <p className="text-gray-500 mb-4 text-sm text-center">
-              Based on your skills, values, and lifestyle goals — here are your top 7 paths.
+            <p
+              className="mb-4 text-sm text-center"
+              style={{ color: SLATE_SECONDARY }}
+            >
+              Based on your skills, values, and lifestyle goals: here are your top 7 paths.
             </p>
 
             {!locked && resultId && (
@@ -614,11 +801,25 @@ export default function QuizPage() {
 
               {locked && (
                 <div className="absolute inset-0 flex items-start justify-center pt-8">
-                  <div className="bg-white rounded-2xl shadow-xl p-8 mx-4 w-full max-w-md text-center border border-gray-100">
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">
+                  <div
+                    className="bg-white rounded-2xl shadow-xl p-8 mx-4 w-full max-w-md text-center"
+                    style={{ border: CARD_BORDER }}
+                  >
+                    <h3
+                      style={{
+                        ...headingFont,
+                        color: ESPRESSO_DEEP,
+                        fontSize: 'clamp(1.2rem, 3vw, 1.4rem)',
+                        lineHeight: 1.2,
+                        marginBottom: '0.5rem',
+                      }}
+                    >
                       Your #1 Match is {matches[0]?.title ?? 'ready'}. You are naturally wired for this.
                     </h3>
-                    <p className="text-gray-500 text-sm mb-6">
+                    <p
+                      className="text-sm mb-6"
+                      style={{ color: SLATE_SECONDARY, lineHeight: 1.5 }}
+                    >
                       I&apos;ve mapped 6 more paths that fit your profile, each with clear
                       first moves to make. Where should I send your full Career Identity
                       Dossier?
@@ -630,7 +831,11 @@ export default function QuizPage() {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="your@email.com"
-                        className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#C9A030]"
+                        className="w-full min-w-0 px-4 py-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#C9A030]"
+                        style={{
+                          border: `1px solid ${INPUT_BORDER}`,
+                          color: ESPRESSO_DEEP,
+                        }}
                       />
                       <button
                         type="submit"
@@ -642,7 +847,12 @@ export default function QuizPage() {
                       </button>
                     </form>
                     {emailError && (
-                      <p className="mt-3 text-sm text-red-600">{emailError}</p>
+                      <p
+                        className="mt-3 text-sm px-3 py-2 rounded-lg"
+                        style={ERROR_STYLE}
+                      >
+                        {emailError}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -650,12 +860,18 @@ export default function QuizPage() {
             </div>
 
             {!locked && (
-              <div className="mt-10 rounded-2xl p-8 text-center border" style={{ background: '#FBF6E4', borderColor: '#EBD9A0' }}>
-                <p className="text-lg font-bold mb-2" style={{ color: '#2D1A00' }}>
+              <div
+                className="mt-10 rounded-2xl p-8 text-center"
+                style={{ background: CREAM, border: '1px solid #EBD9A0' }}
+              >
+                <p
+                  className="text-lg font-bold mb-2"
+                  style={{ color: ESPRESSO_DEEP }}
+                >
                   Ready to turn your top match into a real plan?
                 </p>
-                <p className="text-sm text-gray-600 mb-5">
-                  This assessment is your entry point. IdeaToPlan — part of the same ecosystem —
+                <p className="text-sm mb-5" style={{ color: SLATE }}>
+                  This assessment is your entry point. IdeaToPlan, part of the same ecosystem,
                   turns your match into a clear, professional business plan.
                 </p>
                 <a
@@ -682,36 +898,44 @@ export default function QuizPage() {
   return (
     <>
       <Header />
-      <div className="relative overflow-hidden min-h-screen" style={{ background: '#EBF0E6' }}>
+      <div
+        className="relative overflow-hidden min-h-screen"
+        style={{ background: PALE_SAGE }}
+      >
         <div
-          className="pointer-events-none absolute -top-24 -right-24 w-96 h-96 rounded-full opacity-20"
+          className="pointer-events-none absolute -top-24 -right-24 w-48 h-48 md:w-96 md:h-96 rounded-full opacity-20"
           style={{ background: GOLD_GRADIENT }}
         />
         <div
-          className="pointer-events-none absolute -bottom-16 -left-16 w-64 h-64 rounded-full opacity-10"
+          className="pointer-events-none absolute -bottom-16 -left-16 w-40 h-40 md:w-64 md:h-64 rounded-full opacity-10"
           style={{ background: GOLD_GRADIENT }}
         />
         <div ref={topRef} className="max-w-xl mx-auto px-4 pt-6 pb-10">
           <h1
             className="mb-2 text-center"
             style={{
-              fontFamily: "'Cormorant Garamond', Georgia, serif",
-              fontWeight: 700,
+              ...headingFont,
               fontSize: 'clamp(1.75rem, 4vw, 2.5rem)',
-              color: '#3A281A',
+              color: ESPRESSO_DEEP,
               lineHeight: 1.15,
             }}
           >
             Find the Work That Funds the Life You Want
           </h1>
-          <p className="text-gray-600 mb-6 text-sm leading-relaxed">
-            Five simple questions. Be honest — there are no wrong answers. You&apos;ll get 7 real
+          <p
+            className="mb-6 text-sm leading-relaxed"
+            style={{ color: SLATE_SECONDARY }}
+          >
+            Five simple questions. Be honest. There are no wrong answers. You&apos;ll get 7 real
             paths matched to your skills, your values, and the life you&apos;re building.
           </p>
 
           <ProgressBar step={step} total={TOTAL_STEPS} />
 
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8 mb-6">
+          <div
+            className="rounded-2xl p-6 md:p-8 mb-6"
+            style={{ background: '#FFFFFF', border: CARD_BORDER }}
+          >
             {renderStep()}
           </div>
 
@@ -720,7 +944,8 @@ export default function QuizPage() {
               <button
                 type="button"
                 onClick={() => setStep((s) => s - 1)}
-                className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700 font-medium"
+                className="inline-flex items-center gap-2 text-sm font-medium hover:opacity-80"
+                style={{ color: SLATE }}
               >
                 <ArrowLeft className="w-4 h-4" /> Back
               </button>
@@ -749,7 +974,10 @@ export default function QuizPage() {
                 >
                   Show me my matches
                 </button>
-                <p className="text-xs text-gray-400 mt-2">
+                <p
+                  className="text-xs mt-2"
+                  style={{ color: SLATE_TERTIARY }}
+                >
                   Then run any match through a full feasibility &amp; saturation check
                 </p>
               </div>

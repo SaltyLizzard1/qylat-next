@@ -27,24 +27,36 @@ export default function HomePage() {
   }, []);
 
   return (
-    <div className="min-h-screen">
-      <Header />
-      <Hero />
-      <Divider />
-      <StoryTeaser />
-      <Divider />
-      <LeapCalculatorTeaser />
-      <Divider />
-      <DiscoverYourIdea />
-      <Divider />
-      <IdeaToPlan />
-      <Divider />
-      <LeadMagnet />
-      <Divider />
-      <WorkWithMe />
-      <Divider />
-      <LeapLog />
-      <Footer />
-    </div>
+    <>
+      {/* Hero is rendered as a CSS backgroundImage in components/Hero.tsx,
+          so next/image priority does not apply. This preload lives on the
+          homepage only, since no other route uses the image. React 19
+          hoists the <link> into <head> during SSR. */}
+      <link
+        rel="preload"
+        as="image"
+        href={process.env.NEXT_PUBLIC_IMG_HERO ?? '/images/rice-fields.jpg'}
+        fetchPriority="high"
+      />
+      <div className="min-h-screen">
+        <Header />
+        <Hero />
+        <Divider />
+        <StoryTeaser />
+        <Divider />
+        <LeapCalculatorTeaser />
+        <Divider />
+        <DiscoverYourIdea />
+        <Divider />
+        <IdeaToPlan />
+        <Divider />
+        <LeadMagnet />
+        <Divider />
+        <WorkWithMe />
+        <Divider />
+        <LeapLog />
+        <Footer />
+      </div>
+    </>
   );
 }

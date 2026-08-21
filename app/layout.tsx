@@ -57,14 +57,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" data-scroll-behavior="smooth" className={`${cormorant.variable} ${cinzel.variable}`}>
-      <head>
-        <link
-          rel="preload"
-          as="image"
-          href={process.env.NEXT_PUBLIC_IMG_HERO ?? '/images/rice-fields.jpg'}
-          fetchPriority="high"
-        />
-      </head>
       <body suppressHydrationWarning>
         {children}
         <Analytics />

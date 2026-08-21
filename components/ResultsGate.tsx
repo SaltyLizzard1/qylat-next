@@ -21,7 +21,7 @@ const GOLD_GRADIENT =
 const GOLD_BUTTON_STYLE = {
   background: GOLD_GRADIENT,
   color: '#2D1A00',
-  border: '1.5px solid #7A5C0A',
+  border: '1.5px solid #2D1A00',
 } as const;
 
 const SATURATION_COLORS: Record<string, string> = {

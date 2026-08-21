@@ -1,10 +1,10 @@
-import Header from '../../../components/Header';
-import Footer from '../../../components/Footer';
+import Header from '../../../../components/Header';
+import Footer from '../../../../components/Footer';
 
 const GOLD_GRADIENT =
   'linear-gradient(135deg, #8B6914 0%, #E8C84A 35%, #F5E070 55%, #C9A030 75%, #8B6914 100%)';
 
-export default function ResultNotFound() {
+export default function LeapTestResultNotFound() {
   return (
     <>
       <Header />
@@ -12,11 +12,10 @@ export default function ResultNotFound() {
         className="relative overflow-hidden flex items-center justify-center"
         style={{
           minHeight: 'calc(100vh - 7rem)',
-          background: 'linear-gradient(180deg, #0d0d0f 0%, #17140c 100%)',
+          background: 'linear-gradient(180deg, #0d0d0f 0%, #17140c 50%, #0d0d0f 100%)',
           padding: '4rem 1.5rem',
         }}
       >
-        {/* Radial gold glow */}
         <div
           className="pointer-events-none absolute"
           style={{
@@ -34,7 +33,7 @@ export default function ResultNotFound() {
             className="mb-6 font-bold uppercase"
             style={{ color: '#C9A030', fontSize: '0.78rem', letterSpacing: '0.15em' }}
           >
-            5-MINUTE ASSESSMENT
+            WHAT&apos;S STOPPING YOU
           </p>
           <h1
             className="mb-3"
@@ -48,10 +47,10 @@ export default function ResultNotFound() {
             Link not found
           </h1>
           <p className="mb-8 text-sm leading-relaxed" style={{ color: '#cfc9b8' }}>
-            This result link doesn&apos;t exist or has expired.
+            This result link does not exist or has expired.
           </p>
           <a
-            href="/assessment"
+            href="/whats-stopping-you"
             className="inline-block px-8 py-3 font-semibold rounded-lg transition-all hover:brightness-105"
             style={{
               background: GOLD_GRADIENT,
@@ -59,7 +58,7 @@ export default function ResultNotFound() {
               border: '1.5px solid #2D1A00',
             }}
           >
-            Start My Assessment →
+            Take the test
           </a>
         </div>
       </div>

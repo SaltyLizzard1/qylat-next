@@ -13,7 +13,7 @@ interface ShareButtonsProps {
 const GOLD_GRADIENT =
   'linear-gradient(135deg, #8B6914 0%, #E8C84A 35%, #F5E070 55%, #C9A030 75%, #8B6914 100%)';
 
-const ICON_BTN_SHADOW = '0 2px 8px rgba(0,0,0,0.12)';
+const ICON_BTN_SHADOW = '0 1px 4px rgba(0,0,0,0.08)';
 
 function IconBtn({
   label,
@@ -90,7 +90,7 @@ export default function ShareButtons({ url, title, text }: ShareButtonsProps) {
           type="button"
           onClick={handleNativeShare}
           className="inline-flex items-center gap-2 px-6 py-2.5 font-semibold rounded-lg transition-all hover:brightness-105 text-sm"
-          style={{ background: GOLD_GRADIENT, color: '#2D1A00', border: '1.5px solid #7A5C0A' }}
+          style={{ background: GOLD_GRADIENT, color: '#2D1A00', border: '1.5px solid #2D1A00' }}
         >
           <Share2 className="w-4 h-4" />
           Share My Results
@@ -133,7 +133,7 @@ export default function ShareButtons({ url, title, text }: ShareButtonsProps) {
 
       {igCopied && (
         <p className="text-xs text-center" style={{ color: '#a89f8a' }}>
-          Link copied — paste it in your bio or a DM.
+          Link copied, paste it in your bio or a DM.
         </p>
       )}
     </div>

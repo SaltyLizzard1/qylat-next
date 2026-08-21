@@ -126,7 +126,7 @@ export default function WorkWithMe() {
             <button
               type="button"
               onClick={openBooking}
-              className="font-sans px-10 py-4 text-lg font-semibold rounded-full transition-all duration-300 hover:scale-[1.03] active:scale-[0.98] shadow-lg"
+              className="font-sans whitespace-nowrap px-7 md:px-10 py-4 text-base md:text-lg font-semibold rounded-full transition-all duration-300 hover:scale-[1.03] active:scale-[0.98] shadow-lg"
               style={goldBtn}
             >
               Book Your Leap Session
