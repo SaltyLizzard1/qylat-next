@@ -1,6 +1,13 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Ensure the Cormorant Garamond font file lives alongside the OG image
+  // serverless function so fs.readFileSync can find it at request time.
+  // Without this include, Next.js's file tracing may not bundle files
+  // referenced via process.cwd() paths.
+  outputFileTracingIncludes: {
+    '/whats-stopping-you/result/[id]/opengraph-image': ['./public/fonts/*.ttf'],
+  },
   images: {
     remotePatterns: [
       {
