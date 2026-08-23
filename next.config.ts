@@ -20,7 +20,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: '/quiz',
-        destination: '/assessment',
+        destination: '/whats-stopping-you',
         permanent: true,
       },
       {
