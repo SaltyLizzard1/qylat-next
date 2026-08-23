@@ -16,6 +16,14 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async rewrites() {
+    return [
+      {
+        source: '/go/:slug',
+        destination: 'https://qylat-analytics.vercel.app/go/:slug',
+      },
+    ];
+  },
   async redirects() {
     return [
       {
