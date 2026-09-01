@@ -5,7 +5,7 @@ const ALERT_TO = 'liz@ideatoplan.to';
 const ALERT_FROM = 'noreply@send.quityourlifeandtravel.com';
 
 // Max age for the trend cache before we consider it stale.
-// The workflow runs daily at 3am UTC — 26h gives a comfortable buffer.
+// The workflow runs daily at 3am UTC, 26h gives a comfortable buffer.
 const TREND_CACHE_MAX_AGE_HOURS = 26;
 
 interface CheckResult {
@@ -21,7 +21,7 @@ async function checkWebhook(name: string, url: string): Promise<CheckResult> {
 
     // HEAD request: n8n returns 405 (method not allowed) when a workflow is active,
     // and 404 when the workflow is disabled or the path is unregistered.
-    // No AI nodes are ever invoked — zero cost.
+    // No AI nodes are ever invoked, zero cost.
     const res = await fetch(url, { method: 'HEAD', signal: controller.signal });
 
     clearTimeout(id);

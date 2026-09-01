@@ -21,11 +21,11 @@ const POST_QUERY = `*[_type == "post" && slug.current == $slug][0] {
 }`;
 
 const FALLBACK_DESC =
-  'Real stories from the road — quitting corporate life to build a location-independent life abroad.';
+  'Real stories from the road: quitting corporate life to build a location-independent life abroad.';
 const FALLBACK_IMAGE = 'https://www.quityourlifeandtravel.com/images/rice-fields.jpg';
 const FALLBACK_KEYWORDS = ['digital nomad', 'move abroad', 'location independence', 'quit corporate job'];
 
-// Deduplicated within a single request — generateMetadata and the page share one fetch
+// Deduplicated within a single request: generateMetadata and the page share one fetch
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const fetchPost = cache((slug: string) => sanityClient.fetch<any>(POST_QUERY, { slug }));
 

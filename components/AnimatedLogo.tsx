@@ -54,7 +54,7 @@ export default function AnimatedLogo({
       viewBox={showTagline ? "65 75 840 381" : "65 75 840 335"}
       className={svgClass}
       role="img"
-      aria-label="IdeaToPlan — Shape your future. Start today."
+      aria-label="IdeaToPlan. Shape your future. Start today."
     >
       <defs>
         <filter id="sparkle-glow" x="-200%" y="-200%" width="500%" height="500%">

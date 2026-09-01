@@ -24,7 +24,7 @@ export default function Comments({ pageTitle }: { pageTitle: string }) {
 
     const existing = document.getElementById('cusdis-script');
     if (existing) {
-      // Script already loaded — just re-init for the new page
+      // Script already loaded, just re-init for the new page
       (window as Window & { CUSDIS?: { initial: () => void } }).CUSDIS?.initial();
       return;
     }
@@ -37,7 +37,7 @@ export default function Comments({ pageTitle }: { pageTitle: string }) {
     document.body.appendChild(script);
 
     return () => {
-      // Leave the script tag — removing it breaks re-init on re-open
+      // Leave the script tag, removing it breaks re-init on re-open
     };
   }, [pageId, pageUrl, pageTitle]);
 

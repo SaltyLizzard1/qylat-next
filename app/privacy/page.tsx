@@ -22,7 +22,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 function Processor({ name, role, href }: { name: string; role: string; href: string }) {
   return (
     <p>
-      <span className="font-semibold text-gray-900">{name}</span> — {role}{' '}
+      <span className="font-semibold text-gray-900">{name}</span>: {role}{' '}
       <a href={href} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 text-[#8B6914] hover:opacity-70">
         Privacy policy
       </a>

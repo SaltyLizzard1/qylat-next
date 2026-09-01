@@ -2,7 +2,7 @@ import { ImageResponse } from 'next/og';
 
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
-export const alt = 'My Business Matches — Quit Your Life and Travel';
+export const alt = 'My Business Matches from Quit Your Life and Travel';
 
 interface Match {
   title?: string;
@@ -160,7 +160,7 @@ export default async function Image({ params }: Props) {
                 Also matched: {match2}
               </div>
             )}
-            {/* match3: shown when present — drop here first if space ever gets tight */}
+            {/* match3: shown when present, drop here first if space ever gets tight */}
             {match3 && (
               <div
                 style={{
@@ -192,7 +192,7 @@ export default async function Image({ params }: Props) {
           </div>
         )}
 
-        {/* Spacer — pushes CTA to bottom */}
+        {/* Spacer, pushes CTA to bottom */}
         <div style={{ flex: 1 }} />
 
         {/* ── 6. CTA FOOTER ROW ── */}
@@ -203,7 +203,7 @@ export default async function Image({ params }: Props) {
             alignItems: 'center',
           }}
         >
-          {/* Gold-gradient pill — visual CTA */}
+          {/* Gold-gradient pill, visual CTA */}
           <div
             style={{
               display: 'flex',

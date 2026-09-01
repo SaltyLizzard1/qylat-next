@@ -42,7 +42,7 @@ export default function WelcomePage() {
           </p>
 
           <p className="leading-relaxed mb-10" style={{ color: 'rgba(58,40,26,0.75)' }}>
-            Expect honest dispatches from Thailand — what&apos;s working, what surprised me, what
+            Expect honest dispatches from Thailand: what&apos;s working, what surprised me, what
             I wish I knew. Plus practical tips you can actually use. No fluff. No polished
             postcards. Just real life, in progress.
           </p>

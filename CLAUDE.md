@@ -40,8 +40,8 @@ Docker on a DigitalOcean droplet at 157.245.10.179). A change here can break Ide
 touching anything that talks to Supabase or n8n, consider the other repo.
 
 **Both repos contain a file called `components/IdeaToPlan.tsx` and they are entirely different files.**
-QYLAT's is the marketing section with the "Share Your Idea" CTA. IdeaToPlan's is the paid submission
-form. Confirm which repo is open before editing or reporting on that filename.
+QYLAT's holds the marketing section and an idea form that posts to `app/api/submit-idea/route.ts`.
+IdeaToPlan's is the paid submission form. Confirm which repo is open before editing or reporting on it.
 
 ## n8n
 

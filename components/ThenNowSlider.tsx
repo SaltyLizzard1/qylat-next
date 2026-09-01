@@ -53,7 +53,7 @@ export default function ThenNowSlider() {
         tabIndex={0}
         onKeyDown={onKeyDown}
       >
-        {/* NOW — base layer (beach) */}
+        {/* NOW: base layer (beach) */}
         <Image
           src="/My Story/workingfromhoe.jpg"
           alt="Working from the beach now"
@@ -62,7 +62,7 @@ export default function ThenNowSlider() {
           draggable={false}
         />
 
-        {/* THEN — clipped top layer (old desk) */}
+        {/* THEN: clipped top layer (old desk) */}
         <div
           className="absolute inset-0"
           style={{ clipPath: `inset(0 ${100 - percent}% 0 0)` }}

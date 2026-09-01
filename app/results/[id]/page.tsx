@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
   const canonicalUrl = `${BASE_URL}/results/${id}`;
   const title = 'My Business Matches | Quit Your Life and Travel';
-  const description = 'See the business ideas this assessment matched — then discover yours in 5 minutes.';
+  const description = 'See the business ideas this assessment matched, then discover yours in 5 minutes.';
 
   return {
     title,

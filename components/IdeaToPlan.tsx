@@ -260,7 +260,7 @@ export default function IdeaToPlan() {
                   <CheckCircle className="w-16 h-16 mx-auto mb-4" style={{ color: '#C9A030' }} />
                   <h3 className="text-2xl font-bold mb-3" style={{ color: '#8B6914' }}>We&apos;ve got your idea!</h3>
                   <p className="text-slate-700 mb-2">We&apos;ll be in touch within 48 hours to confirm the details. Plans are delivered within 72 hours, with expedited 48-hour delivery available.</p>
-                  <p className="text-slate-500 text-sm">Check your inbox — and spam, just in case.</p>
+                  <p className="text-slate-500 text-sm">Check your inbox (and spam, just in case).</p>
                   <button
                     onClick={closeForm}
                     className="mt-6 px-8 py-3 text-white font-semibold rounded-lg transition-colors"
@@ -314,7 +314,7 @@ export default function IdeaToPlan() {
                       </div>
                       <div>
                         <label className="block text-sm font-semibold text-slate-800 mb-1">Where will you operate?</label>
-                        <input name="location" value={form.location} onChange={handleChange} placeholder="City, State — or Online/Location-independent"
+                        <input name="location" value={form.location} onChange={handleChange} placeholder="City, State (or Online / Location-independent)"
                           className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#8B6914] transition" />
                       </div>
                     </div>
@@ -323,13 +323,13 @@ export default function IdeaToPlan() {
                       <div>
                         <label className="block text-sm font-semibold text-slate-800 mb-1">Current annual revenue</label>
                         <input name="currentRevenue" value={form.currentRevenue} onChange={handleChange}
-                          placeholder="e.g. $150,000 — leave blank if pre-revenue"
+                          placeholder="e.g. $150,000 (leave blank if pre-revenue)"
                           className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#8B6914] transition" />
                       </div>
                       <div>
                         <label className="block text-sm font-semibold text-slate-800 mb-1">Years in business</label>
                         <input name="yearsInBusiness" value={form.yearsInBusiness} onChange={handleChange}
-                          placeholder="e.g. 5 years — leave blank if new"
+                          placeholder="e.g. 5 years (leave blank if new)"
                           className="w-full border border-slate-200 rounded-lg px-4 py-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#8B6914] transition" />
                       </div>
                     </div>

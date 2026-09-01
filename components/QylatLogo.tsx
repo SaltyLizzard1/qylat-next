@@ -5,9 +5,9 @@ import Image from 'next/image';
 /*
   Animated QYLAT logo.
   Assets (all in /public):
-    /qylat-logo-base.png — wordmark, fully cleaned (no baked line, plane, or debris)
-    /qylat-line.png      — gold underline, extended to reach the T (751px @ 1:1 scale)
-    /qylat-plane.png     — the plane sprite (unchanged)
+    /qylat-logo-base.png - wordmark, fully cleaned (no baked line, plane, or debris)
+    /qylat-line.png      - gold underline, extended to reach the T (751px @ 1:1 scale)
+    /qylat-plane.png     - the plane sprite (unchanged)
   On load, the plane flies from the Q's swoosh to just beyond the T's stand,
   drawing the gold line behind it. Runs once. Reduced motion shows it static.
 */

@@ -23,7 +23,7 @@ export default function LeapLoader({ className }: { className?: string }) {
             /* idle on left bank */
             0%      { transform: translate(0px, 0px);    opacity: 1; }
             43.75%  { transform: translate(0px, 0px);    opacity: 1; }
-            /* leap arc — mid-air peak, then descend to right bank */
+            /* leap arc: mid-air peak, then descend to right bank */
             56.25%  { transform: translate(100px,-80px); opacity: 1; }
             68.75%  { transform: translate(260px,-18px); opacity: 1; }
             /* landing: x=340 puts frog-feet at world-x ~475, past pond edge (pond rx=115 → ends x=455) */
@@ -92,13 +92,13 @@ export default function LeapLoader({ className }: { className?: string }) {
             animation: frog-blink 8s linear infinite;
           }
           @keyframes frog-blink {
-            /* blink 1 at 25% (~2.0s) — during eye-contact beat */
+            /* blink 1 at 25% (~2.0s), during eye-contact beat */
             0%    { transform: scaleY(0); }
             23%   { transform: scaleY(0); }
             25%   { transform: scaleY(1); }
             27%   { transform: scaleY(1); }
             29%   { transform: scaleY(0); }
-            /* blink 2 at 84% (~6.7s) — post-landing smile */
+            /* blink 2 at 84% (~6.7s), post-landing smile */
             81%   { transform: scaleY(0); }
             84%   { transform: scaleY(1); }
             87%   { transform: scaleY(1); }
@@ -208,7 +208,7 @@ export default function LeapLoader({ className }: { className?: string }) {
       <circle cx="610" cy="62" r="34" fill="#F5E070" opacity="0.45" />
       <circle cx="610" cy="62" r="22" fill="#F5D020" />
 
-      {/* ── LEFT BANK — isometric cubicle maze ── */}
+      {/* ── LEFT BANK: isometric cubicle maze ── */}
       <rect x="0" y="210" width="210" height="110" fill="#9DA5AB" />
       {/* cubicle block 1 */}
       <polygon points="20,130 80,110 140,130 80,150" fill="#B7BDC2" />
@@ -237,7 +237,7 @@ export default function LeapLoader({ className }: { className?: string }) {
       <circle id="ripple-a" cx="320" cy="270" r="6" fill="none" stroke="#9FC3CF" strokeWidth="1.5" />
       <circle id="ripple-b" cx="345" cy="274" r="6" fill="none" stroke="#9FC3CF" strokeWidth="1.5" />
 
-      {/* ── RIGHT BANK — sandy ── */}
+      {/* ── RIGHT BANK: sandy ── */}
       <ellipse cx="530" cy="278" rx="155" ry="52" fill="#C9B87A" />
       <rect x="430" y="270" width="250" height="50" fill="#C9B87A" />
 
@@ -315,7 +315,7 @@ export default function LeapLoader({ className }: { className?: string }) {
               <circle cx="9"  cy="1" r="7" fill="white" />
               <circle cx="27" cy="1" r="7" fill="white" />
 
-              {/* FIX 3: animated pupils only — static id="pupil-l"/"pupil-r" removed */}
+              {/* FIX 3: animated pupils only, static id="pupil-l"/"pupil-r" removed */}
               <g id="frog-pupils">
                 <circle cx="9"  cy="2.5" r="2.8" fill="#0a0a0a" />
                 <circle cx="27" cy="2.5" r="2.8" fill="#0a0a0a" />
@@ -333,7 +333,7 @@ export default function LeapLoader({ className }: { className?: string }) {
               <ellipse cx="5"  cy="12" rx="4" ry="2.5" fill="#E8909A" opacity="0.4" />
               <ellipse cx="31" cy="12" rx="4" ry="2.5" fill="#E8909A" opacity="0.4" />
 
-              {/* MOUTH — neutral closed line, ALWAYS CLOSED */}
+              {/* MOUTH: neutral closed line, ALWAYS CLOSED */}
               <path
                 id="frog-mouth-neutral"
                 d="M12,19 Q18,21 24,19"
@@ -342,7 +342,7 @@ export default function LeapLoader({ className }: { className?: string }) {
                 strokeWidth="1.8"
                 strokeLinecap="round"
               />
-              {/* MOUTH — smile after landing, also closed */}
+              {/* MOUTH: smile after landing, also closed */}
               <path
                 id="frog-mouth-smile"
                 d="M12,18 Q18,24 24,18"
@@ -353,7 +353,7 @@ export default function LeapLoader({ className }: { className?: string }) {
                 style={{ opacity: 0 }}
               />
 
-              {/* TONGUE — pink rounded rect, scaleX from left */}
+              {/* TONGUE: pink rounded rect, scaleX from left */}
               <rect
                 id="frog-tongue"
                 x="18" y="18"

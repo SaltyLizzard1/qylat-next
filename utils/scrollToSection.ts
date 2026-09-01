@@ -1,4 +1,4 @@
-/** Sticky header id — must match Header.tsx */
+/** Sticky header id, must match Header.tsx */
 export const SITE_HEADER_ID = 'site-header';
 
 function headerBufferPx(): number {
