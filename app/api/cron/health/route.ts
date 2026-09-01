@@ -85,7 +85,7 @@ async function sendAlert(failures: CheckResult[]) {
     body: JSON.stringify({
       from: ALERT_FROM,
       to: ALERT_TO,
-      subject: `⚠️ n8n Pipeline Alert — ${count} issue${count > 1 ? 's' : ''} detected`,
+      subject: `⚠️ n8n Pipeline Alert: ${count} issue${count > 1 ? 's' : ''} detected`,
       text: [
         `The following n8n pipelines are down or unhealthy:\n`,
         bullet,
