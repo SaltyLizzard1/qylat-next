@@ -3,9 +3,11 @@ import { STATIC_POSTS } from '../data/staticPosts';
 
 /**
  * Server-side Leap Log list. app/page.tsx calls this so the homepage HTML
- * carries a real link to every post. The previous client-side fetch went
- * through /api/posts, which robots.txt disallows, so crawlers saw an empty
- * Leap Log and posts were discoverable only through the sitemap.
+ * carries a real link to every post, and app/sitemap.ts calls it so the
+ * sitemap and the homepage never disagree about which posts exist. The
+ * previous client-side fetch went through /api/posts, which robots.txt
+ * disallows, so crawlers saw an empty Leap Log and posts were discoverable
+ * only through the sitemap.
  *
  * Plain data only: this shape crosses the server/client boundary as a prop.
  */
@@ -16,6 +18,8 @@ export type LeapLogPost = {
   date: string;
   /** ISO date from Sanity, or the static registry. */
   publishedAt: string;
+  /** ISO timestamp of the last edit: Sanity's _updatedAt, or publishedAt for a static post. */
+  updatedAt: string;
   excerpt: string;
   image: string | null;
   postType: 'blog' | 'discussion' | 'photo-essay';
@@ -30,6 +34,7 @@ const LIST_QUERY = `*[_type == "post" && defined(slug.current)] | order(publishe
   excerpt,
   heroImage,
   publishedAt,
+  _updatedAt,
   "hasBody": count(coalesce(body, [])) > 0
 }`;
 
@@ -42,6 +47,7 @@ type RawListPost = {
   excerpt?: string;
   heroImage?: unknown;
   publishedAt?: string;
+  _updatedAt?: string;
   hasBody?: boolean;
 };
 
@@ -78,6 +84,7 @@ export async function getLeapLogPosts(): Promise<LeapLogPost[]> {
     title: post.title,
     date: formatPostDate(post.publishedAt ?? ''),
     publishedAt: post.publishedAt ?? '',
+    updatedAt: post._updatedAt ?? post.publishedAt ?? '',
     excerpt: post.excerpt ?? '',
     image: post.heroImage ? urlFor(post.heroImage).width(800).height(600).fit('crop').url() : null,
     postType: toPostType(post.postType),
@@ -92,6 +99,7 @@ export async function getLeapLogPosts(): Promise<LeapLogPost[]> {
       title: post.title,
       date: formatPostDate(post.publishedAt),
       publishedAt: post.publishedAt,
+      updatedAt: post.publishedAt,
       excerpt: post.excerpt,
       image: post.image,
       postType: 'blog',

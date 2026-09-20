@@ -160,6 +160,10 @@ Cormorant Garamond and Cinzel (display accent) both load via `next/font/google` 
 - The static 60-day post's slug, title, date and excerpt live in `data/staticPosts.ts` (server-safe) and
   spread into `data/posts.tsx`, which cannot be imported by a server component because it uses hooks.
   `app/leap/[slug]/page.tsx` checks that registry after Sanity and returns a real 404 for anything else
+- `app/sitemap.ts` lists posts from `lib/posts.ts` with Sanity's `_updatedAt` as lastmod, and the static
+  pages with a hand-kept copy date. Vercel builds from a shallow clone with no `.git`, so dates cannot
+  come from git. When the visible copy of a static page changes, bump its date in `app/sitemap.ts` in the
+  same commit. Metadata and styling changes do not count. noindex routes stay out of the sitemap
 - New routes get one or the other, with title, description, canonical, openGraph AND twitter
 - Any route that declares an `openGraph` block MUST include its own `images` array. Next.js merges
   metadata shallowly, so a child `openGraph` replaces the root one entirely and silently strips the
