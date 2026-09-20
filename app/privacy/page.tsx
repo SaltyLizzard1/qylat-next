@@ -1,12 +1,13 @@
 import type { Metadata } from 'next';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
+import { pageMetadata } from '@/lib/siteMetadata';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: 'Privacy Policy | QYLAT',
   description: 'How Quit Your Life and Travel collects, uses, and protects your information.',
-  alternates: { canonical: 'https://www.quityourlifeandtravel.com/privacy' },
-};
+  path: '/privacy',
+});
 
 const EFFECTIVE_DATE = 'July 8, 2026';
 

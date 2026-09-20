@@ -143,8 +143,19 @@ Cormorant Garamond and Cinzel (display accent) both load via `next/font/google` 
 
 - Metadata lives in one of two places today. A route `layout.tsx` carries it for assessment, calculator,
   thank-you, welcome and whats-stopping-you. The page itself exports `metadata` or `generateMetadata` for
-  story, privacy, terms, maintenance, leap/[slug], results/[id] and whats-stopping-you/result/[id].
-  /about and /faq have neither and inherit root metadata from `app/layout.tsx`, a known gap, not a pattern
+  the homepage, story, about, faq, privacy, terms, maintenance, leap/[slug], results/[id] and
+  whats-stopping-you/result/[id]. `lib/siteMetadata.ts` holds the site constants and a `pageMetadata()`
+  helper that emits title, description, canonical, openGraph with image and twitter together. Use it
+- The root layout deliberately carries no `alternates.canonical` and no `openGraph.url`. Both inherit into
+  any route that does not override them, which is how /story, /about, /faq and the result pages shipped
+  the homepage as their canonical until September 2026. Every indexable route sets its own canonical
+- `app/page.tsx` is a server component so the homepage can export metadata; the client body lives in
+  `components/HomePage.tsx`
+- The per-user result routes (results/[id], whats-stopping-you/result/[id]) are `noindex, follow`. Their
+  OG image routes still render, so sharing works
+- The static 60-day post's slug, title, date and excerpt live in `data/staticPosts.ts` (server-safe) and
+  spread into `data/posts.tsx`, which cannot be imported by a server component because it uses hooks.
+  `app/leap/[slug]/page.tsx` checks that registry after Sanity and returns a real 404 for anything else
 - New routes get one or the other, with title, description, canonical, openGraph AND twitter
 - Any route that declares an `openGraph` block MUST include its own `images` array. Next.js merges
   metadata shallowly, so a child `openGraph` replaces the root one entirely and silently strips the

@@ -2,6 +2,13 @@ import type { Metadata } from 'next';
 import { Cormorant_Garamond, Cinzel } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/react';
 import { GoogleAnalytics } from '@next/third-parties/google';
+import {
+  SITE_URL,
+  SITE_NAME,
+  SITE_TITLE,
+  SITE_DESCRIPTION,
+  DEFAULT_OG_IMAGE,
+} from '@/lib/siteMetadata';
 import './globals.css';
 
 const cormorant = Cormorant_Garamond({
@@ -18,35 +25,29 @@ const cinzel = Cinzel({
   display: 'swap',
 });
 
+// Root metadata is the fallback for routes that declare nothing of their own.
+// It deliberately carries no alternates.canonical and no openGraph.url. Both
+// keys inherit into every child route that does not override them, which is
+// how /story, /about, /faq and the result pages all shipped the homepage as
+// their canonical. Each indexable route sets its own via lib/siteMetadata.ts.
 export const metadata: Metadata = {
-  metadataBase: new URL('https://www.quityourlifeandtravel.com'),
-  alternates: {
-    canonical: 'https://www.quityourlifeandtravel.com',
-  },
-  title: 'How to Move Abroad and Build a Location-Independent Life | QYLAT',
-  description: 'Your mind tells you too old, too broke, too scared. It\'s lying. The life you\'ve always wanted is there, waiting for you. Here\'s how to build it.',
+  metadataBase: new URL(SITE_URL),
+  title: SITE_TITLE,
+  description: SITE_DESCRIPTION,
   keywords: 'digital nomad, quit your job, online business, remote work, location independence',
   authors: [{ name: 'Liz' }],
   openGraph: {
-    title: 'How to Move Abroad and Build a Location-Independent Life | QYLAT',
-    description: 'Your mind tells you too old, too broke, too scared. It\'s lying. The life you\'ve always wanted is there, waiting for you. Here\'s how to build it.',
-    url: 'https://www.quityourlifeandtravel.com',
-    siteName: 'Quit Your Life and Travel',
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+    siteName: SITE_NAME,
     type: 'website',
-    images: [
-      {
-        url: 'https://www.quityourlifeandtravel.com/images/og-default.jpg',
-        width: 1200,
-        height: 630,
-        alt: 'Rice terraces at sunset in northern Thailand',
-      },
-    ],
+    images: [DEFAULT_OG_IMAGE],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'How to Move Abroad and Build a Location-Independent Life | QYLAT',
-    description: 'Your mind tells you too old, too broke, too scared. It\'s lying. The life you\'ve always wanted is there, waiting for you. Here\'s how to build it.',
-    images: ['https://www.quityourlifeandtravel.com/images/og-default.jpg'],
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+    images: [DEFAULT_OG_IMAGE],
   },
 };
 

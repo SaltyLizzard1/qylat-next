@@ -1,12 +1,13 @@
 import type { Metadata } from 'next';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
+import { pageMetadata } from '@/lib/siteMetadata';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: 'Terms of Service | QYLAT',
   description: 'Terms of service for Quit Your Life and Travel.',
-  alternates: { canonical: 'https://www.quityourlifeandtravel.com/terms' },
-};
+  path: '/terms',
+});
 
 const EFFECTIVE_DATE = 'July 8, 2026';
 

@@ -1,31 +1,14 @@
-'use client';
+import type { Metadata } from 'next';
+import HomePage from '../components/HomePage';
+import { pageMetadata, SITE_TITLE, SITE_DESCRIPTION } from '@/lib/siteMetadata';
 
-import { useEffect } from 'react';
-import Header from '../components/Header';
-import Hero from '../components/Hero';
-import LeadMagnet from '../components/LeadMagnet';
-import StoryTeaser from '../components/StoryTeaser';
-import WorkWithMe from '../components/WorkWithMe';
-import DiscoverYourIdea from '../components/DiscoverYourIdea';
-import IdeaToPlan from '../components/IdeaToPlan';
-import LeapCalculatorTeaser from '../components/LeapCalculatorTeaser';
-import LeapLog from '../components/LeapLog';
-import Footer from '../components/Footer';
-import { scrollToSectionById } from '../utils/scrollToSection';
+export const metadata: Metadata = pageMetadata({
+  title: SITE_TITLE,
+  description: SITE_DESCRIPTION,
+  path: '/',
+});
 
-const Divider = () => (
-  <div className="w-full" style={{ height: '3px', background: 'linear-gradient(90deg, transparent 0%, #C9A030 25%, #F5E070 50%, #C9A030 75%, transparent 100%)' }} />
-);
-
-export default function HomePage() {
-  useEffect(() => {
-    const hash = window.location.hash?.replace(/^#/, '');
-    if (!hash) return;
-    const id = decodeURIComponent(hash);
-    const t = window.setTimeout(() => scrollToSectionById(id), 350);
-    return () => window.clearTimeout(t);
-  }, []);
-
+export default function Page() {
   return (
     <>
       {/* Hero is rendered as a CSS backgroundImage in components/Hero.tsx,
@@ -38,25 +21,7 @@ export default function HomePage() {
         href={process.env.NEXT_PUBLIC_IMG_HERO ?? '/images/rice-fields.jpg'}
         fetchPriority="high"
       />
-      <div className="min-h-screen">
-        <Header />
-        <Hero />
-        <Divider />
-        <StoryTeaser />
-        <Divider />
-        <LeapCalculatorTeaser />
-        <Divider />
-        <DiscoverYourIdea />
-        <Divider />
-        <IdeaToPlan />
-        <Divider />
-        <LeadMagnet />
-        <Divider />
-        <WorkWithMe />
-        <Divider />
-        <LeapLog />
-        <Footer />
-      </div>
+      <HomePage />
     </>
   );
 }

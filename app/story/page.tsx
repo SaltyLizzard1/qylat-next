@@ -1,27 +1,24 @@
+import type { Metadata } from 'next';
 import Image from 'next/image';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import StoryHero from '../../components/StoryHero';
 import ThenNowSlider from '../../components/ThenNowSlider';
+import { pageMetadata } from '@/lib/siteMetadata';
 
-export const metadata = {
+export const metadata: Metadata = pageMetadata({
   title: 'My Story | Quit Your Life and Travel',
   description:
     'How a two-hour Monday commute over the Howard Franklin Bridge became the moment I decided to quit corporate life, the leap to Thailand, the pandemic that erased the plan, and the six years it took to try again.',
-  openGraph: {
-    title: 'My Story | Quit Your Life and Travel',
-    description:
-      'How a two-hour Monday commute over the Howard Franklin Bridge became the moment I decided to quit corporate life, the leap to Thailand, the pandemic that erased the plan, and the six years it took to try again.',
-    images: [
-      {
-        url: '/My Story/traffic.png',
-        width: 1200,
-        height: 700,
-        alt: 'Bumper to bumper morning commute',
-      },
-    ],
+  path: '/story',
+  // 1200x700, the one deliberate exception to the 1200x630 rule. See CLAUDE.md.
+  image: {
+    url: '/My Story/traffic.png',
+    width: 1200,
+    height: 700,
+    alt: 'Bumper to bumper morning commute',
   },
-};
+});
 
 const headingFont = { fontFamily: "'Cormorant Garamond', Georgia, serif" };
 

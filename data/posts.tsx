@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { images } from '../config/images';
+import { SIXTY_DAY_POST } from './staticPosts';
 
 export interface Post {
   id: number;
@@ -200,15 +200,12 @@ function WorkWithMeCTA({ onTakeLeapClick }: { onTakeLeapClick?: () => void }) {
   );
 }
 
+// Slug, title, date and excerpt come from data/staticPosts.ts so the server
+// route can read them without pulling this hook-bearing module into a server
+// component. Only the render function lives here.
 export const posts: Post[] = [
   {
-    id: 3,
-    slug: 'how-to-move-to-thailand-in-60-days',
-    title: 'How to Move to Thailand in 60 Days',
-    date: 'March 15, 2026',
-    excerpt:
-      "The second leap is harder than the first. Here's the exact 60-day plan I'm following - packing, visa, banking, and every task from first sort to final keys.",
-    image: images.sixtyDay,
+    ...SIXTY_DAY_POST,
     content: ({ onTakeLeapClick } = {}) => (
       <PostContent>
         <p>The first time I did this, it was easier. Not because it wasn&apos;t scary. It was terrifying. But I hadn&apos;t lost anything yet. I just knew I was done with the life I had and ready for something different.</p>

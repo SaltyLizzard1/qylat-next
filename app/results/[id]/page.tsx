@@ -31,9 +31,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const title = 'My Business Matches | Quit Your Life and Travel';
   const description = 'See the business ideas this assessment matched, then discover yours in 5 minutes.';
 
+  // Per-user result page. Shareable (the OG image route still renders) but
+  // kept out of the index so thousands of near-duplicate result URLs never
+  // compete with /assessment.
   return {
     title,
     description,
+    alternates: { canonical: canonicalUrl },
+    robots: { index: false, follow: true },
     openGraph: {
       title,
       description,

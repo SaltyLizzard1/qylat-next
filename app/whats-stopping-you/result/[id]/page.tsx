@@ -40,10 +40,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     ? `${ARCHETYPE_COPY[result.archetype].bottleneckLine} Find out what's stopping you.`
     : 'Sixteen honest questions. Find the one thing standing between you and the leap.';
 
+  // Per-user result page. Shareable (the OG image route still renders) but
+  // kept out of the index so result URLs never compete with /whats-stopping-you.
   return {
     title,
     description,
     alternates: { canonical: canonicalUrl },
+    robots: { index: false, follow: true },
     openGraph: {
       title,
       description,
