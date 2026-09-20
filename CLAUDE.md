@@ -138,6 +138,10 @@ Cormorant Garamond and Cinzel (display accent) both load via `next/font/google` 
   `9498737` (Footer), `9243576` (LeadMagnet, LeapCalculator), `9562904` (assessment, ResultsGate). Blog
   posts instead embed the Kit script with uid `afc2a0b2d2` in `data/posts.tsx`. Reuse an existing id
 - Free tools and content always appear before paid offers in page flow
+- The Leap Log list is fetched on the server in `lib/posts.ts` (Sanity plus `data/staticPosts.ts`, pinned
+  post first, hourly revalidation) and passed down as a prop from `app/page.tsx`, so every post link is in
+  the homepage HTML. `PostCard` renders real `next/link` anchors, never buttons. `/api/posts` is
+  disallowed in robots.txt, so nothing a crawler needs may depend on a client-side fetch of it
 
 ## Metadata and social previews
 

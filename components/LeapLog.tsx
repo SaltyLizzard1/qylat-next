@@ -1,83 +1,14 @@
 'use client';
 
 import { motion, MotionConfig } from 'framer-motion';
-import { useCallback, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
 import PostCard from './PostCard';
 import SectionDivider from './SectionDivider';
-import { posts, type Post } from '../data/posts';
-import { useSanityPosts, type SanityPost } from '../lib/useSanityPosts';
-import { SanityPostContent } from '../lib/SanityPostContent';
+import type { LeapLogPost } from '../lib/posts';
 
-/** Convert a Sanity post into the shape PostCard expects */
-function sanityToPost(sp: SanityPost): Post {
-  return {
-    id: 9000 + Math.abs(hashCode(sp._id)),
-    slug: sp.slug,
-    title: sp.title,
-    date: sp.publishedAt
-      ? new Date(sp.publishedAt).toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-        })
-      : '',
-    excerpt: sp.excerpt || '',
-    image: sp.heroCardUrl || sp.heroImageUrl || '',
-    heroFit: sp.heroFit === 'contain' ? 'contain' : 'cover',
-    postType: sp.postType,
-    // Keep the Portable Text body so the post can be matched/rendered even if
-    // `content` is ever absent.
-    body: sp.body,
-    content: ({ onTakeLeapClick } = {}) => <SanityPostContent post={sp} onTakeLeapClick={onTakeLeapClick} />,
-  };
-}
-
-/**
- * A post is renderable if it has a hardcoded `content` render function OR a
- * non-empty Sanity Portable Text `body`.
- */
-function isRenderablePost(p: Post): boolean {
-  return Boolean(p.content) || (Array.isArray(p.body) && p.body.length > 0);
-}
-
-function hashCode(s: string): number {
-  let h = 0;
-  for (let i = 0; i < s.length; i++) {
-    h = (Math.imul(31, h) + s.charCodeAt(i)) | 0;
-  }
-  return h;
-}
-
-export default function LeapLog() {
-  const router = useRouter();
-
-  const { posts: sanityPosts } = useSanityPosts();
-
-  const allPosts = useMemo(() => {
-    const converted = sanityPosts.map(sanityToPost);
-    const hardcoded = [...posts];
-    const slugSet = new Set(converted.map((p) => p.slug));
-    const filtered = hardcoded.filter((p) => !slugSet.has(p.slug));
-    const PINNED = 'how-to-move-to-thailand-in-60-days';
-    return [...converted, ...filtered].sort((a, b) => {
-      if (a.slug === PINNED) return -1;
-      if (b.slug === PINNED) return 1;
-      const tb = new Date(b.date).getTime();
-      const ta = new Date(a.date).getTime();
-      const byDate = tb - ta;
-      if (byDate !== 0) return byDate;
-      return b.id - a.id;
-    });
-  }, [sanityPosts]);
-
-  const openPost = useCallback(
-    (slug: string) => {
-      router.push(`/leap/${slug}`);
-    },
-    [router]
-  );
-
+// Posts arrive as a prop from app/page.tsx, fetched on the server by
+// lib/posts.ts, already merged with the static registry and sorted. Nothing
+// here fetches, so the full list is in the server-rendered HTML.
+export default function LeapLog({ posts }: { posts: LeapLogPost[] }) {
   return (
     <MotionConfig reducedMotion="user">
     <motion.section
@@ -98,8 +29,8 @@ export default function LeapLog() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-8 mb-8">
-          {allPosts.map((post, index) => (
-            <PostCard key={post.id} post={post} onOpenPost={openPost} priority={index === 0} />
+          {posts.map((post, index) => (
+            <PostCard key={post.slug} post={post} priority={index === 0} />
           ))}
         </div>
       </div>

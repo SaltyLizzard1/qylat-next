@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import HomePage from '../components/HomePage';
+import { getLeapLogPosts } from '@/lib/posts';
 import { pageMetadata, SITE_TITLE, SITE_DESCRIPTION } from '@/lib/siteMetadata';
 
 export const metadata: Metadata = pageMetadata({
@@ -8,7 +9,9 @@ export const metadata: Metadata = pageMetadata({
   path: '/',
 });
 
-export default function Page() {
+export default async function Page() {
+  const posts = await getLeapLogPosts();
+
   return (
     <>
       {/* Hero is rendered as a CSS backgroundImage in components/Hero.tsx,
@@ -21,7 +24,7 @@ export default function Page() {
         href={process.env.NEXT_PUBLIC_IMG_HERO ?? '/images/rice-fields.jpg'}
         fetchPriority="high"
       />
-      <HomePage />
+      <HomePage posts={posts} />
     </>
   );
 }

@@ -12,14 +12,15 @@ import LeapCalculatorTeaser from './LeapCalculatorTeaser';
 import LeapLog from './LeapLog';
 import Footer from './Footer';
 import { scrollToSectionById } from '../utils/scrollToSection';
+import type { LeapLogPost } from '../lib/posts';
 
 const Divider = () => (
   <div className="w-full" style={{ height: '3px', background: 'linear-gradient(90deg, transparent 0%, #C9A030 25%, #F5E070 50%, #C9A030 75%, transparent 100%)' }} />
 );
 
 // The homepage body. app/page.tsx stays a server component so it can export
-// metadata; everything interactive (hash scrolling, client sections) lives here.
-export default function HomePage() {
+// metadata and fetch the Leap Log; everything interactive lives here.
+export default function HomePage({ posts }: { posts: LeapLogPost[] }) {
   useEffect(() => {
     const hash = window.location.hash?.replace(/^#/, '');
     if (!hash) return;
@@ -45,7 +46,7 @@ export default function HomePage() {
       <Divider />
       <WorkWithMe />
       <Divider />
-      <LeapLog />
+      <LeapLog posts={posts} />
       <Footer />
     </div>
   );
