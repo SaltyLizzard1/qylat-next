@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import About from '../../components/About';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
+import JsonLd from '../../components/JsonLd';
+import { aboutProfilePage, breadcrumbList, HOME_CRUMB } from '@/lib/jsonLd';
 import { pageMetadata } from '@/lib/siteMetadata';
 
 export const metadata: Metadata = pageMetadata({
@@ -14,6 +16,7 @@ export const metadata: Metadata = pageMetadata({
 export default function AboutPage() {
   return (
     <div className="min-h-screen">
+      <JsonLd data={[aboutProfilePage(), breadcrumbList([HOME_CRUMB, { name: 'About', path: '/about' }])]} />
       <Header />
       <About />
       <Footer />

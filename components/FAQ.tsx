@@ -2,95 +2,30 @@
 
 import { useState } from 'react';
 import { Plus, Minus } from 'lucide-react';
+import { VISIBLE_FAQS, type Faq, type FaqSegment } from '../data/faqs';
 
 const goldGradient =
   'linear-gradient(135deg, #8B6914 0%, #E8C84A 35%, #F5E070 55%, #C9A030 75%, #8B6914 100%)';
 
-type FaqItem = {
-  question: string;
-  answer: React.ReactNode;
-};
+const linkClass = 'font-semibold underline underline-offset-4 hover:opacity-70 transition';
 
-const FAQS: FaqItem[] = [
-  {
-    question: 'How are QYLAT and IdeaToPlan related?',
-    answer: (
-      <>
-        They are two entry points into the same ecosystem. QYLAT helps you figure out the
-        work and life you&apos;re built for; IdeaToPlan turns that direction into a clear,
-        professional business plan. You can start with either one. They&apos;re designed to
-        work together, not as separate businesses.
-      </>
-    ),
-  },
-  {
-    question: 'What is the free Discover Your Idea assessment?',
-    answer: (
-      <>
-        It&apos;s a short assessment, five questions, about two minutes, that matches your
-        skills, values, and lifestyle goals to seven real online income paths. It&apos;s free
-        and no email is required to start.
-      </>
-    ),
-  },
-  {
-    question: 'How long does a business plan take?',
-    answer: (
-      <>
-        Delivered within 72 hours. Expedited 48-hour delivery is available.
-      </>
-    ),
-  },
-  {
-    question: 'How much does a business plan cost?',
-    answer: (
-      <>
-        Plans start at $25. You can see the full range of options and details at{' '}
-        <a
-          href="https://ideatoplan.to"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="font-semibold underline underline-offset-4 hover:opacity-70 transition"
-          style={{ color: '#8B6914' }}
-        >
-          ideatoplan.to
-        </a>
-        .
-      </>
-    ),
-  },
-  {
-    question: 'What is a Leap Session?',
-    answer: (
-      <>
-        A 45-minute private coaching call built to help you identify what&apos;s keeping you
-        stuck, clarify what you actually want, and leave with a first action plan. It&apos;s
-        currently offered at a $40 introductory rate.
-      </>
-    ),
-  },
-  {
-    question: 'Is any of this professional advice?',
-    answer: (
-      <>
-        No. Everything here, including the assessment, plans, and coaching, is informational
-        and educational. It is not legal, financial, tax, immigration, or medical advice. You
-        remain responsible for your own decisions, and we recommend consulting licensed
-        professionals before acting on anything significant. See our{' '}
-        <a
-          href="/terms"
-          className="font-semibold underline underline-offset-4 hover:opacity-70 transition"
-          style={{ color: '#8B6914' }}
-        >
-          Terms of Service
-        </a>{' '}
-        for details.
-      </>
-    ),
-  },
-];
+function AnswerSegment({ segment }: { segment: FaqSegment }) {
+  if (typeof segment === 'string') return <>{segment}</>;
+  if (segment.external) {
+    return (
+      <a href={segment.href} target="_blank" rel="noopener noreferrer" className={linkClass} style={{ color: '#8B6914' }}>
+        {segment.label}
+      </a>
+    );
+  }
+  return (
+    <a href={segment.href} className={linkClass} style={{ color: '#8B6914' }}>
+      {segment.label}
+    </a>
+  );
+}
 
-function FaqRow({ item, isOpen, onToggle }: { item: FaqItem; isOpen: boolean; onToggle: () => void }) {
+function FaqRow({ item, isOpen, onToggle }: { item: Faq; isOpen: boolean; onToggle: () => void }) {
   return (
     <div className="border-b" style={{ borderColor: 'rgba(139,105,20,0.25)' }}>
       <button
@@ -115,7 +50,9 @@ function FaqRow({ item, isOpen, onToggle }: { item: FaqItem; isOpen: boolean; on
       </button>
       {isOpen && (
         <p className="pb-4 -mt-1 text-base leading-relaxed" style={{ color: '#3A281A' }}>
-          {item.answer}
+          {item.answer.map((segment, index) => (
+            <AnswerSegment key={index} segment={segment} />
+          ))}
         </p>
       )}
     </div>
@@ -161,9 +98,9 @@ export default function FAQ() {
         </div>
 
         <div>
-          {FAQS.slice(0, 5).map((item, index) => (
+          {VISIBLE_FAQS.map((item, index) => (
             <FaqRow
-              key={index}
+              key={item.question}
               item={item}
               isOpen={openIndex === index}
               onToggle={() => setOpenIndex(openIndex === index ? null : index)}

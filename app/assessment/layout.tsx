@@ -1,4 +1,6 @@
 import type { Metadata } from 'next';
+import JsonLd from '../../components/JsonLd';
+import { breadcrumbList, HOME_CRUMB } from '@/lib/jsonLd';
 import { pageMetadata } from '@/lib/siteMetadata';
 
 export const metadata: Metadata = pageMetadata({
@@ -10,5 +12,10 @@ export const metadata: Metadata = pageMetadata({
 });
 
 export default function QuizLayout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
+  return (
+    <>
+      <JsonLd data={breadcrumbList([HOME_CRUMB, { name: 'Discover Your Idea', path: '/assessment' }])} />
+      {children}
+    </>
+  );
 }

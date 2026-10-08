@@ -1,4 +1,6 @@
 import type { Metadata } from 'next';
+import JsonLd from '../../components/JsonLd';
+import { breadcrumbList, HOME_CRUMB } from '@/lib/jsonLd';
 
 const TITLE = "What's Stopping You | Quit Your Life and Travel";
 const DESCRIPTION =
@@ -36,5 +38,10 @@ export const metadata: Metadata = {
 };
 
 export default function LeapTestLayout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
+  return (
+    <>
+      <JsonLd data={breadcrumbList([HOME_CRUMB, { name: "What's Stopping You", path: '/whats-stopping-you' }])} />
+      {children}
+    </>
+  );
 }

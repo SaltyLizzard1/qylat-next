@@ -183,6 +183,21 @@ Cormorant Garamond and Cinzel (display accent) both load via `next/font/google` 
 - Share direct URLs only. Google's native share button wraps links in a `share.google` redirect, which
   breaks previews. The debugger's missing `fb:app_id` warning is harmless, ignore it
 
+## Structured data (JSON-LD)
+
+- Builders live in `lib/jsonLd.ts`, rendered by `components/JsonLd.tsx` as native script tags. The root
+  layout ships the site graph on every page: Organization (QYLAT), Person (Liz Alfond), Organization
+  (IdeaToPlan) and WebSite, linked by `@id`. Page blocks reference those ids
+- Per page: Service (Leap Session) on the homepage, BlogPosting plus BreadcrumbList on posts, FAQPage
+  on /faq, ProfilePage on /about, WebPage on /story, BreadcrumbList on the three tools
+- Every fact in a schema must already be on the site. The surname Alfond and leaving the LLC out were
+  confirmed by Liz on 2026-09-22. Never add a legal name, address, phone, revenue or founding date
+- FAQ copy lives in `data/faqs.ts` and feeds both the FAQ component and the FAQPage schema, so the two
+  cannot drift. `VISIBLE_FAQS` is what the page shows; the schema must never list a hidden question
+- When the Leap Session price, length or booking URL changes in `components/WorkWithMe.tsx`, change
+  `leapSessionService()` in the same commit
+- Validate on the live URL with Google's Rich Results Test and validator.schema.org after deploying
+
 ## Environment
 
 - Windows and PowerShell. Use `curl.exe` not `curl`, since `curl` is an alias for `Invoke-WebRequest` and

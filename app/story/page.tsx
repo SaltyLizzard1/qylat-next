@@ -4,6 +4,8 @@ import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import StoryHero from '../../components/StoryHero';
 import ThenNowSlider from '../../components/ThenNowSlider';
+import JsonLd from '../../components/JsonLd';
+import { storyWebPage, breadcrumbList, HOME_CRUMB } from '@/lib/jsonLd';
 import { pageMetadata } from '@/lib/siteMetadata';
 
 export const metadata: Metadata = pageMetadata({
@@ -34,6 +36,7 @@ const DARK_BG = 'linear-gradient(180deg, #242826 0%, #2E3230 50%, #242826 100%)'
 export default function StoryPage() {
   return (
     <div className="min-h-screen font-sans" style={{ background: '#FBF6E3' }}>
+      <JsonLd data={[storyWebPage(), breadcrumbList([HOME_CRUMB, { name: 'My Story', path: '/story' }])]} />
       <Header />
 
       {/* DARK SECTION: hero video + commute story */}

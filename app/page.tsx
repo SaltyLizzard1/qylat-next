@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import HomePage from '../components/HomePage';
+import JsonLd from '../components/JsonLd';
+import { leapSessionService } from '@/lib/jsonLd';
 import { getLeapLogPosts } from '@/lib/posts';
 import { pageMetadata, SITE_TITLE, SITE_DESCRIPTION } from '@/lib/siteMetadata';
 
@@ -24,6 +26,8 @@ export default async function Page() {
         href={process.env.NEXT_PUBLIC_IMG_HERO ?? '/images/rice-fields.jpg'}
         fetchPriority="high"
       />
+      {/* The Leap Session lives in the Work With Me section of this page. */}
+      <JsonLd data={leapSessionService()} />
       <HomePage posts={posts} />
     </>
   );

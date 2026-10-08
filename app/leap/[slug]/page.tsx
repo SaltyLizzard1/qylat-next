@@ -4,11 +4,14 @@ import { notFound } from 'next/navigation';
 import { sanityClient, urlFor } from '@/lib/sanity';
 import type { SanityPost } from '@/lib/useSanityPosts';
 import { SITE_URL, SITE_NAME, DEFAULT_OG_IMAGE, type OgImage } from '@/lib/siteMetadata';
+import { blogPosting, breadcrumbList, HOME_CRUMB, LEAP_LOG_CRUMB, type BlogPostingInput } from '@/lib/jsonLd';
 import { findStaticPost } from '@/data/staticPosts';
+import JsonLd from '../../../components/JsonLd';
 import LeapPostClient from './LeapPostClient';
 
 const POST_QUERY = `*[_type == "post" && slug.current == $slug][0] {
   _id,
+  _updatedAt,
   title,
   "slug": slug.current,
   postType,
@@ -57,40 +60,82 @@ function toSanityPost(raw: any): SanityPost {
   };
 }
 
-type PostMetadataInput = {
-  slug: string;
-  title: string;
-  description: string;
-  publishedAt: string;
-  keywords: string[];
-  image: OgImage;
-};
+/**
+ * One description of a post for both generateMetadata and the JSON-LD block,
+ * resolved from Sanity first and the static registry second.
+ */
+type PostFacts = BlogPostingInput & { image: OgImage };
 
-function postMetadata({ slug, title, description, publishedAt, keywords, image }: PostMetadataInput): Metadata {
-  const canonical = `${SITE_URL}/leap/${slug}`;
-  const fullTitle = `${title} | QYLAT`;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function sanityPostFacts(slug: string, raw: any): PostFacts {
+  // fit('crop') forces the exact 1200x630 frame so the declared dimensions
+  // are true. Without it Sanity clips to the bounding box and a 4:3 hero
+  // would come back 840x630.
+  const image: OgImage = raw.heroImage
+    ? {
+        url: urlFor(raw.heroImage).width(1200).height(630).fit('crop').url(),
+        width: 1200,
+        height: 630,
+        alt: raw.title as string,
+      }
+    : DEFAULT_OG_IMAGE;
+
+  return {
+    slug,
+    title: raw.title,
+    description: raw.excerpt || FALLBACK_DESC,
+    imageUrl: image.url,
+    image,
+    datePublished: raw.publishedAt,
+    dateModified: raw._updatedAt || raw.publishedAt,
+    keywords: raw.tags?.length ? raw.tags : FALLBACK_KEYWORDS,
+  };
+}
+
+function postFacts(slug: string, raw: unknown): PostFacts | null {
+  if (raw) return sanityPostFacts(slug, raw);
+
+  const staticPost = findStaticPost(slug);
+  if (!staticPost) return null;
+
+  return {
+    slug,
+    title: staticPost.title,
+    description: staticPost.excerpt,
+    imageUrl: DEFAULT_OG_IMAGE.url,
+    image: DEFAULT_OG_IMAGE,
+    datePublished: staticPost.publishedAt,
+    dateModified: staticPost.publishedAt,
+    keywords: FALLBACK_KEYWORDS,
+  };
+}
+
+function postMetadata(post: PostFacts): Metadata {
+  const canonical = `${SITE_URL}/leap/${post.slug}`;
+  const fullTitle = `${post.title} | QYLAT`;
 
   return {
     title: fullTitle,
-    description,
-    keywords,
+    description: post.description,
+    keywords: post.keywords,
     authors: [{ name: 'Liz' }],
     alternates: { canonical },
     openGraph: {
       title: fullTitle,
-      description,
+      description: post.description,
       url: canonical,
       siteName: SITE_NAME,
       type: 'article',
-      publishedTime: publishedAt,
+      publishedTime: post.datePublished,
+      modifiedTime: post.dateModified,
       authors: ['Liz'],
-      images: [image],
+      images: [post.image],
     },
     twitter: {
       card: 'summary_large_image',
       title: fullTitle,
-      description,
-      images: [image],
+      description: post.description,
+      images: [post.image],
     },
   };
 }
@@ -99,56 +144,37 @@ type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const raw = await fetchPost(slug);
+  const post = postFacts(slug, await fetchPost(slug));
 
-  if (raw) {
-    // fit('crop') forces the exact 1200x630 frame so the declared dimensions
-    // are true. Without it Sanity clips to the bounding box and a 4:3 hero
-    // would come back 840x630.
-    const image: OgImage = raw.heroImage
-      ? {
-          url: urlFor(raw.heroImage).width(1200).height(630).fit('crop').url(),
-          width: 1200,
-          height: 630,
-          alt: raw.title as string,
-        }
-      : DEFAULT_OG_IMAGE;
-
-    return postMetadata({
-      slug,
-      title: raw.title,
-      description: raw.excerpt || FALLBACK_DESC,
-      publishedAt: raw.publishedAt,
-      keywords: raw.tags?.length ? raw.tags : FALLBACK_KEYWORDS,
-      image,
-    });
+  if (!post) {
+    return {
+      title: 'Post Not Found | QYLAT',
+      robots: { index: false, follow: false },
+    };
   }
 
-  const staticPost = findStaticPost(slug);
-  if (staticPost) {
-    return postMetadata({
-      slug,
-      title: staticPost.title,
-      description: staticPost.excerpt,
-      publishedAt: staticPost.publishedAt,
-      keywords: FALLBACK_KEYWORDS,
-      image: DEFAULT_OG_IMAGE,
-    });
-  }
-
-  return {
-    title: 'Post Not Found | QYLAT',
-    robots: { index: false, follow: false },
-  };
+  return postMetadata(post);
 }
 
 export default async function LeapPostPage({ params }: Props) {
   const { slug } = await params;
   const raw = await fetchPost(slug);
+  const post = postFacts(slug, raw);
 
   // Unknown slug: a real 404, not a loading shell that redirects client-side.
-  if (!raw && !findStaticPost(slug)) notFound();
+  if (!post) notFound();
 
   const initialPost = raw ? toSanityPost(raw) : null;
-  return <LeapPostClient slug={slug} initialPost={initialPost} />;
+
+  return (
+    <>
+      <JsonLd
+        data={[
+          blogPosting(post),
+          breadcrumbList([HOME_CRUMB, LEAP_LOG_CRUMB, { name: post.title, path: `/leap/${slug}` }]),
+        ]}
+      />
+      <LeapPostClient slug={slug} initialPost={initialPost} />
+    </>
+  );
 }

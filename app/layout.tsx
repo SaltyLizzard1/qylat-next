@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import { Cormorant_Garamond, Cinzel } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/react';
 import { GoogleAnalytics } from '@next/third-parties/google';
+import JsonLd from '../components/JsonLd';
+import { siteGraph } from '@/lib/jsonLd';
 import {
   SITE_URL,
   SITE_NAME,
@@ -59,6 +61,8 @@ export default function RootLayout({
   return (
     <html lang="en" data-scroll-behavior="smooth" className={`${cormorant.variable} ${cinzel.variable}`}>
       <body suppressHydrationWarning>
+        {/* Organization, Person, IdeaToPlan and WebSite on every page. Page-level blocks reference these by @id. */}
+        <JsonLd data={siteGraph()} />
         {children}
         <Analytics />
         <GoogleAnalytics gaId="G-XKZ53T022C" />

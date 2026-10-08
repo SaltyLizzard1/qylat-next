@@ -1,4 +1,6 @@
 import type { Metadata } from 'next';
+import JsonLd from '../../components/JsonLd';
+import { breadcrumbList, HOME_CRUMB } from '@/lib/jsonLd';
 
 export const metadata: Metadata = {
   title: 'Leap Runway Calculator | Quit Your Life and Travel',
@@ -33,5 +35,10 @@ export const metadata: Metadata = {
 };
 
 export default function CalculatorLayout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
+  return (
+    <>
+      <JsonLd data={breadcrumbList([HOME_CRUMB, { name: 'Leap Calculator', path: '/calculator' }])} />
+      {children}
+    </>
+  );
 }
