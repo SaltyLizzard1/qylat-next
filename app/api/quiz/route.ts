@@ -1,4 +1,5 @@
 import { checkRateLimit, clientIp } from '../../../lib/rateLimit';
+import { reportToken } from '../../../lib/reportToken';
 
 export const maxDuration = 180;
 
@@ -83,9 +84,12 @@ export async function POST(req: Request) {
       console.error('Supabase persistence error:', err);
     }
 
+    // reportToken goes only to the person who just took the assessment. It is
+    // what lets them, and nobody holding a share link, ask for the full report.
+    const saved = resultId ? { resultId, reportToken: reportToken(resultId) } : {};
     const responsePayload = Array.isArray(data)
-      ? { matches, ...(resultId ? { resultId } : {}) }
-      : { ...(data as object), ...(resultId ? { resultId } : {}) };
+      ? { matches, ...saved }
+      : { ...(data as object), ...saved };
 
     return Response.json(responsePayload);
   } catch (err) {

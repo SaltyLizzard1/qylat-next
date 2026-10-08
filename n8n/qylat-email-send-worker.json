@@ -1,0 +1,524 @@
+{
+  "name": "QYLAT Email - Send worker (claims, sends via Resend, records outcome, alerts Liz)",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## QYLAT Email - Send worker\nClaims pending rows from outbound_emails (atomic, skip locked), sends each through Resend with the row id as the idempotency key, records sent, failed or uncertain, and emails Liz about anything that is not sent. Never retries on its own. Requeue by hand with requeue_outbound_email(id).\n\nSends nothing while outbound_email_settings.send_mode is 'off'. In 'test' only addresses in test_allowlist are sent.\n\nKick URL: https://n8n.ideatoplan.to/webhook/qylat-email-kick-v1 (N8N_EMAIL_KICK_WEBHOOK_URL in Vercel).",
+        "height": 260,
+        "width": 640
+      },
+      "id": "note",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -40,
+        -340
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "qylat-email-kick-v1",
+        "authentication": "headerAuth",
+        "options": {}
+      },
+      "id": "kick",
+      "name": "Kick",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "qylat-email-kick-v1",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "WQx18lXqetKlm2ex",
+          "name": "Header Auth account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 5
+            }
+          ]
+        }
+      },
+      "id": "every-5",
+      "name": "Every 5 minutes",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://yglmlnfsyzsvozxirlpo.supabase.co/rest/v1/rpc/claim_outbound_emails",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ p_brand: \"qylat\", p_limit: 10 }) }}",
+        "options": {
+          "timeout": 15000
+        }
+      },
+      "id": "claim-pending",
+      "name": "Claim pending",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        240,
+        0
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "oxQOdBDbGP7WmsX1",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\"/g, '&quot;');\nconst NL = String.fromCharCode(10);\nconst out = [];\nconst items = $input.all();\nfor (let i = 0; i < items.length; i++) {\n  const r = items[i].json;\n  if (!r || !r.id) continue;\n  const unsubscribeUrl = r.unsubscribe_token ? `${r.site_url}/unsubscribe?token=${r.unsubscribe_token}` : '';\n  const vars = { ...(r.variables || {}), site_url: r.site_url, postal_address: r.postal_address, unsubscribe_url: unsubscribeUrl };\n\n  // The assessment report is built here from the saved matches the database\n  // attached to the row. Every value is escaped; nothing comes from the browser.\n  const raw = {};\n  if (Array.isArray(vars.matches)) {\n    const ms = vars.matches.filter((m) => m && typeof m.title === 'string' && m.title);\n    const line = (label, v) => (typeof v === 'string' && v ? `<p style=\"margin:4px 0\"><strong>${label}:</strong> ${esc(v)}</p>` : '');\n    raw.matches_html = ms.map((m, n) => {\n      const steps = Array.isArray(m.firstSteps) ? m.firstSteps.filter((x) => typeof x === 'string' && x) : [];\n      return `<div style=\"margin:0 0 20px;padding:0 0 12px;border-bottom:1px solid #ddd\"><h3 style=\"margin:0 0 6px\">${n + 1}. ${esc(m.title)}</h3>`\n        + (typeof m.description === 'string' && m.description ? `<p style=\"margin:4px 0\">${esc(m.description)}</p>` : '')\n        + line('Why you', m.whyYou) + line('Income range', m.incomeRange) + line('Your unique angle', m.uniqueAngle)\n        + (steps.length ? `<p style=\"margin:4px 0\"><strong>First steps:</strong></p><ol style=\"margin:4px 0\">${steps.map((x) => `<li>${esc(x)}</li>`).join('')}</ol>` : '')\n        + '</div>';\n    }).join('');\n    vars.matches_text = ms.map((m, n) => {\n      const steps = Array.isArray(m.firstSteps) ? m.firstSteps.filter((x) => typeof x === 'string' && x) : [];\n      const parts = [`${n + 1}. ${m.title}`, m.description, m.whyYou && `Why you: ${m.whyYou}`, m.incomeRange && `Income range: ${m.incomeRange}`,\n        m.uniqueAngle && `Your unique angle: ${m.uniqueAngle}`, steps.length && `First steps:${NL}${steps.map((x, j) => `  ${j + 1}. ${x}`).join(NL)}`];\n      return parts.filter((x) => typeof x === 'string' && x).join(NL);\n    }).join(NL + NL);\n    if (!ms.length) { delete vars.matches_text; }\n    delete vars.matches;\n  }\n\n  // An empty string is a legitimate value. Only a missing variable is left in\n  // place, which the check below then refuses to send.\n  const fill = (tpl, html) => String(tpl || '').replace(/\\{\\{\\s*([a-z_]+)\\s*\\}\\}/g, (m, k) => {\n    if (html && typeof raw[k] === 'string' && raw[k]) return raw[k];\n    const v = vars[k];\n    if (v === undefined || v === null || typeof v === 'object') return m;\n    return html ? esc(v) : String(v);\n  });\n  const subject = fill(r.subject, false);\n  const html = fill(r.html, true);\n  const text = fill(r.body_text, false);\n\n  let problem = '';\n  if (!r.subject || !r.html) problem = `template ${r.template_key} not found`;\n  else if ([subject, html, text, r.from_address, r.reply_to].some((s) => String(s).includes('REPLACE_BEFORE_LAUNCH'))) problem = 'a launch placeholder is still unset';\n  else if ([subject, html, text].some((s) => /\\{\\{\\s*[a-z_]+\\s*\\}\\}/.test(s))) problem = 'template has an unresolved variable';\n\n  const payload = { from: r.from_address, to: [r.to_email], reply_to: r.reply_to, subject, html, text };\n  if (r.kind === 'owner_notice' && vars.lead_email) payload.reply_to = vars.lead_email;\n  if (r.unsubscribe_token) {\n    payload.headers = {\n      'List-Unsubscribe': `<${r.site_url}/api/unsubscribe?token=${r.unsubscribe_token}>`,\n      'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',\n    };\n  }\n  out.push({\n    json: { id: r.id, to_email: r.to_email, kind: r.kind, template_key: r.template_key,\n            outcome: problem ? 'failed' : '', provider_message_id: '', error: problem,\n            payload: problem ? null : payload },\n    pairedItem: { item: i },\n  });\n}\nreturn out;"
+      },
+      "id": "render",
+      "name": "Render",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        460,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json.outcome }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "ready",
+      "name": "Ready to send?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        680,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.resend.com/emails",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Idempotency-Key",
+              "value": "={{ $json.id }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.payload) }}",
+        "options": {
+          "timeout": 20000,
+          "batching": {
+            "batch": {
+              "batchSize": 1,
+              "batchInterval": 700
+            }
+          },
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "send",
+      "name": "Send via Resend",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        900,
+        -100
+      ],
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "REPLACE_WITH_RESEND_CREDENTIAL_ID",
+          "name": "Resend QYLAT"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Decides what is known about the send. Only a 2xx with a message id is\n// 'sent'. A response that proves Resend refused the message is 'failed'.\n// Anything else (timeout, network error, 5xx, 409) is 'uncertain': the email\n// may have gone out, so it is reported and never retried automatically.\nconst src = $('Ready to send?').item.json;\nconst res = $json || {};\nconst code = Number(res.statusCode);\nconst body = (res.body && typeof res.body === 'object') ? res.body : {};\nlet outcome = 'uncertain';\nlet providerId = '';\nlet error = '';\nif (code >= 200 && code < 300 && body.id) {\n  outcome = 'sent';\n  providerId = body.id;\n} else if ([400, 401, 403, 404, 405, 413, 422, 429].includes(code)) {\n  outcome = 'failed';\n  error = `Resend ${code}: ${body.message || body.name || 'rejected'}`;\n} else {\n  error = code ? `Resend ${code}: ${body.message || 'no confirmation'}` : `No response: ${(res.error && (res.error.message || res.error)) || 'unknown'}`;\n}\nreturn { json: { id: src.id, to_email: src.to_email, kind: src.kind, template_key: src.template_key,\n                 outcome, provider_message_id: providerId, error: String(error).slice(0, 500) } };"
+      },
+      "id": "classify",
+      "name": "Classify",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        -100
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "outcome",
+      "name": "Outcome",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1340,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://yglmlnfsyzsvozxirlpo.supabase.co/rest/v1/rpc/complete_outbound_email",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ p_id: $json.id, p_outcome: $json.outcome, p_provider_message_id: $json.provider_message_id, p_error: $json.error }) }}",
+        "options": {
+          "timeout": 15000
+        }
+      },
+      "id": "record-outcome",
+      "name": "Record outcome",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1560,
+        0
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "oxQOdBDbGP7WmsX1",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $('Outcome').item.json.outcome }}",
+              "rightValue": "sent",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "attention",
+      "name": "Needs attention?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1780,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "liz@ideatoplan.to",
+        "subject": "=QYLAT email {{ $('Outcome').item.json.outcome }}: {{ $('Outcome').item.json.template_key }}",
+        "emailType": "text",
+        "message": "=To: {{ $('Outcome').item.json.to_email }}\nTemplate: {{ $('Outcome').item.json.template_key }}\nOutcome: {{ $('Outcome').item.json.outcome }}\nReason: {{ $('Outcome').item.json.error }}\nRow id: {{ $('Outcome').item.json.id }}\n\nfailed means Resend refused it and nothing was sent. uncertain means it may have been sent. Nothing is retried automatically. To send again: select requeue_outbound_email('{{ $('Outcome').item.json.id }}');",
+        "options": {
+          "appendAttribution": false,
+          "senderName": "QYLAT Email"
+        }
+      },
+      "id": "alert",
+      "name": "Alert Liz",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2000,
+        -100
+      ],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "eKUvaAAgyww27rSu",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://yglmlnfsyzsvozxirlpo.supabase.co/rest/v1/rpc/flag_stale_outbound_emails",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ p_brand: \"qylat\", p_minutes: 15 }) }}",
+        "options": {
+          "timeout": 15000
+        }
+      },
+      "id": "flag-stale-claims",
+      "name": "Flag stale claims",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        240,
+        400
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "oxQOdBDbGP7WmsX1",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.all().filter((i) => i.json && i.json.id);"
+      },
+      "id": "stale-found",
+      "name": "Stale found",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        460,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "liz@ideatoplan.to",
+        "subject": "=QYLAT email uncertain: {{ $json.template_key }}",
+        "emailType": "text",
+        "message": "=To: {{ $json.to_email }}\nTemplate: {{ $json.template_key }}\nClaimed at: {{ $json.claimed_at }}\nRow id: {{ $json.id }}\n\nThis row was claimed and no outcome was recorded within 15 minutes, so it may or may not have been sent. It is now marked uncertain and will not be retried automatically. To send again: select requeue_outbound_email('{{ $json.id }}');",
+        "options": {
+          "appendAttribution": false,
+          "senderName": "QYLAT Email"
+        }
+      },
+      "id": "alert-stale",
+      "name": "Alert Liz stale",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        680,
+        400
+      ],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "eKUvaAAgyww27rSu",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Kick": {
+      "main": [
+        [
+          {
+            "node": "Claim pending",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Flag stale claims",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Every 5 minutes": {
+      "main": [
+        [
+          {
+            "node": "Claim pending",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Flag stale claims",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claim pending": {
+      "main": [
+        [
+          {
+            "node": "Render",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Render": {
+      "main": [
+        [
+          {
+            "node": "Ready to send?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ready to send?": {
+      "main": [
+        [
+          {
+            "node": "Send via Resend",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Outcome",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send via Resend": {
+      "main": [
+        [
+          {
+            "node": "Classify",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Classify": {
+      "main": [
+        [
+          {
+            "node": "Outcome",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Outcome": {
+      "main": [
+        [
+          {
+            "node": "Record outcome",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Record outcome": {
+      "main": [
+        [
+          {
+            "node": "Needs attention?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Needs attention?": {
+      "main": [
+        [
+          {
+            "node": "Alert Liz",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Flag stale claims": {
+      "main": [
+        [
+          {
+            "node": "Stale found",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Stale found": {
+      "main": [
+        [
+          {
+            "node": "Alert Liz stale",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "errorWorkflow": "BFirlikXaAuti0bh",
+    "callerPolicy": "workflowsFromSameOwner"
+  }
+}

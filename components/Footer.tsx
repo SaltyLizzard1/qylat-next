@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Mail } from 'lucide-react';
+import { subscribe } from '../lib/emailSources';
 
 function FooterNewsletter() {
   const [email, setEmail] = useState('');
@@ -11,12 +12,8 @@ function FooterNewsletter() {
     e.preventDefault();
     setStatus('loading');
     try {
-      const res = await fetch('https://app.kit.com/forms/9498737/subscriptions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({ email_address: email }).toString(),
-      });
-      if (res.ok) { setStatus('success'); setEmail(''); }
+      const ok = await subscribe({ source: 'footer', email });
+      if (ok) { setStatus('success'); setEmail(''); }
       else setStatus('error');
     } catch { setStatus('error'); }
   };
@@ -53,6 +50,9 @@ function FooterNewsletter() {
           {status === 'loading' ? 'Subscribing…' : 'Subscribe'}
         </button>
       </div>
+      <p className="text-[#2D1A00]/60 text-xs text-center">
+        I&apos;ll send you the Leap Log now and then. Unsubscribe any time.
+      </p>
       {status === 'error' && (
         <p className="text-red-800 text-xs text-center">Something went wrong. Please try again.</p>
       )}

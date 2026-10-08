@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import ShareButtons from './ShareButtons';
+import { subscribe } from '../lib/emailSources';
+import NewsletterOptIn from './NewsletterOptIn';
 
 interface Match {
   title: string;
@@ -105,6 +107,7 @@ function MatchCard({ match, index }: { match: Match; index: number }) {
 export default function ResultsGate({ matches, canonicalUrl }: { matches: Match[]; canonicalUrl: string }) {
   const [unlocked, setUnlocked] = useState(false);
   const [email, setEmail] = useState('');
+  const [optIn, setOptIn] = useState(false);
   const [emailLoading, setEmailLoading] = useState(false);
   const [emailError, setEmailError] = useState('');
 
@@ -114,17 +117,15 @@ export default function ResultsGate({ matches, canonicalUrl }: { matches: Match[
     setEmailLoading(true);
     setEmailError('');
 
+    // The matches unlock whether or not the capture is recorded. A failed
+    // capture is alerted on the server and never stands between the visitor
+    // and the results.
     try {
-      await fetch('https://app.kit.com/forms/9562904/subscriptions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({ email_address: email.trim() }).toString(),
-      });
-      setUnlocked(true);
+      await subscribe({ source: 'results-gate', email: email.trim(), newsletterOptIn: optIn });
     } catch (err) {
       console.error('Email error:', err);
-      setEmailError('Something went wrong. Try again.');
     } finally {
+      setUnlocked(true);
       setEmailLoading(false);
     }
   }
@@ -176,6 +177,7 @@ export default function ResultsGate({ matches, canonicalUrl }: { matches: Match[
                   placeholder="your@email.com"
                   className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#C9A030]"
                 />
+                <NewsletterOptIn checked={optIn} onChange={setOptIn} className="text-gray-500" />
                 <button
                   type="submit"
                   disabled={emailLoading}

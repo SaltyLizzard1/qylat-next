@@ -1,5 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { SIXTY_DAY_POST } from './staticPosts';
+import { subscribe } from '../lib/emailSources';
+import NewsletterOptIn from '../components/NewsletterOptIn';
 
 export interface Post {
   id: number;
@@ -27,26 +29,61 @@ export interface Post {
   body?: any[];
 }
 
-function KitForm() {
-  const embedRef = useRef<HTMLDivElement>(null);
+function PlanForm() {
+  const [email, setEmail] = useState('');
+  const [optIn, setOptIn] = useState(false);
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
 
-  useEffect(() => {
-    const host = embedRef.current;
-    if (!host) return;
-    host.innerHTML = '';
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setStatus('loading');
+    try {
+      const ok = await subscribe({ source: 'post-60-day', email, newsletterOptIn: optIn });
+      setStatus(ok ? 'success' : 'error');
+    } catch {
+      setStatus('error');
+    }
+  };
 
-    const script = document.createElement('script');
-    script.async = true;
-    script.dataset.uid = 'afc2a0b2d2';
-    script.src = 'https://quit-your-life-and-travel.kit.com/afc2a0b2d2/index.js';
-    host.appendChild(script);
+  if (status === 'success') {
+    return (
+      <p className="font-semibold text-emerald-900">
+        Check your inbox. If the plan has not arrived in a few minutes, write to me at
+        liz@quityourlifeandtravel.com and I will send it myself.
+      </p>
+    );
+  }
 
-    return () => {
-      host.innerHTML = '';
-    };
-  }, []);
-
-  return <div ref={embedRef} className="min-h-[120px]" />;
+  return (
+    <form onSubmit={handleSubmit} className="flex flex-col gap-2">
+      <div className="flex flex-col sm:flex-row gap-2">
+        <input
+          type="email"
+          required
+          placeholder="Email address"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="flex-1 min-w-0 px-4 py-2 rounded-full bg-white border border-emerald-200 text-[#2D1A00] placeholder-[#2D1A00]/40 focus:outline-none focus:ring-2 focus:ring-[#E8C84A] text-sm"
+        />
+        <button
+          type="submit"
+          disabled={status === 'loading'}
+          className="rounded-full px-6 py-2 text-sm font-semibold transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-60 whitespace-nowrap shrink-0"
+          style={{
+            background: 'linear-gradient(135deg, #8B6914 0%, #E8C84A 35%, #F5E070 55%, #C9A030 75%, #8B6914 100%)',
+            color: '#2D1A00',
+            border: '1.5px solid #2D1A00',
+          }}
+        >
+          {status === 'loading' ? 'Sending…' : 'Send Me the Plan'}
+        </button>
+      </div>
+      <NewsletterOptIn checked={optIn} onChange={setOptIn} className="text-gray-600" />
+      {status === 'error' && (
+        <p className="text-xs text-red-700">Something went wrong. Please try again.</p>
+      )}
+    </form>
+  );
 }
 
 function SixtyDayPlanDownloadSection() {
@@ -56,12 +93,12 @@ function SixtyDayPlanDownloadSection() {
         Want the exact 60-day plan I&apos;m using right now?
       </p>
       <p className="text-gray-600 mb-4">
-        I built a simple spreadsheet that tracks every task from first sort to final keys - packing,
+        I built a simple plan that tracks every task from first sort to final keys - packing,
         visa, banking, logistics, all of it. I&apos;m giving it away free. Drop your email below and
         I&apos;ll send it straight to you. No spam, no fluff - just the tool I&apos;m actually
         following every day.
       </p>
-      <KitForm />
+      <PlanForm />
     </div>
   );
 }

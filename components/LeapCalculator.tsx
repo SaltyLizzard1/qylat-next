@@ -2,6 +2,8 @@
 
 import { useState, useMemo } from 'react';
 import { Plane, Info } from 'lucide-react';
+import { subscribe } from '../lib/emailSources';
+import NewsletterOptIn from './NewsletterOptIn';
 
 // ── Brand tokens ────────────────────────────────────────────────────────────
 
@@ -45,8 +47,6 @@ const heading = {
   fontWeight: 700,
   color: ESPRESSO_DEEP,
 } as const;
-
-const KIT_FORM_URL = 'https://app.kit.com/forms/9243576/subscriptions';
 
 // ── Types ───────────────────────────────────────────────────────────────────
 
@@ -354,6 +354,7 @@ export default function LeapCalculator() {
   const [setupExpanded, setSetupExpanded] = useState(false);
 
   const [email, setEmail] = useState('');
+  const [optIn, setOptIn] = useState(false);
   const [emailStatus, setEmailStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
 
   const updateItem =
@@ -408,18 +409,18 @@ export default function LeapCalculator() {
     e.preventDefault();
     setEmailStatus('loading');
     try {
-      const res = await fetch(KIT_FORM_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({
-          email_address: email,
-          'fields[calc_setup_cost]': String(totalSetup),
-          'fields[calc_monthly_cost]': String(totalMonthly),
-          'fields[calc_net_cash]': String(netCash),
-          'fields[calc_runway_months]': String(runway.months ?? 0),
-        }).toString(),
+      const ok = await subscribe({
+        source: 'calculator',
+        email,
+        newsletterOptIn: optIn,
+        fields: {
+          calc_setup_cost: totalSetup,
+          calc_monthly_cost: totalMonthly,
+          calc_net_cash: netCash,
+          calc_runway_months: runway.months ?? 0,
+        },
       });
-      if (res.ok) {
+      if (ok) {
         setEmailStatus('success');
         setEmail('');
       } else {
@@ -996,6 +997,14 @@ export default function LeapCalculator() {
                 {emailStatus === 'loading' ? 'Sending…' : 'Email Me the Kit'}
               </button>
             </form>
+          )}
+          {emailStatus !== 'success' && (
+            <NewsletterOptIn
+              checked={optIn}
+              onChange={setOptIn}
+              className="mt-3 justify-center"
+              color={HINT_TEXT}
+            />
           )}
           {emailStatus === 'error' && (
             <p

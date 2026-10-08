@@ -9,7 +9,7 @@ export const metadata: Metadata = pageMetadata({
   path: '/privacy',
 });
 
-const EFFECTIVE_DATE = 'July 8, 2026';
+const EFFECTIVE_DATE = 'October 7, 2026';
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -67,7 +67,8 @@ export default function PrivacyPage() {
         <Section title="3. Third-Party Processors">
           <p>These services process data on our behalf to run this site:</p>
           <Processor name="Vercel" role="Hosts the website and receives inbound request data." href="https://vercel.com/legal/privacy-policy" />
-          <Processor name="Kit" role="Manages our email list, the Leap Kit delivery, and newsletter sends." href="https://kit.com/privacy" />
+          <Processor name="Supabase" role="Stores our email list, along with where and when you signed up." href="https://supabase.com/privacy" />
+          <Processor name="Resend" role="Delivers the Leap Kit, your assessment results, and newsletter sends." href="https://resend.com/legal/privacy-policy" />
           <Processor name="Cusdis" role="Powers blog comments. Your name, email, and comment are stored with Cusdis." href="https://cusdis.com/privacy-policy" />
           <Processor name="Calendly" role="Handles Leap Session scheduling." href="https://calendly.com/legal/privacy-notice" />
           <Processor name="Stripe" role="Processes payments securely. We never see your full card number." href="https://stripe.com/privacy" />
