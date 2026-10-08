@@ -179,7 +179,7 @@
       "onError": "continueRegularOutput",
       "credentials": {
         "httpBearerAuth": {
-          "id": "REPLACE_WITH_RESEND_CREDENTIAL_ID",
+          "id": "SQ8PjKvAme19ISp3",
           "name": "Resend QYLAT"
         }
       }
