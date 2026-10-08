@@ -74,6 +74,10 @@ create table public.outbound_email_settings (
   send_mode text not null default 'off' check (send_mode in ('off', 'test', 'live')),
   test_allowlist text[] not null default '{}',
   from_address text not null,
+  -- Lead notices go to Liz's own inbox, which IdeaToPlan's email handler also
+  -- watches. They are sent from a no-reply address that handler ignores, never
+  -- from the customer-facing address.
+  owner_from_address text not null default 'QYLAT <noreply@quityourlifeandtravel.com>',
   reply_to text not null,
   owner_notify_to text not null,
   site_url text not null,
@@ -348,7 +352,8 @@ begin
   )
   select u.id, u.kind, u.purpose, u.template_key, u.to_email, u.variables,
          t.subject, t.html, t.body_text,
-         v_set.from_address, v_set.reply_to, v_set.site_url, v_set.postal_address,
+         case when u.kind = 'owner_notice' then v_set.owner_from_address else v_set.from_address end,
+         v_set.reply_to, v_set.site_url, v_set.postal_address,
          case when u.kind = 'owner_notice' then null else s.unsubscribe_token end
     from upd u
     left join public.outbound_email_templates t on t.brand = u.brand and t.key = u.template_key
