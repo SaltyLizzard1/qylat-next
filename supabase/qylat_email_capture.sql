@@ -3,8 +3,8 @@
 -- IdeaToPlan owns lead_notifications, email_events, email_threads,
 -- email_model_budget, plan_*, idea_submissions and stripe_redemptions. This file
 -- does not read, write, alter or reference any of them. The only existing
--- table it reads is QYLAT's own quiz_results, to verify an assessment report
--- exists before promising to send it.
+-- table it reads is quiz_results, and only rows where site = 'qylat', to
+-- verify an assessment report exists before promising to send it.
 --
 -- Sending starts in mode 'off'. Nothing leaves until
 -- outbound_email_settings.send_mode is changed to 'test' or 'live'.
@@ -203,7 +203,7 @@ begin
       if p_purpose = 'assessment_report' then
         -- The report is built from the saved results, never from anything the
         -- browser sent. No saved results means there is nothing to send.
-        select q.matches into v_matches from public.quiz_results q where q.id = v_scope;
+        select q.matches into v_matches from public.quiz_results q where q.id = v_scope and q.site = 'qylat';
         if v_matches is null or jsonb_typeof(v_matches) <> 'array' or jsonb_array_length(v_matches) = 0 then
           v_fulfillment := 'unavailable';
         else
