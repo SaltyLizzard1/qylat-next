@@ -25,7 +25,8 @@ export default async function Image({ params }: Props) {
       .from('quiz_results')
       .select('matches')
       .eq('id', id)
-      .single();
+      .eq('site', 'qylat')
+      .maybeSingle();
 
     if (data?.matches) {
       matches = data.matches as Match[];

@@ -54,17 +54,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function ResultsPage({ params }: Props) {
   const { id } = await params;
 
+  // quiz_results is shared with IdeaToPlan, whose results live on its own
+  // site. Only rows saved by this site are shown here.
   const { data, error } = await supabase
     .from('quiz_results')
     .select('matches')
     .eq('id', id)
-    .single();
+    .eq('site', 'qylat')
+    .maybeSingle();
 
-  if (error || !data) {
+  const matches = (data?.matches ?? []) as Match[];
+  if (error || !data || matches.length === 0) {
     notFound();
   }
-
-  const matches = (data.matches ?? []) as Match[];
   const canonicalUrl = `${BASE_URL}/results/${id}`;
 
   return (
@@ -128,7 +130,14 @@ export default async function ResultsPage({ params }: Props) {
       <div style={{ background: '#FAF7F0', paddingBottom: '4rem' }}>
         <div className="max-w-2xl mx-auto px-4" style={{ marginTop: '-2.75rem' }}>
 
-          <ResultsGate matches={matches} canonicalUrl={canonicalUrl} />
+          {/* Only the first match is sent to the browser. The gate fetches
+              the rest from the server once the visitor gives an email. */}
+          <ResultsGate
+            resultId={id}
+            firstMatch={matches[0]}
+            restCount={matches.length - 1}
+            canonicalUrl={canonicalUrl}
+          />
 
           <div className="mt-10 rounded-2xl p-8 text-center border border-[#EBD9A0]" style={{ background: '#FBF6E4' }}>
             <p className="text-lg font-bold mb-2" style={{ color: '#3A281A' }}>

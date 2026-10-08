@@ -102,11 +102,49 @@ function MatchCard({ match, index }: { match: Match; index: number }) {
   );
 }
 
-export default function ResultsGate({ matches, canonicalUrl }: { matches: Match[]; canonicalUrl: string }) {
-  const [unlocked, setUnlocked] = useState(false);
+// Blank stand-in for a match the browser has not been given yet.
+function PlaceholderCard() {
+  return (
+    <div
+      className="rounded-2xl overflow-hidden"
+      style={{
+        background: '#FFFEFB',
+        border: '1px solid #F0E6D2',
+        boxShadow: '0 14px 34px rgba(30,20,5,0.09)',
+      }}
+      aria-hidden="true"
+    >
+      <div style={{ height: '4px', background: GOLD_GRADIENT }} />
+      <div className="p-6 space-y-3">
+        <div className="h-3 w-24 rounded bg-gray-200" />
+        <div className="h-5 w-2/3 rounded bg-gray-300" />
+        <div className="h-3 w-full rounded bg-gray-200" />
+        <div className="h-3 w-5/6 rounded bg-gray-200" />
+        <div className="h-3 w-1/2 rounded bg-gray-200" />
+      </div>
+    </div>
+  );
+}
+
+export default function ResultsGate({
+  resultId,
+  firstMatch,
+  restCount,
+  canonicalUrl,
+}: {
+  resultId: string;
+  firstMatch: Match;
+  restCount: number;
+  canonicalUrl: string;
+}) {
+  // The remaining matches are not in the page until the server hands them
+  // over. With only one match there is nothing to unlock.
+  const [rest, setRest] = useState<Match[] | null>(restCount > 0 ? null : []);
   const [email, setEmail] = useState('');
   const [emailLoading, setEmailLoading] = useState(false);
   const [emailError, setEmailError] = useState('');
+
+  const unlocked = rest !== null;
 
   async function submitEmail(e: React.FormEvent) {
     e.preventDefault();
@@ -114,84 +152,113 @@ export default function ResultsGate({ matches, canonicalUrl }: { matches: Match[
     setEmailLoading(true);
     setEmailError('');
 
+    // A failed signup never stands between the visitor and the matches.
     try {
       await fetch('https://app.kit.com/forms/9562904/subscriptions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams({ email_address: email.trim() }).toString(),
       });
-      setUnlocked(true);
     } catch (err) {
       console.error('Email error:', err);
+    }
+
+    // The matches themselves are different: if they cannot be fetched, the
+    // gate stays locked and says so rather than showing an empty unlock.
+    try {
+      const res = await fetch(`/api/results/${resultId}/rest`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.trim() }),
+      });
+      if (!res.ok) throw new Error(`Status ${res.status}`);
+      const data: { matches?: Match[] } = await res.json();
+      if (!Array.isArray(data.matches) || data.matches.length !== restCount) {
+        throw new Error('Unexpected matches payload');
+      }
+      setRest(data.matches);
+    } catch (err) {
+      console.error('Results unlock error:', err);
       setEmailError('Something went wrong. Try again.');
     } finally {
       setEmailLoading(false);
     }
   }
 
-  const top3 = matches.slice(0, 3).map((m, i) => `${i + 1}. ${m.title}`).join('\n');
-  const more = matches.length > 3 ? `…and ${matches.length - 3} more.` : '';
+  const all = unlocked ? [firstMatch, ...rest] : [firstMatch];
+  const top3 = all.slice(0, 3).map((m, i) => `${i + 1}. ${m.title}`).join('\n');
+  const more = all.length > 3 ? `…and ${all.length - 3} more.` : '';
   const shareText = `${'✨'} I took the 5-minute Discover Your Idea assessment. My top matches:\n${top3}\n${more}\n${'\u{1F4AB}'} Find yours:`;
 
   return (
     <>
       <div className="mb-4">
-        <MatchCard match={matches[0]} index={0} />
+        <MatchCard match={firstMatch} index={0} />
       </div>
 
-      <div className="relative">
-        <div className={unlocked ? '' : 'blur-sm select-none pointer-events-none'}>
-          <div className="space-y-4">
-            {matches.slice(1).map((match, i) => (
-              <MatchCard key={i} match={match} index={i + 1} />
-            ))}
-          </div>
-        </div>
+      {restCount > 0 && (
+        <div className="relative">
+          {unlocked ? (
+            <div className="space-y-4">
+              {rest.map((match, i) => (
+                <MatchCard key={i} match={match} index={i + 1} />
+              ))}
+            </div>
+          ) : (
+            <div className="blur-sm select-none pointer-events-none">
+              <div className="space-y-4">
+                {Array.from({ length: restCount }, (_, i) => (
+                  <PlaceholderCard key={i} />
+                ))}
+              </div>
+            </div>
+          )}
 
-        {!unlocked && (
-          <div className="absolute inset-0 flex items-start justify-center pt-8">
-            <div className="bg-white rounded-2xl shadow-xl p-8 mx-4 w-full max-w-md text-center border border-gray-100">
-              <h3 className="text-xl font-bold text-gray-900 mb-2">
-                Someone shared their matches with you
-              </h3>
-              <p className="text-gray-500 text-sm mb-5">
-                Their #1 match is above. Curious what you&apos;re built to do?
-              </p>
-              <a
-                href="/assessment"
-                className="block w-full py-3 font-semibold rounded-lg transition-all hover:brightness-105 mb-4"
-                style={GOLD_BUTTON_STYLE}
-              >
-                Take the Free Assessment →
-              </a>
-              <p className="text-xs text-gray-500 mb-3">
-                Or enter your email to see the rest of their matches:
-              </p>
-              <form onSubmit={submitEmail} className="space-y-3">
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="your@email.com"
-                  className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#C9A030]"
-                />
-                <button
-                  type="submit"
-                  disabled={emailLoading}
-                  className="w-full py-3 font-semibold rounded-lg transition-all hover:brightness-105 disabled:opacity-60"
+          {!unlocked && (
+            <div className="absolute inset-0 flex items-start justify-center pt-8">
+              <div className="bg-white rounded-2xl shadow-xl p-8 mx-4 w-full max-w-md text-center border border-gray-100">
+                <h3 className="text-xl font-bold text-gray-900 mb-2">
+                  Someone shared their matches with you
+                </h3>
+                <p className="text-gray-500 text-sm mb-5">
+                  Their #1 match is above. Curious what you&apos;re built to do?
+                </p>
+                <a
+                  href="/assessment"
+                  className="block w-full py-3 font-semibold rounded-lg transition-all hover:brightness-105 mb-4"
                   style={GOLD_BUTTON_STYLE}
                 >
-                  {emailLoading ? 'Revealing...' : 'Reveal their matches'}
-                </button>
-              </form>
-              {emailError && (
-                <p className="mt-3 text-sm text-red-600">{emailError}</p>
-              )}
+                  Take the Free Assessment →
+                </a>
+                <p className="text-xs text-gray-500 mb-3">
+                  Or enter your email to see the rest of their matches:
+                </p>
+                <form onSubmit={submitEmail} className="space-y-3">
+                  <input
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="your@email.com"
+                    className="w-full min-w-0 px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#C9A030]"
+                  />
+                  <button
+                    type="submit"
+                    disabled={emailLoading}
+                    className="w-full py-3 font-semibold rounded-lg transition-all hover:brightness-105 disabled:opacity-60"
+                    style={GOLD_BUTTON_STYLE}
+                  >
+                    {emailLoading ? 'Revealing...' : 'Reveal their matches'}
+                  </button>
+                </form>
+                {emailError && (
+                  <p className="mt-3 text-sm text-red-600">{emailError}</p>
+                )}
+              </div>
             </div>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
+      )}
 
       {unlocked && (
         <div className="mt-8 flex justify-center">
