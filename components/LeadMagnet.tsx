@@ -1,24 +1,20 @@
 'use client';
 
 import { useState } from 'react';
+import { subscribe } from '../lib/emailSources';
+import NewsletterOptIn from './NewsletterOptIn';
 
 export default function LeadMagnet() {
   const [email, setEmail] = useState('');
+  const [optIn, setOptIn] = useState(false);
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus('loading');
     try {
-      const res = await fetch(
-        'https://app.kit.com/forms/9243576/subscriptions',
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: new URLSearchParams({ email_address: email }).toString(),
-        }
-      );
-      if (res.ok) {
+      const ok = await subscribe({ source: 'lead-magnet', email, newsletterOptIn: optIn });
+      if (ok) {
         setStatus('success');
         setEmail('');
       } else {
@@ -90,6 +86,13 @@ export default function LeadMagnet() {
               {status === 'loading' ? 'Sending…' : 'Show Me How'}
             </button>
           </form>
+        )}
+        {status !== 'success' && (
+          <NewsletterOptIn
+            checked={optIn}
+            onChange={setOptIn}
+            className="mt-2 justify-center text-[#2D1A00]/80"
+          />
         )}
         {status === 'error' && (
           <p className="text-red-300 text-xs mt-2 text-center">

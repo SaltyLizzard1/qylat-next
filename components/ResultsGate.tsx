@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import ShareButtons from './ShareButtons';
+import NewsletterOptIn from './NewsletterOptIn';
+import { subscribe } from '../lib/emailSources';
 
 interface Match {
   title: string;
@@ -141,6 +143,7 @@ export default function ResultsGate({
   // over. With only one match there is nothing to unlock.
   const [rest, setRest] = useState<Match[] | null>(restCount > 0 ? null : []);
   const [email, setEmail] = useState('');
+  const [optIn, setOptIn] = useState(false);
   const [emailLoading, setEmailLoading] = useState(false);
   const [emailError, setEmailError] = useState('');
 
@@ -152,13 +155,10 @@ export default function ResultsGate({
     setEmailLoading(true);
     setEmailError('');
 
-    // A failed signup never stands between the visitor and the matches.
+    // A failed capture never stands between the visitor and the matches. It
+    // is alerted on the server.
     try {
-      await fetch('https://app.kit.com/forms/9562904/subscriptions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({ email_address: email.trim() }).toString(),
-      });
+      await subscribe({ source: 'results-gate', email: email.trim(), newsletterOptIn: optIn });
     } catch (err) {
       console.error('Email error:', err);
     }
@@ -242,6 +242,7 @@ export default function ResultsGate({
                     placeholder="your@email.com"
                     className="w-full min-w-0 px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#C9A030]"
                   />
+                  <NewsletterOptIn checked={optIn} onChange={setOptIn} className="text-gray-500" />
                   <button
                     type="submit"
                     disabled={emailLoading}

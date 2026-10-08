@@ -100,12 +100,16 @@ Three UptimeRobot HTTP monitors at 5-minute intervals cover `ideatoplan.to`, `n8
 `quityourlifeandtravel.com`.
 
 `app/api/cron/health/route.ts` runs daily at 07:00 UTC per `vercel.json`, gated by `CRON_SECRET`, and
-alerts via Resend from `noreply@send.quityourlifeandtravel.com` to `liz@ideatoplan.to`. Three checks:
-HEAD on the quiz webhook, HEAD on the idea submission webhook, and freshness of `trend_cache` (stale past
-26 hours, against a workflow that runs daily at 03:00 UTC). On the HEAD checks anything that is not a 404
-and not a 5xx counts as alive, since n8n answers 405 on a live path and 404 when the workflow is disabled
-or unregistered. The HEAD checks only prove a path is registered, so the quiz workflow can fail every
-execution while they stay green; only the `trend_cache` check catches that.
+alerts via Resend from `noreply@quityourlifeandtravel.com` to `liz@ideatoplan.to`. Resend has verified
+the root domain only: a from address on `send.` is rejected with a 403, which silently blocked every
+alert until October 2026. Three checks: a GET probe on the quiz webhook, a GET probe on the idea
+submission webhook, and freshness of `trend_cache` (stale past 26 hours, against a workflow that runs
+daily at 03:00 UTC). On n8n 2.20.9 HEAD and OPTIONS answer a made-up path exactly as they answer a real
+one, so neither proves anything. Only the body of a GET differs, and `lib/healthProbe.ts` reads it. A GET
+cannot start a POST-only webhook; never give those webhooks a GET handler without changing the probe.
+The probes only prove a path is registered, so the quiz workflow can fail every execution while they stay
+green; the `trend_cache` check and the n8n error workflow catch that. When an alert is needed and Resend
+does not accept it, the route answers 500 so the failure shows in the Vercel cron log.
 
 ## Brand tokens (defined inline per component, not in a shared file)
 
@@ -134,9 +138,14 @@ Cormorant Garamond and Cinzel (display accent) both load via `next/font/google` 
 - Header nav order: My Story, What's Stopping You, Leap Calculator, Discover Your Idea, Idea To Plan,
   Work With Me, Leap Log
 - Interactive components are `'use client'`
-- Email capture posts to `https://app.kit.com/forms/<id>/subscriptions` and the id differs per surface:
-  `9498737` (Footer), `9243576` (LeadMagnet, LeapCalculator), `9562904` (assessment, ResultsGate). Blog
-  posts instead embed the Kit script with uid `afc2a0b2d2` in `data/posts.tsx`. Reuse an existing id
+- Email capture goes through `subscribe()` in `lib/emailSources.ts`, which posts to `/api/subscribe`.
+  Nothing posts to Kit any more. Every form is a source in that file's registry and maps to a purpose;
+  sends are decided by purpose, so two forms asking for the same resource send one email. Asking for a
+  resource or unlocking results is never newsletter consent: those forms carry `NewsletterOptIn`, always
+  unchecked, and only the footer form is itself the signup. Schema and email copy live in
+  `supabase/qylat_email_capture.sql`; the n8n send worker is `n8n/qylat-email-send-worker.json`. Rate
+  limit prefixes are `qylat-subscribe:` and `qylat-unsubscribe:`. Sending is governed by
+  `outbound_email_settings.send_mode` (`off`, `test`, `live`); rollback is `off`, never dropping tables
 - Free tools and content always appear before paid offers in page flow
 - The Leap Log list is fetched on the server in `lib/posts.ts` (Sanity plus `data/staticPosts.ts`, pinned
   post first, hourly revalidation) and passed down as a prop from `app/page.tsx`, so every post link is in

@@ -20,14 +20,14 @@ type StaticPage = {
 
 // noindex routes (welcome, thank-you, the per-user result pages) stay out.
 const STATIC_PAGES: StaticPage[] = [
-  { path: '/', copyDate: '2026-09-01', changeFrequency: 'weekly', priority: 1.0 },
+  { path: '/', copyDate: '2026-10-07', changeFrequency: 'weekly', priority: 1.0 },
   { path: '/story', copyDate: '2026-09-01', changeFrequency: 'monthly', priority: 0.8 },
   { path: '/about', copyDate: '2026-08-12', changeFrequency: 'monthly', priority: 0.6 },
   { path: '/faq', copyDate: '2026-08-12', changeFrequency: 'monthly', priority: 0.6 },
-  { path: '/assessment', copyDate: '2026-08-21', changeFrequency: 'monthly', priority: 0.7 },
+  { path: '/assessment', copyDate: '2026-10-07', changeFrequency: 'monthly', priority: 0.7 },
   { path: '/whats-stopping-you', copyDate: '2026-08-21', changeFrequency: 'monthly', priority: 0.7 },
-  { path: '/calculator', copyDate: '2026-08-21', changeFrequency: 'monthly', priority: 0.7 },
-  { path: '/privacy', copyDate: '2026-09-01', changeFrequency: 'yearly', priority: 0.3 },
+  { path: '/calculator', copyDate: '2026-10-07', changeFrequency: 'monthly', priority: 0.7 },
+  { path: '/privacy', copyDate: '2026-10-07', changeFrequency: 'yearly', priority: 0.3 },
   { path: '/terms', copyDate: '2026-08-11', changeFrequency: 'yearly', priority: 0.3 },
 ];
 

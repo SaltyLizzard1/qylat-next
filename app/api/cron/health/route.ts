@@ -1,8 +1,12 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { classifyWebhookProbe } from '../../../../lib/healthProbe';
 
 const ALERT_TO = 'liz@ideatoplan.to';
-const ALERT_FROM = 'noreply@send.quityourlifeandtravel.com';
+// Resend has verified quityourlifeandtravel.com itself. A from address on the
+// send. subdomain is rejected with a 403, which is why no alert was delivered
+// before this was corrected.
+const ALERT_FROM = 'noreply@quityourlifeandtravel.com';
 
 // Max age for the trend cache before we consider it stale.
 // The workflow runs daily at 3am UTC, 26h gives a comfortable buffer.
@@ -14,23 +18,14 @@ interface CheckResult {
   detail: string;
 }
 
-async function checkWebhook(name: string, url: string): Promise<CheckResult> {
+async function checkWebhook(name: string, url: string | undefined): Promise<CheckResult> {
+  if (!url) return { name, ok: false, detail: 'webhook URL env var is not set' };
   try {
-    const controller = new AbortController();
-    const id = setTimeout(() => controller.abort(), 10_000);
-
-    // HEAD request: n8n returns 405 (method not allowed) when a workflow is active,
-    // and 404 when the workflow is disabled or the path is unregistered.
-    // No AI nodes are ever invoked, zero cost.
-    const res = await fetch(url, { method: 'HEAD', signal: controller.signal });
-
-    clearTimeout(id);
-
-    // 404 = workflow is disabled/not registered = broken
-    // 5xx = n8n server error = broken
-    // anything else (405, 200, etc.) = endpoint exists = alive
-    const ok = res.status !== 404 && res.status < 500;
-    return { name, ok, detail: `HTTP ${res.status}` };
+    // GET, not HEAD: see lib/healthProbe.ts for why, and for what a pass does
+    // and does not prove. No workflow runs and no AI node is invoked.
+    const res = await fetch(url, { method: 'GET', signal: AbortSignal.timeout(10_000) });
+    const body = await res.text();
+    return { name, ...classifyWebhookProbe(res.status, body) };
   } catch (err) {
     const detail = err instanceof Error ? err.message : String(err);
     return { name, ok: false, detail };
@@ -72,28 +67,39 @@ async function checkTrendCache(): Promise<CheckResult> {
   }
 }
 
-async function sendAlert(failures: CheckResult[]) {
+// Returns null when Resend accepted the alert, otherwise the reason it did not.
+async function sendAlert(failures: CheckResult[]): Promise<string | null> {
+  const key = process.env.RESEND_API_KEY;
+  if (!key) return 'RESEND_API_KEY is not set';
+
   const bullet = failures.map((f) => `• ${f.name}: ${f.detail}`).join('\n');
   const count = failures.length;
 
-  await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      from: ALERT_FROM,
-      to: ALERT_TO,
-      subject: `⚠️ n8n Pipeline Alert: ${count} issue${count > 1 ? 's' : ''} detected`,
-      text: [
-        `The following n8n pipelines are down or unhealthy:\n`,
-        bullet,
-        `\nCheck n8n: https://n8n.ideatoplan.to`,
-        `Detected at: ${new Date().toUTCString()}`,
-      ].join('\n'),
-    }),
-  });
+  try {
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${key}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: ALERT_FROM,
+        to: ALERT_TO,
+        subject: `⚠️ n8n Pipeline Alert: ${count} issue${count > 1 ? 's' : ''} detected`,
+        text: [
+          `The following n8n pipelines are down or unhealthy:\n`,
+          bullet,
+          `\nCheck n8n: https://n8n.ideatoplan.to`,
+          `Detected at: ${new Date().toUTCString()}`,
+        ].join('\n'),
+      }),
+      signal: AbortSignal.timeout(10_000),
+    });
+    if (res.ok) return null;
+    return `Resend answered HTTP ${res.status}: ${(await res.text()).slice(0, 300)}`;
+  } catch (err) {
+    return err instanceof Error ? err.message : String(err);
+  }
 }
 
 export async function GET(request: Request) {
@@ -103,20 +109,25 @@ export async function GET(request: Request) {
   }
 
   const results = await Promise.all([
-    checkWebhook('Quiz Match', process.env.N8N_QUIZ_WEBHOOK_URL!),
-    checkWebhook('Idea Submission', process.env.N8N_I2P_WEBHOOK_URL!),
+    checkWebhook('Quiz Match', process.env.N8N_QUIZ_WEBHOOK_URL),
+    checkWebhook('Idea Submission', process.env.N8N_I2P_WEBHOOK_URL),
     checkTrendCache(),
   ]);
 
   const failures = results.filter((r) => !r.ok);
 
-  if (failures.length > 0 && process.env.RESEND_API_KEY) {
-    await sendAlert(failures);
+  let alertSent = false;
+  let alertError: string | null = null;
+  if (failures.length > 0) {
+    alertError = await sendAlert(failures);
+    alertSent = alertError === null;
+    // An alert that was needed and did not go out fails the cron run, so it
+    // shows as an error in the Vercel cron log instead of passing silently.
+    if (!alertSent) console.error('Health alert was not delivered:', alertError);
   }
 
-  return NextResponse.json({
-    timestamp: new Date().toISOString(),
-    results,
-    alertSent: failures.length > 0,
-  });
+  return NextResponse.json(
+    { timestamp: new Date().toISOString(), results, alertSent, alertError },
+    { status: failures.length > 0 && !alertSent ? 500 : 200 },
+  );
 }

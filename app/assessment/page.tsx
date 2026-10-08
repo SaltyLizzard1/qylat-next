@@ -4,6 +4,8 @@ import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import ShareButtons from '@/components/ShareButtons';
 import AssessmentLoader from '@/components/AssessmentLoader';
+import { subscribe } from '@/lib/emailSources';
+import NewsletterOptIn from '@/components/NewsletterOptIn';
 import { useState, useEffect, useRef } from 'react';
 import { ArrowLeft, ArrowRight, Sparkles } from 'lucide-react';
 
@@ -443,10 +445,12 @@ export default function QuizPage() {
 
   const [matches, setMatches] = useState<Match[]>([]);
   const [resultId, setResultId] = useState<string | undefined>(undefined);
+  const [reportToken, setReportToken] = useState<string | undefined>(undefined);
   const [error, setError] = useState('');
   const [loaderComplete, setLoaderComplete] = useState(false);
 
   const [email, setEmail] = useState('');
+  const [optIn, setOptIn] = useState(false);
   const [emailLoading, setEmailLoading] = useState(false);
   const [emailError, setEmailError] = useState('');
   const topRef = useRef<HTMLDivElement>(null);
@@ -508,6 +512,7 @@ export default function QuizPage() {
 
       setMatches(parsed);
       if (data.resultId) setResultId(data.resultId);
+      if (data.reportToken) setReportToken(data.reportToken);
       setLoaderComplete(true);
       setTimeout(() => setStage('results'), 900);
     } catch (err) {
@@ -524,18 +529,20 @@ export default function QuizPage() {
     setEmailLoading(true);
     setEmailError('');
 
+    // The report unlocks whether or not the capture is recorded. A failed
+    // capture is alerted on the server and never stands between the visitor
+    // and the results.
     try {
-      await fetch('https://app.kit.com/forms/9562904/subscriptions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({ email_address: email.trim() }).toString(),
+      await subscribe({
+        source: 'assessment',
+        email: email.trim(),
+        newsletterOptIn: optIn,
+        ...(resultId && reportToken ? { resultId, reportToken } : {}),
       });
-
-      setStage('unlocked');
     } catch (err) {
       if (process.env.NODE_ENV === 'development') console.error('Email error:', err);
-      setEmailError('Something went wrong. Try again.');
     } finally {
+      setStage('unlocked');
       setEmailLoading(false);
     }
   }
@@ -820,9 +827,12 @@ export default function QuizPage() {
                       className="text-sm mb-6"
                       style={{ color: SLATE_SECONDARY, lineHeight: 1.5 }}
                     >
-                      I&apos;ve mapped 6 more paths that fit your profile, each with clear
-                      first moves to make. Where should I send your full Career Identity
-                      Dossier?
+                      {matches.length > 1
+                        ? `I've mapped ${matches.length - 1} more ${matches.length === 2 ? 'path' : 'paths'} that fit your profile, each with clear first moves to make. `
+                        : ''}
+                      {resultId && reportToken
+                        ? 'Where should I send your full report?'
+                        : 'Enter your email to unlock your full report.'}
                     </p>
                     <form onSubmit={submitEmail} className="space-y-3">
                       <input
@@ -845,6 +855,7 @@ export default function QuizPage() {
                       >
                         {emailLoading ? 'Unlocking...' : 'Enter Email to Unlock Your Full Report'}
                       </button>
+                      <NewsletterOptIn checked={optIn} onChange={setOptIn} color={SLATE_SECONDARY} />
                     </form>
                     {emailError && (
                       <p
