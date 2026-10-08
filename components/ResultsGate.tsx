@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import ShareButtons from './ShareButtons';
 import NewsletterOptIn from './NewsletterOptIn';
 import { subscribe } from '../lib/emailSources';
@@ -133,11 +133,14 @@ export default function ResultsGate({
   firstMatch,
   restCount,
   canonicalUrl,
+  reportToken,
 }: {
   resultId: string;
   firstMatch: Match;
   restCount: number;
   canonicalUrl: string;
+  /** Present only when the page was opened from the owner's report email. */
+  reportToken?: string;
 }) {
   // The remaining matches are not in the page until the server hands them
   // over. With only one match there is nothing to unlock.
@@ -148,6 +151,43 @@ export default function ResultsGate({
   const [emailError, setEmailError] = useState('');
 
   const unlocked = rest !== null;
+  // True while a report link is being opened. The email box is held back
+  // until that either works or fails.
+  const [opening, setOpening] = useState(!!reportToken && restCount > 0);
+
+  useEffect(() => {
+    if (!reportToken || restCount === 0) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(`/api/results/${resultId}/rest`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ reportToken }),
+        });
+        if (!res.ok) throw new Error(`Status ${res.status}`);
+        const data: { matches?: Match[] } = await res.json();
+        if (!Array.isArray(data.matches) || data.matches.length !== restCount) {
+          throw new Error('Unexpected matches payload');
+        }
+        if (cancelled) return;
+        setRest(data.matches);
+        // Drop the token from the address bar so it is not copied or shared
+        // along with the page.
+        window.history.replaceState(null, '', window.location.pathname);
+      } catch (err) {
+        console.error('Report link error:', err);
+        // The link did not open the report. Say so and fall back to the
+        // normal gate rather than showing a blank or half-open page.
+        if (!cancelled) setEmailError('Your report link did not open. Enter your email to see the rest.');
+      } finally {
+        if (!cancelled) setOpening(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [reportToken, resultId, restCount]);
 
   async function submitEmail(e: React.FormEvent) {
     e.preventDefault();
@@ -214,7 +254,15 @@ export default function ResultsGate({
             </div>
           )}
 
-          {!unlocked && (
+          {!unlocked && opening && (
+            <div className="absolute inset-0 flex items-start justify-center pt-8">
+              <p className="bg-white rounded-2xl shadow-xl px-8 py-6 mx-4 text-sm text-gray-600 border border-gray-100">
+                Opening your full report...
+              </p>
+            </div>
+          )}
+
+          {!unlocked && !opening && (
             <div className="absolute inset-0 flex items-start justify-center pt-8">
               <div className="bg-white rounded-2xl shadow-xl p-8 mx-4 w-full max-w-md text-center border border-gray-100">
                 <h3 className="text-xl font-bold text-gray-900 mb-2">

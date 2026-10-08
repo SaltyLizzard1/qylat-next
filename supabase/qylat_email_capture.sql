@@ -145,7 +145,8 @@ create function public.capture_subscriber(
   p_newsletter_opt_in boolean,
   p_notice_text text,
   p_newsletter_consent_text text,
-  p_fields jsonb
+  p_fields jsonb,
+  p_report_token text default ''
 ) returns jsonb
 language plpgsql
 security definer
@@ -205,15 +206,16 @@ begin
       v_fulfillment := 'suppressed';
     else
       if p_purpose = 'assessment_report' then
-        -- The report is built from the saved results, never from anything the
-        -- browser sent. No saved results means there is nothing to send.
+        -- The email is a link to the saved results, opened by a token the
+        -- site issued for this one result. No saved QYLAT result, or no
+        -- well-formed token, means there is nothing honest to send.
         select q.matches into v_matches from public.quiz_results q where q.id = v_scope and q.site = 'qylat';
-        if v_matches is null or jsonb_typeof(v_matches) <> 'array' or jsonb_array_length(v_matches) = 0 then
+        if v_matches is null or jsonb_typeof(v_matches) <> 'array' or jsonb_array_length(v_matches) = 0
+           or coalesce(p_report_token, '') !~ '^[a-f0-9]{64}$' then
           v_fulfillment := 'unavailable';
         else
           v_variables := jsonb_build_object(
-            'matches', v_matches,
-            'results_url', v_site_url || '/results/' || v_scope);
+            'report_url', v_site_url || '/results/' || v_scope || '?t=' || p_report_token);
         end if;
       end if;
 
@@ -549,7 +551,7 @@ $$;
 -- ── Grants: service_role only, same rule as check_rate_limit ────────────────
 
 revoke all on function
-  public.capture_subscriber(text, text, text, text, text, text, integer, boolean, text, text, jsonb),
+  public.capture_subscriber(text, text, text, text, text, text, integer, boolean, text, text, jsonb, text),
   public.claim_outbound_emails(text, integer),
   public.complete_outbound_email(uuid, text, text, text),
   public.flag_stale_outbound_emails(text, integer),
@@ -560,7 +562,7 @@ revoke all on function
 from public, anon, authenticated;
 
 grant execute on function
-  public.capture_subscriber(text, text, text, text, text, text, integer, boolean, text, text, jsonb),
+  public.capture_subscriber(text, text, text, text, text, text, integer, boolean, text, text, jsonb, text),
   public.claim_outbound_emails(text, integer),
   public.complete_outbound_email(uuid, text, text, text),
   public.flag_stale_outbound_emails(text, integer),
@@ -615,23 +617,24 @@ You are getting this because you asked for the Leap Kit at quityourlifeandtravel
 Unsubscribe from the Leap Log: {{unsubscribe_url}}
 {{postal_address}}$text$),
 
--- {{matches_html}} and {{matches_text}} are built by the worker from the
--- saved quiz_results row, so the email is the full report itself.
+-- A short note with a link. The link carries a token that opens the full
+-- results for this one saved result, so the report itself stays on the site.
 ('qylat', 'assessment_report', 'Your Discover Your Idea report',
 $html$<p>Hi, it's Liz.</p>
-<p>Here is your full Discover Your Idea report, every match with its first steps.</p>
-{{matches_html}}
-<p>If you want to share your matches, this is your page: <a href="{{results_url}}">{{results_url}}</a></p>
+<p>Your full Discover Your Idea report is ready. It has every one of your matches, each with its first steps.</p>
+<p><a href="{{report_url}}">Open your full report</a></p>
+<p>The link keeps working, so you can come back whenever you are ready to act on one.</p>
 <p>If you want to talk any of them through, reply to this email. It comes straight to me.</p>
 <p>Liz</p>
 <p style="font-size:12px;color:#666">You are getting this because you asked for your report at quityourlifeandtravel.com. {{newsletter_note}} You can <a href="{{unsubscribe_url}}">unsubscribe from the Leap Log</a> any time.<br>{{postal_address}}</p>$html$,
 $text$Hi, it's Liz.
 
-Here is your full Discover Your Idea report, every match with its first steps.
+Your full Discover Your Idea report is ready. It has every one of your matches, each with its first steps.
 
-{{matches_text}}
+Open your full report:
+{{report_url}}
 
-If you want to share your matches, this is your page: {{results_url}}
+The link keeps working, so you can come back whenever you are ready to act on one.
 
 If you want to talk any of them through, reply to this email. It comes straight to me.
 

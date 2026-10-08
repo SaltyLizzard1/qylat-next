@@ -5,6 +5,7 @@ import { supabase } from '../../../lib/supabase';
 import Header from '../../../components/Header';
 import Footer from '../../../components/Footer';
 import ResultsGate from '../../../components/ResultsGate';
+import { isValidReportToken } from '../../../lib/reportToken';
 
 const BASE_URL = 'https://www.quityourlifeandtravel.com';
 
@@ -23,7 +24,7 @@ interface Match {
   firstSteps: string[];
 }
 
-type Props = { params: Promise<{ id: string }> };
+type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ t?: string | string[] }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
@@ -51,8 +52,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function ResultsPage({ params }: Props) {
+export default async function ResultsPage({ params, searchParams }: Props) {
   const { id } = await params;
+  const { t } = await searchParams;
 
   // quiz_results is shared with IdeaToPlan, whose results live on its own
   // site. Only rows saved by this site are shown here.
@@ -137,6 +139,7 @@ export default async function ResultsPage({ params }: Props) {
             firstMatch={matches[0]}
             restCount={matches.length - 1}
             canonicalUrl={canonicalUrl}
+            reportToken={typeof t === 'string' && isValidReportToken(id, t) ? t : undefined}
           />
 
           <div className="mt-10 rounded-2xl p-8 text-center border border-[#EBD9A0]" style={{ background: '#FBF6E4' }}>

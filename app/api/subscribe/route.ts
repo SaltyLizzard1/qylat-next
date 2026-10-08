@@ -104,6 +104,8 @@ export async function POST(req: Request) {
       p_notice_text: config.notice,
       p_newsletter_consent_text: consentText,
       p_fields: cleanFields(fields),
+      // Only ever a token this route has just verified for this result id.
+      p_report_token: scope ? (reportToken as string) : '',
     });
     if (error) throw new Error(error.message);
   } catch (err) {

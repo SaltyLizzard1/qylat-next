@@ -19,7 +19,7 @@ begin
 end;
 $$;
 
-drop function public.capture_subscriber(text, text, text, text, text, text, integer, boolean, text, text, jsonb);
+drop function public.capture_subscriber(text, text, text, text, text, text, integer, boolean, text, text, jsonb, text);
 drop function public.claim_outbound_emails(text, integer);
 drop function public.complete_outbound_email(uuid, text, text, text);
 drop function public.flag_stale_outbound_emails(text, integer);
