@@ -48,7 +48,7 @@ export default function TermsPage() {
 
         <Section title="3. Leap Sessions">
           <p>
-            Leap Sessions are 45-minute coaching calls booked through Calendly and paid at the time of booking
+            Leap Sessions are 45-minute coaching calls booked through Cal.com and paid at the time of booking
             through Stripe. Prices are listed in US dollars.
           </p>
           <p>

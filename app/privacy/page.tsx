@@ -9,7 +9,7 @@ export const metadata: Metadata = pageMetadata({
   path: '/privacy',
 });
 
-const EFFECTIVE_DATE = 'October 7, 2026';
+const EFFECTIVE_DATE = 'October 10, 2026';
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -45,6 +45,7 @@ export default function PrivacyPage() {
             Your email address when you subscribe to our newsletter or request the free 60-Day Leap Kit.
             Your answers when you take the Discover Your Idea assessment.
             Your name, email, and comment text when you comment on a blog post.
+            Your name, email address, and the content of your message when you email us.
             Your name, email, and scheduling details when you book a Leap Session, along with payment processed at booking.
             Your business idea details if you submit the IdeaToPlan intake form, which may include financial information such as budget, revenue, funding goals, and loan details.
           </p>
@@ -62,28 +63,34 @@ export default function PrivacyPage() {
             Assessment responses and business idea submissions are processed with the help of AI language models to generate
             your results and plans. A human reviews business plans before delivery.
           </p>
+          <p>
+            When you email Quit Your Life and Travel, we may use AI services to help categorize your message and
+            prepare a draft response. Every AI-assisted reply is reviewed and approved by a person before it is sent.
+            We do not automatically subscribe you to marketing emails when you contact us.
+          </p>
         </Section>
 
         <Section title="3. Third-Party Processors">
           <p>These services process data on our behalf to run this site:</p>
           <Processor name="Vercel" role="Hosts the website and receives inbound request data." href="https://vercel.com/legal/privacy-policy" />
-          <Processor name="Supabase" role="Stores our email list, along with where and when you signed up." href="https://supabase.com/privacy" />
-          <Processor name="Resend" role="Delivers the Leap Kit, your assessment results, and newsletter sends." href="https://resend.com/legal/privacy-policy" />
+          <Processor name="Supabase" role="Stores our email list, along with where and when you signed up, and a record of emails you send us and our replies." href="https://supabase.com/privacy" />
+          <Processor name="Resend" role="Delivers the Leap Kit, your assessment results, newsletter sends, and our replies to your emails." href="https://resend.com/legal/privacy-policy" />
           <Processor name="Cusdis" role="Powers blog comments. Your name, email, and comment are stored with Cusdis." href="https://cusdis.com/privacy-policy" />
-          <Processor name="Calendly" role="Handles Leap Session scheduling." href="https://calendly.com/legal/privacy-notice" />
+          <Processor name="Cal.com" role="Handles Leap Session scheduling." href="https://cal.com/privacy" />
           <Processor name="Stripe" role="Processes payments securely. We never see your full card number." href="https://stripe.com/privacy" />
           <Processor name="Google Workspace" role="Stores submissions and handles email communication." href="https://workspace.google.com/terms/privacy.html" />
-          <Processor name="n8n (self-hosted)" role="Automation that routes assessment and plan submissions through our pipeline, hosted on our own server." href="https://n8n.io/legal/privacy" />
-          <Processor name="OpenRouter" role="Routes AI requests for assessment results and business plans." href="https://openrouter.ai/privacy" />
-          <Processor name="Anthropic" role="AI model (Claude) used to draft assessment results and business plans." href="https://www.anthropic.com/privacy" />
+          <Processor name="Hostinger" role="Hosts the mailbox that receives email sent to our quityourlifeandtravel.com address." href="https://www.hostinger.com/legal/privacy-policy" />
+          <Processor name="n8n (self-hosted)" role="Automation that routes assessment and plan submissions, and emails you send us, through our pipeline, hosted on our own server." href="https://n8n.io/legal/privacy" />
+          <Processor name="OpenRouter" role="Routes AI requests for assessment results, business plans, and draft email replies." href="https://openrouter.ai/privacy" />
+          <Processor name="Anthropic" role="AI model (Claude) used to draft assessment results, business plans, and email replies for our review." href="https://www.anthropic.com/privacy" />
           <Processor name="Perplexity" role="AI research used on Growth-tier business plans." href="https://www.perplexity.ai/hub/legal/privacy-policy" />
         </Section>
 
         <Section title="4. Cookies and Analytics">
           <p>
             We do not run advertising cookies, tracking pixels, or third-party analytics scripts. Vercel may set a
-            session cookie for routing. Embedded services such as Cusdis and Calendly may set their own cookies when
-            you use those features.
+            session cookie for routing. Embedded services such as Cusdis may set their own cookies when you use those
+            features. Booking a Leap Session takes you to Cal.com, which sets its own cookies.
           </p>
         </Section>
 
