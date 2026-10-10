@@ -72,7 +72,9 @@ export default function PrivacyPage() {
 
         <Section title="3. Third-Party Processors">
           <p>These services process data on our behalf to run this site:</p>
-          <Processor name="Vercel" role="Hosts the website and receives inbound request data." href="https://vercel.com/legal/privacy-policy" />
+          <Processor name="Vercel" role="Hosts the website, receives inbound request data, and provides website analytics." href="https://vercel.com/legal/privacy-policy" />
+          <Processor name="Google Analytics" role="Website analytics." href="https://policies.google.com/privacy" />
+          <Processor name="Neon" role="Stores records of clicks on certain links, such as the referring page, browser type, and country." href="https://neon.com/privacy-policy" />
           <Processor name="Supabase" role="Stores our email list, along with where and when you signed up, and a record of emails you send us and our replies." href="https://supabase.com/privacy" />
           <Processor name="Resend" role="Delivers the Leap Kit, your assessment results, newsletter sends, and our replies to your emails." href="https://resend.com/legal/privacy-policy" />
           <Processor name="Cusdis" role="Powers blog comments. Your name, email, and comment are stored with Cusdis." href="https://cusdis.com/privacy-policy" />
@@ -81,6 +83,8 @@ export default function PrivacyPage() {
           <Processor name="Google Workspace" role="Stores submissions and handles email communication." href="https://workspace.google.com/terms/privacy.html" />
           <Processor name="Hostinger" role="Hosts the mailbox that receives email sent to our quityourlifeandtravel.com address." href="https://www.hostinger.com/legal/privacy-policy" />
           <Processor name="n8n (self-hosted)" role="Automation that routes assessment and plan submissions, and emails you send us, through our pipeline, hosted on our own server." href="https://n8n.io/legal/privacy" />
+          <Processor name="DigitalOcean" role="Hosts the server our automation runs on, including its short-lived processing logs." href="https://www.digitalocean.com/legal/privacy-policy" />
+          <Processor name="Cloudflare" role="Stores backups of our database." href="https://www.cloudflare.com/privacypolicy/" />
           <Processor name="OpenRouter" role="Routes AI requests for assessment results, business plans, and draft email replies." href="https://openrouter.ai/privacy" />
           <Processor name="Anthropic" role="AI model (Claude) used to draft assessment results, business plans, and email replies for our review." href="https://www.anthropic.com/privacy" />
           <Processor name="Perplexity" role="AI research used on Growth-tier business plans." href="https://www.perplexity.ai/hub/legal/privacy-policy" />
@@ -88,8 +92,14 @@ export default function PrivacyPage() {
 
         <Section title="4. Cookies and Analytics">
           <p>
-            We do not run advertising cookies, tracking pixels, or third-party analytics scripts. Vercel may set a
-            session cookie for routing. Embedded services such as Cusdis may set their own cookies when you use those
+            We use analytics services, including Google Analytics and Vercel Analytics, to understand how visitors use
+            our website. We also track interactions with certain links to understand which content and resources
+            people find useful. These services may collect information about your device, browser, pages visited, and
+            interactions with our site.
+          </p>
+          <p>
+            Google Analytics sets cookies to do this. We do not run advertising cookies. Vercel may set a session
+            cookie for routing. Embedded services such as Cusdis may set their own cookies when you use those
             features. Booking a Leap Session takes you to Cal.com, which sets its own cookies.
           </p>
         </Section>
@@ -105,9 +115,14 @@ export default function PrivacyPage() {
             and any draft or reply, are deleted 12 months after the last activity in that conversation. We keep a
             conversation longer only while a request is still open, while a reply has not been confirmed as delivered,
             or where we need it to meet a legal obligation or resolve a dispute. After deletion we keep a minimal
-            record that a reply was approved and sent, with no name, email address, or message text. Processing logs
-            are removed within 14 days. The original email stays in our email accounts until we delete it or you ask
-            us to.
+            record that a reply was approved and sent, with no name, email address, or message text. Our automation's
+            processing logs are removed within 14 days.
+          </p>
+          <p>
+            Original emails may remain in our mailbox accounts, and copies of our records may remain in database
+            backups, after the working records are deleted. If you ask us to delete your data, we remove it from our
+            active systems, and removal from mailboxes and backups is subject to applicable legal and operational
+            requirements.
           </p>
         </Section>
 
