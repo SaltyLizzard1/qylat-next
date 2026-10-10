@@ -106,9 +106,9 @@ export default function PrivacyPage() {
 
         <Section title="5. Data Retention">
           <p>
-            We keep your information only as long as needed to provide the service, typically no longer than 12 months
-            after your last interaction. Email subscribers are kept until they unsubscribe. Comments remain published
-            until you ask us to remove them.
+            We keep your information for as long as needed to provide the service. Assessment results and submissions
+            are not deleted on a fixed schedule, and you can ask us to delete them at any time. Email subscribers are
+            kept until they unsubscribe. Comments remain published until you ask us to remove them.
           </p>
           <p>
             When you email us, the records our systems create to handle your message, including a copy of your message
