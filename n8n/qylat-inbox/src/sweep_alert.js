@@ -8,6 +8,7 @@ const TITLES = {
   send_uncertain: 'NOT KNOWN: a reply may or may not have been sent',
   deferred_message: 'Needs you: a second message was not answered',
   polling_stale: 'CHECK: the mailbox may not be being read',
+  held_summary: 'Needs you: messages held without an email',
 };
 const out = [];
 for (const item of $input.all()) {

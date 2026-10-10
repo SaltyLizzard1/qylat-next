@@ -16,6 +16,9 @@
 --   * the owner is emailed about at most a set number of messages a day, so a
 --     burst of mail cannot use up the sending quota the capture system needs
 --   * a send with no confirmed outcome becomes 'uncertain' and is never resent
+--   * a conversation is deleted 12 months after its last activity, never while
+--     an approval is pending, a send is unresolved or a hold is set, and only
+--     while the retention switch is on (off at first)
 
 -- ── Settings: one row per mailbox. Everything starts closed. ────────────────
 
@@ -30,6 +33,8 @@ create table public.qylat_inbox_settings (
   max_handled_per_thread_per_day integer not null default 3 check (max_handled_per_thread_per_day between 1 and 20),
   max_handled_per_sender_per_day integer not null default 5 check (max_handled_per_sender_per_day between 1 and 50),
   daily_notification_cap integer not null default 25 check (daily_notification_cap between 1 and 60),
+  retention_enabled boolean not null default false,
+  retention_months integer not null default 12 check (retention_months between 12 and 84),
   canary_token text,
   canary_sent_at timestamptz,
   canary_seen_at timestamptz,
@@ -51,6 +56,8 @@ create table public.qylat_inbox_threads (
   category text,
   claimed_at timestamptz,
   claim_message_id uuid,
+  legal_hold boolean not null default false,
+  legal_hold_reason text,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   unique (mailbox, thread_key)
@@ -144,6 +151,35 @@ create table public.qylat_inbox_model_calls (
   updated_at timestamptz not null default now()
 );
 
+-- What is kept after a conversation is deleted: proof that a reply was approved
+-- before it was sent. No address, no name, no subject, no text.
+create table public.qylat_inbox_send_audit (
+  draft_id uuid primary key,
+  mailbox text not null,
+  approval_status text not null,
+  decided_at timestamptz,
+  send_status text,
+  sent_at timestamptz,
+  reply_sha256 text not null,
+  provider_message_id text,
+  removed_at timestamptz not null default now()
+);
+
+-- One row per cleanup that deleted something. Counts only.
+create table public.qylat_inbox_retention_runs (
+  id bigint generated always as identity primary key,
+  mailbox text not null,
+  ran_at timestamptz not null default now(),
+  cutoff timestamptz not null,
+  threads integer not null,
+  messages integer not null,
+  drafts integer not null,
+  events integer not null,
+  ignored integer not null,
+  kept_unresolved integer not null,
+  kept_on_hold integer not null
+);
+
 -- The ensure_rls event trigger already enables RLS on new public tables. Stated
 -- here as well so this file is correct on its own. No policies: every read and
 -- write goes through the functions below.
@@ -155,11 +191,14 @@ alter table public.qylat_inbox_drafts enable row level security;
 alter table public.qylat_inbox_events enable row level security;
 alter table public.qylat_inbox_model_calls enable row level security;
 alter table public.qylat_inbox_notify_days enable row level security;
+alter table public.qylat_inbox_send_audit enable row level security;
+alter table public.qylat_inbox_retention_runs enable row level security;
 
 revoke all on
   public.qylat_inbox_settings, public.qylat_inbox_threads, public.qylat_inbox_messages,
   public.qylat_inbox_ignored, public.qylat_inbox_drafts, public.qylat_inbox_events,
-  public.qylat_inbox_model_calls, public.qylat_inbox_notify_days
+  public.qylat_inbox_model_calls, public.qylat_inbox_notify_days,
+  public.qylat_inbox_send_audit, public.qylat_inbox_retention_runs
 from public, anon, authenticated, service_role;
 
 -- ── Helpers ─────────────────────────────────────────────────────────────────
@@ -430,7 +469,7 @@ $$;
 -- first_held is true for the first message held on a day, so the workflow can
 -- raise one alert through a channel that does not use the sending provider.
 
-create function public.qylat_inbox_claim_notification(p_mailbox text) returns jsonb
+create function public.qylat_inbox_claim_notification(p_mailbox text, p_thread_id uuid default null) returns jsonb
 language plpgsql security definer set search_path = public
 as $$
 declare
@@ -457,6 +496,13 @@ begin
      set held = held + 1, updated_at = now()
    where mailbox = v_mailbox and day = v_day
   returning held into v_held;
+  -- Same transaction as the count, so a held message can never go unrecorded.
+  -- The sweep lists it for the owner on the following day.
+  if p_thread_id is not null then
+    insert into public.qylat_inbox_events (thread_id, event_type, actor, summary)
+    values (p_thread_id, 'notification_held', 'system',
+            'Held without an email: the daily limit of inbox emails was reached.');
+  end if;
   return jsonb_build_object('allowed', false, 'cap', v_cap, 'held', v_held, 'first_held', v_held = 1);
 end;
 $$;
@@ -818,6 +864,169 @@ begin
          ('The mailbox check sent at ' || to_char(st.canary_sent_at at time zone 'utc', 'YYYY-MM-DD HH24:MI') ||
           ' UTC was not seen by the poller. New mail may not be being read.')::text
     from stale st;
+
+  return query
+  with due as (
+    select e.thread_id, min(e.created_at) as held_at
+      from public.qylat_inbox_events e
+      join public.qylat_inbox_threads t on t.id = e.thread_id
+     where t.mailbox = v_mailbox and e.event_type = 'notification_held'
+       and e.created_at < date_trunc('day', now() at time zone 'utc') at time zone 'utc'
+       and not exists (select 1 from public.qylat_inbox_events r
+                        where r.thread_id = e.thread_id and r.event_type = 'notification_held_reported'
+                          and r.created_at >= e.created_at)
+     group by e.thread_id
+  ), marked as (
+    insert into public.qylat_inbox_events (thread_id, event_type, actor, summary)
+    select d.thread_id, 'notification_held_reported', 'system', 'Listed in the summary of held messages.'
+      from due d
+    returning public.qylat_inbox_events.thread_id
+  ), listed as (
+    select d.held_at, t.customer_email, t.subject, t.status,
+           row_number() over (order by d.held_at) as n, count(*) over () as total
+      from due d join public.qylat_inbox_threads t on t.id = d.thread_id
+  )
+  select 'held_summary'::text, null::uuid, null::uuid, null::text, null::text,
+         (max(l.total)::text || ' message(s) arrived after the daily limit of inbox emails was reached and were held without an email. ' ||
+          'Each one is recorded and is still in the mailbox:' || E'\n\n' ||
+          string_agg('- ' || l.customer_email || ': ' || coalesce(nullif(l.subject, ''), '(no subject)') ||
+                     ' (' || to_char(l.held_at at time zone 'utc', 'YYYY-MM-DD HH24:MI') || ' UTC)', E'\n' order by l.n)
+            filter (where l.n <= 40) ||
+          case when max(l.total) > 40 then E'\n' || 'and ' || (max(l.total) - 40)::text || ' more in the mailbox.' else '' end)::text
+    from listed l
+   where (select count(*) from marked) >= 0
+  having count(*) > 0;
+end;
+$$;
+
+-- ── Retention ───────────────────────────────────────────────────────────────
+-- A conversation is deleted, with its messages, drafts and log, once nothing
+-- has happened in it for the retention period (12 months, never less).
+--
+-- Never deleted, whatever their age: a conversation still being processed, one
+-- waiting for a decision, one whose send has no confirmed outcome, one with a
+-- message not yet reported, and one placed on hold.
+--
+-- Nothing is deleted unless retention_enabled is on AND the caller asks to
+-- apply. Any other call only counts what would go.
+
+create function public.qylat_inbox_set_hold(p_thread_id uuid, p_hold boolean, p_reason text) returns boolean
+language plpgsql security definer set search_path = public
+as $$
+begin
+  update public.qylat_inbox_threads
+     set legal_hold = coalesce(p_hold, false),
+         legal_hold_reason = case when coalesce(p_hold, false) then left(p_reason, 300) end
+   where id = p_thread_id;
+  if not found then
+    return false;
+  end if;
+  perform public.qylat_inbox_log(p_thread_id, null, null,
+    case when coalesce(p_hold, false) then 'hold_set' else 'hold_released' end, 'owner', left(p_reason, 300), '{}'::jsonb);
+  return true;
+end;
+$$;
+
+create function public.qylat_inbox_retention(p_mailbox text, p_apply boolean default false, p_limit integer default 200)
+returns jsonb
+language plpgsql security definer set search_path = public
+as $$
+declare
+  v_mailbox text := lower(p_mailbox);
+  v_set public.qylat_inbox_settings%rowtype;
+  v_cutoff timestamptz;
+  v_ids uuid[];
+  v_messages integer := 0;
+  v_drafts integer := 0;
+  v_events integer := 0;
+  v_ignored integer := 0;
+  v_unresolved integer := 0;
+  v_hold integer := 0;
+  v_apply boolean;
+begin
+  select * into v_set from public.qylat_inbox_settings where mailbox = v_mailbox;
+  if not found then
+    raise exception 'unknown mailbox %', p_mailbox;
+  end if;
+  v_cutoff := now() - make_interval(months => greatest(12, v_set.retention_months));
+  v_apply := coalesce(p_apply, false) and v_set.retention_enabled;
+
+  select coalesce(array_agg(x.id), '{}') into v_ids
+    from (
+      select t.id
+        from public.qylat_inbox_threads t
+       where t.mailbox = v_mailbox
+         and t.status in ('needs_owner', 'approved_not_sent', 'sent', 'declined', 'expired', 'failed')
+         and not t.legal_hold
+         and t.created_at < v_cutoff and t.updated_at < v_cutoff
+         and not exists (select 1 from public.qylat_inbox_messages m
+                          where m.thread_id = t.id
+                            and (m.created_at >= v_cutoff or m.status in ('processing', 'deferred')))
+         and not exists (select 1 from public.qylat_inbox_drafts d
+                          where d.thread_id = t.id
+                            and (d.created_at >= v_cutoff
+                                 or coalesce(d.decided_at, d.created_at) >= v_cutoff
+                                 or coalesce(d.sent_at, d.created_at) >= v_cutoff
+                                 or d.approval_status = 'pending'
+                                 or d.send_status in ('claimed', 'uncertain')))
+         and not exists (select 1 from public.qylat_inbox_events e
+                          where e.thread_id = t.id and e.created_at >= v_cutoff)
+       order by t.updated_at
+       limit greatest(1, least(coalesce(p_limit, 200), 1000))
+         for update of t skip locked
+    ) x;
+
+  select count(*) into v_unresolved
+    from public.qylat_inbox_threads t
+   where t.mailbox = v_mailbox and t.updated_at < v_cutoff and not t.legal_hold
+     and (t.status in ('processing', 'awaiting_approval', 'uncertain')
+          or exists (select 1 from public.qylat_inbox_drafts d
+                      where d.thread_id = t.id
+                        and (d.approval_status = 'pending' or d.send_status in ('claimed', 'uncertain')))
+          or exists (select 1 from public.qylat_inbox_messages m
+                      where m.thread_id = t.id and m.status in ('processing', 'deferred')));
+  select count(*) into v_hold
+    from public.qylat_inbox_threads t
+   where t.mailbox = v_mailbox and t.updated_at < v_cutoff and t.legal_hold;
+
+  if not v_apply then
+    select count(*) into v_messages from public.qylat_inbox_messages where thread_id = any (v_ids);
+    select count(*) into v_drafts from public.qylat_inbox_drafts where thread_id = any (v_ids);
+    select count(*) into v_events from public.qylat_inbox_events where thread_id = any (v_ids);
+    select count(*) into v_ignored from public.qylat_inbox_ignored where mailbox = v_mailbox and created_at < v_cutoff;
+    return jsonb_build_object('applied', false,
+      'reason', case when not coalesce(p_apply, false) then 'count only' else 'retention is switched off' end,
+      'cutoff', v_cutoff, 'threads', coalesce(array_length(v_ids, 1), 0), 'messages', v_messages, 'drafts', v_drafts,
+      'events', v_events, 'ignored', v_ignored, 'kept_unresolved', v_unresolved, 'kept_on_hold', v_hold);
+  end if;
+
+  insert into public.qylat_inbox_send_audit
+    (draft_id, mailbox, approval_status, decided_at, send_status, sent_at, reply_sha256, provider_message_id)
+  select d.id, v_mailbox, d.approval_status, d.decided_at, d.send_status, d.sent_at, d.reply_sha256, d.provider_message_id
+    from public.qylat_inbox_drafts d
+   where d.thread_id = any (v_ids) and d.approval_status = 'approved'
+  on conflict (draft_id) do nothing;
+
+  delete from public.qylat_inbox_events where thread_id = any (v_ids);
+  get diagnostics v_events = row_count;
+  delete from public.qylat_inbox_drafts where thread_id = any (v_ids);
+  get diagnostics v_drafts = row_count;
+  delete from public.qylat_inbox_messages where thread_id = any (v_ids);
+  get diagnostics v_messages = row_count;
+  delete from public.qylat_inbox_threads where id = any (v_ids);
+  delete from public.qylat_inbox_ignored where mailbox = v_mailbox and created_at < v_cutoff;
+  get diagnostics v_ignored = row_count;
+  delete from public.qylat_inbox_notify_days where mailbox = v_mailbox and day < v_cutoff::date;
+
+  if coalesce(array_length(v_ids, 1), 0) > 0 or v_ignored > 0 then
+    insert into public.qylat_inbox_retention_runs
+      (mailbox, cutoff, threads, messages, drafts, events, ignored, kept_unresolved, kept_on_hold)
+    values (v_mailbox, v_cutoff, coalesce(array_length(v_ids, 1), 0), v_messages, v_drafts, v_events, v_ignored, v_unresolved, v_hold);
+  end if;
+
+  return jsonb_build_object('applied', true, 'cutoff', v_cutoff,
+    'threads', coalesce(array_length(v_ids, 1), 0), 'messages', v_messages, 'drafts', v_drafts,
+    'events', v_events, 'ignored', v_ignored, 'kept_unresolved', v_unresolved, 'kept_on_hold', v_hold);
 end;
 $$;
 
@@ -831,13 +1040,15 @@ revoke all on function
   public.qylat_inbox_canary_seen(text, text),
   public.qylat_inbox_claim_message(text, text, text, text[], text, text, text, text, jsonb, boolean),
   public.qylat_inbox_claim_model_call(text),
-  public.qylat_inbox_claim_notification(text),
+  public.qylat_inbox_claim_notification(text, uuid),
   public.qylat_inbox_save_draft(uuid, uuid, text, numeric, text, boolean, jsonb, jsonb, text, jsonb, text),
   public.qylat_inbox_finish_failed(uuid, uuid, text),
   public.qylat_inbox_decide(uuid, text, text, text),
   public.qylat_inbox_claim_send(uuid, text),
   public.qylat_inbox_complete_send(uuid, text, text, text),
-  public.qylat_inbox_sweep(text, integer)
+  public.qylat_inbox_sweep(text, integer),
+  public.qylat_inbox_set_hold(uuid, boolean, text),
+  public.qylat_inbox_retention(text, boolean, integer)
 from public, anon, authenticated;
 
 grant execute on function
@@ -847,13 +1058,15 @@ grant execute on function
   public.qylat_inbox_canary_seen(text, text),
   public.qylat_inbox_claim_message(text, text, text, text[], text, text, text, text, jsonb, boolean),
   public.qylat_inbox_claim_model_call(text),
-  public.qylat_inbox_claim_notification(text),
+  public.qylat_inbox_claim_notification(text, uuid),
   public.qylat_inbox_save_draft(uuid, uuid, text, numeric, text, boolean, jsonb, jsonb, text, jsonb, text),
   public.qylat_inbox_finish_failed(uuid, uuid, text),
   public.qylat_inbox_decide(uuid, text, text, text),
   public.qylat_inbox_claim_send(uuid, text),
   public.qylat_inbox_complete_send(uuid, text, text, text),
-  public.qylat_inbox_sweep(text, integer)
+  public.qylat_inbox_sweep(text, integer),
+  public.qylat_inbox_set_hold(uuid, boolean, text),
+  public.qylat_inbox_retention(text, boolean, integer)
 to service_role;
 
 -- ── Seed: the one mailbox. Shadow on, sending off, nothing approved. ────────

@@ -448,7 +448,7 @@
         "nodeCredentialType": "supabaseApi",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ { p_mailbox: $('Normalize and Filter').first().json.mailbox } }}",
+        "jsonBody": "={{ { p_mailbox: $('Normalize and Filter').first().json.mailbox, p_thread_id: $('Claim Message').first().json.thread_id } }}",
         "options": {}
       },
       "credentials": {
@@ -458,7 +458,7 @@
         }
       },
       "retryOnFail": false,
-      "notes": "ATOMIC. Counts this owner email against the daily ceiling held in the database. Over the ceiling the message is still recorded with its status, and no email is sent for it."
+      "notes": "ATOMIC. Counts this owner email against the daily ceiling held in the database. Over the ceiling the message is still recorded with its status, no email is sent for it, and the same database call marks it as held so the summary sent the next day lists it."
     },
     {
       "id": "ceiling",
@@ -604,7 +604,7 @@
         760
       ],
       "parameters": {
-        "errorMessage": "QYLAT inbox: the daily limit of inbox emails to you has been reached. Messages arriving for the rest of today are recorded and held, with no email for each one. Nothing is lost and nothing is sent to anyone. Open the QYLAT mailbox to read them. This alert is raised once a day."
+        "errorMessage": "QYLAT inbox: the daily limit of inbox emails to you has been reached. Messages arriving for the rest of today are recorded and held, with no email for each one. Nothing is lost and nothing is sent to anyone. Open the QYLAT mailbox to read them: every one is still there, unread. A list of the held messages is emailed to you tomorrow. This alert is raised once a day."
       },
       "notes": "Fails the execution on purpose, once a day, so the instance-wide failure alert tells the owner. That alert does not use the sending provider whose quota this ceiling protects, and it carries no customer text."
     },

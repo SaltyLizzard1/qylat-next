@@ -142,8 +142,8 @@ const handlerNodes = [
     "// The model call failed. It is not retried. The owner is told and answers by hand.\nconst e = $input.first().json || {};\nreturn [{ json: { no_model_call: 'the model call failed: ' + String((e.error && (e.error.message || e.error)) || e.message || 'unknown').slice(0, 200) } }];", pos(11, 1)),
   code('parse', 'Parse AI Answer', 'parse_ai.js', pos(12, 2)),
   code('gate', 'Decision Gate', 'gate.js', pos(13, 2)),
-  rpc('claim-notify', 'Claim Notification', 'qylat_inbox_claim_notification', "{ p_mailbox: $('Normalize and Filter').first().json.mailbox }", pos(13, 3),
-    { notes: 'ATOMIC. Counts this owner email against the daily ceiling held in the database. Over the ceiling the message is still recorded with its status, and no email is sent for it.' }),
+  rpc('claim-notify', 'Claim Notification', 'qylat_inbox_claim_notification', "{ p_mailbox: $('Normalize and Filter').first().json.mailbox, p_thread_id: $('Claim Message').first().json.thread_id }", pos(13, 3),
+    { notes: 'ATOMIC. Counts this owner email against the daily ceiling held in the database. Over the ceiling the message is still recorded with its status, no email is sent for it, and the same database call marks it as held so the summary sent the next day lists it.' }),
   inline('ceiling', 'Apply Ceiling',
     "// Over the daily ceiling no email goes to the owner, so no approval can be offered either. The message and\n// its status are still saved.\nconst gate = $('Decision Gate').first().json;\nconst n = $input.first().json || {};\nconst allowed = n.allowed === true;\nconst out = { ...gate, notify_allowed: allowed, first_held: n.first_held === true, notify_cap: n.cap || null };\nif (!allowed) {\n  out.approvable = false;\n  out.blocks = gate.blocks.concat(['the daily limit of ' + (n.cap || 'the configured number of') + ' inbox emails was reached, so this message is held without an email']);\n  out.reason = 'No approval offered: ' + out.blocks.join('; ');\n}\nreturn [{ json: out }];", pos(14, 3)),
   rpc('save', 'Save Draft', 'qylat_inbox_save_draft',
@@ -155,7 +155,7 @@ const handlerNodes = [
   noop('held', 'Held Without Email', pos(17, 5), 'Recorded with its status. No email, because the daily ceiling was already reached and already reported.'),
   {
     id: 'ceiling-reached', name: 'Ceiling Reached', type: 'n8n-nodes-base.stopAndError', typeVersion: 1, position: pos(17, 4),
-    parameters: { errorMessage: 'QYLAT inbox: the daily limit of inbox emails to you has been reached. Messages arriving for the rest of today are recorded and held, with no email for each one. Nothing is lost and nothing is sent to anyone. Open the QYLAT mailbox to read them. This alert is raised once a day.' },
+    parameters: { errorMessage: 'QYLAT inbox: the daily limit of inbox emails to you has been reached. Messages arriving for the rest of today are recorded and held, with no email for each one. Nothing is lost and nothing is sent to anyone. Open the QYLAT mailbox to read them: every one is still there, unread. A list of the held messages is emailed to you tomorrow. This alert is raised once a day.' },
     notes: 'Fails the execution on purpose, once a day, so the instance-wide failure alert tells the owner. That alert does not use the sending provider whose quota this ceiling protects, and it carries no customer text.',
   },
   resend('send-owner', 'Send Owner Email', pos(16, 2), 'OWNER ONLY. The recipient is fixed in Config. Sent from the no-reply address.'),
@@ -287,6 +287,8 @@ const watchdogNodes = [
     notes: 'Fails the execution on purpose so the instance-wide failure alert fires. It carries no customer text.',
   },
   noop('canary-off', 'Check Disabled', pos(4, 3)),
+  rpc('retention', 'Run Retention', 'qylat_inbox_retention', "{ p_mailbox: $('Config').first().json.mailbox, p_apply: true }", pos(3, 4),
+    { notes: 'Once a day. Deletes conversations with no activity for 12 months, and only while retention_enabled is on in the database. With the switch off this call counts and deletes nothing. It never touches a pending approval, an unresolved send or a conversation on hold.' }),
   rpc('sweep', 'Sweep', 'qylat_inbox_sweep', "{ p_mailbox: $('Config').first().json.mailbox, p_stuck_minutes: 20 }", pos(3, 0),
     { alwaysOutputData: true, notes: 'One database call marks what is stuck, expired or uncertain and returns each thing once. It sends nothing and resends nothing.' }),
   code('sweep-alerts', 'Build Sweep Alerts', 'sweep_alert.js', pos(4, 0)),
@@ -297,7 +299,7 @@ const watchdogNodes = [
 ];
 const watchdogWires = wire([
   ['Every 15 Minutes', 'Config'], ['Daily Mailbox Check', 'Config'], ['Config', 'Daily Run?'],
-  ['Daily Run?', 'Check Enabled?', 0], ['Daily Run?', 'Sweep', 1],
+  ['Daily Run?', 'Check Enabled?', 0], ['Daily Run?', 'Run Retention', 0], ['Daily Run?', 'Sweep', 1],
   ['Check Enabled?', 'Start Mailbox Check', 0], ['Check Enabled?', 'Check Disabled', 1],
   ['Start Mailbox Check', 'Build Mailbox Check'], ['Build Mailbox Check', 'Send Mailbox Check'], ['Send Mailbox Check', 'Mailbox Check Outcome'], ['Mailbox Check Outcome', 'Check Sent?'], ['Check Sent?', 'Mailbox Check Not Sent', 1],
   ['Sweep', 'Build Sweep Alerts'], ['Build Sweep Alerts', 'Send Sweep Alert'], ['Send Sweep Alert', 'Sweep Alert Outcome'], ['Sweep Alert Outcome', 'Record Sweep Alert'], ['Record Sweep Alert', 'Alert Delivered?'], ['Alert Delivered?', 'Sweep Alert Not Delivered', 1],

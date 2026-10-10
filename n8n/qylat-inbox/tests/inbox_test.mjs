@@ -49,7 +49,7 @@ const rpc = async (fn, args) => {
 };
 const sweep = async (mins = 20) => q(`select * from public.qylat_inbox_sweep($1, $2)`, [MB, mins]);
 const settings = async (patch) => { const k = Object.keys(patch); await pool.query(`update public.qylat_inbox_settings set ${k.map((c, i) => `${c} = $${i + 1}`).join(', ')}`, k.map((c) => patch[c])); };
-const resetData = async () => { await pool.query(`truncate public.qylat_inbox_events, public.qylat_inbox_drafts, public.qylat_inbox_messages, public.qylat_inbox_threads, public.qylat_inbox_ignored, public.qylat_inbox_model_calls, public.qylat_inbox_notify_days cascade`); await settings({ shadow: true, sending_enabled: false, fact_sheet_approved: true, production_send_authorized: false, monthly_model_cap: 100, canary_token: null, canary_sent_at: null, canary_seen_at: null, canary_alerted_at: null, max_handled_per_thread_per_day: 3, max_handled_per_sender_per_day: 50, daily_notification_cap: 60 }); };
+const resetData = async () => { await pool.query(`truncate public.qylat_inbox_events, public.qylat_inbox_drafts, public.qylat_inbox_messages, public.qylat_inbox_threads, public.qylat_inbox_ignored, public.qylat_inbox_model_calls, public.qylat_inbox_notify_days, public.qylat_inbox_send_audit, public.qylat_inbox_retention_runs cascade`); await settings({ shadow: true, sending_enabled: false, fact_sheet_approved: true, production_send_authorized: false, monthly_model_cap: 100, canary_token: null, canary_sent_at: null, canary_seen_at: null, canary_alerted_at: null, max_handled_per_thread_per_day: 3, max_handled_per_sender_per_day: 50, daily_notification_cap: 60, retention_enabled: false, retention_months: 12 }); };
 const openSending = () => settings({ shadow: false, sending_enabled: true, production_send_authorized: true });
 
 // \u2500\u2500 A stand-in for the n8n flow. Runs the built code nodes in the built order, with the database
@@ -103,7 +103,7 @@ async function runHandler(email, opt = {}) {
   const ai = step('Parse AI Answer', runCode(js(handler, 'Parse AI Answer'), s, aiInput)[0]);
   const gate = step('Decision Gate', runCode(js(handler, 'Decision Gate'), s, ai)[0]);
   if (opt.beforeSave) await opt.beforeSave(s);
-  const note = step('Claim Notification', await rpc('qylat_inbox_claim_notification', { p_mailbox: n.mailbox }));
+  const note = step('Claim Notification', await rpc('qylat_inbox_claim_notification', { p_mailbox: n.mailbox, p_thread_id: s['Claim Message'].thread_id }));
   const capped = step('Apply Ceiling', runCode(js(handler, 'Apply Ceiling'), s, note)[0]);
   step('Save Draft', await rpc('qylat_inbox_save_draft', { p_thread_id: claim.thread_id, p_message_id: claim.message_id, p_category: capped.category, p_confidence: capped.confidence, p_reply_text: capped.reply_text, p_approvable: capped.approvable, p_blocks: capped.blocks, p_warnings: capped.warnings, p_model: capped.model, p_usage: capped.usage, p_reason: capped.reason }));
   const owner = step('Build Owner Email', runCode(js(handler, 'Build Owner Email'), s, s['Save Draft'])[0]);
@@ -161,7 +161,7 @@ try {
     const fn = url.split('/rpc/')[1];
     const sent = Array.from(new Set((n.parameters.jsonBody.match(/\bp_[a-z_0-9]+(?=\s*:)/g) || [])));
     const want = fnArgs[fn] || [];
-    const required = fn === 'qylat_inbox_sweep' ? ['p_mailbox'] : want;
+    const required = fn === 'qylat_inbox_sweep' ? ['p_mailbox'] : fn === 'qylat_inbox_retention' ? ['p_mailbox', 'p_apply'] : want;
     if (!fnArgs[fn] || sent.some((a) => !want.includes(a)) || required.some((a) => !sent.includes(a))) { rpcOk = false; rpcBad.push([n.name, fn, sent, want]); }
   }
   check('every database call in the workflows names a real function with exactly its arguments (' + rpcCount + ' calls)', rpcOk && rpcCount >= 12, rpcBad);
@@ -309,10 +309,12 @@ try {
 
   // the SQL file only adds its own objects
   const sqlText = fs.readFileSync(path.join(WT, 'supabase/qylat_inbox.sql'), 'utf8').replace(/--[^\n]*/g, '');
+  const rStart = sqlText.indexOf('create function public.qylat_inbox_retention('); const rEnd = sqlText.indexOf('$$;', rStart) + 3;
+  const retentionBody = sqlText.slice(rStart, rEnd); const sqlNoRetention = sqlText.slice(0, rStart) + sqlText.slice(rEnd);
   const touched = Array.from(sqlText.matchAll(/\b(create table|alter table|create (?:unique )?index \w+ on|create function|insert into|update|delete from|truncate|drop \w+|grant execute on function|references)\s+(?:if (?:not )?exists\s+)?(?:only\s+)?(public\.[a-z_0-9]+)/gi)).map((m) => m[2].toLowerCase());
   const foreign = Array.from(new Set(touched.filter((n) => !n.startsWith('public.qylat_inbox_'))));
   const reads = Array.from(new Set(Array.from(sqlText.matchAll(/\b(?:from|join)\s+(public\.[a-z_0-9]+)/gi)).map((m) => m[1].toLowerCase()).filter((n) => !n.startsWith('public.qylat_inbox_'))));
-  check('the SQL file creates, changes and writes only qylat_inbox_ objects (' + new Set(touched).size + ' objects named)', foreign.length === 0 && touched.length > 40 && !/\bdrop\s|\btruncate\s|\bdelete\s+from\b|\balter\s+(function|type|role|schema|policy)/i.test(sqlText), foreign);
+  check('the SQL file creates, changes and writes only qylat_inbox_ objects (' + new Set(touched).size + ' objects named)', foreign.length === 0 && touched.length > 40 && !/\bdrop\s|\btruncate\s|\bdelete\s+from\b|\balter\s+(function|type|role|schema|policy)/i.test(sqlNoRetention) && (retentionBody.match(/\bdelete\s+from\b/gi) || []).length === 6, foreign);
   check('the only existing table it reads is this brand\'s own send queue', reads.join() === 'public.outbound_emails', reads);
   const beforeObjs = await one(`select count(*)::int n from public.outbound_emails`);
   check('the stand-in existing table is untouched after every test so far', beforeObjs.n === 2);
@@ -605,6 +607,86 @@ try {
   ]);
   check('sweep alerts go to the owner only, one per finding, and say nothing will be resent', alerts.length === 2 && alerts.every((a) => a.payload.to.join() === CFG.owner_to && a.payload.subject.startsWith('[QYLAT inbox] ') && !/Conversation:|t1|d1/.test(a.payload.text)) && /Nothing was sent automatically and nothing will be/.test(alerts[0].payload.text));
   check('every owner-facing subject starts with the prefix the handler itself ignores', CFG.system_subject_prefixes.includes('[QYLAT inbox]'));
+
+  {
+  // ── Retention: synthetic conversations only ──
+  await resetData(); await openSending();
+  const age = async (threadId, months = 13) => {
+    const iv = months + ' months';
+    await pool.query(`update public.qylat_inbox_events set created_at = created_at - $2::interval where thread_id = $1`, [threadId, iv]);
+    await pool.query(`update public.qylat_inbox_drafts set created_at = created_at - $2::interval, decided_at = decided_at - $2::interval, sent_at = sent_at - $2::interval, send_claimed_at = send_claimed_at - $2::interval, approval_expires_at = approval_expires_at - $2::interval where thread_id = $1`, [threadId, iv]);
+    await pool.query(`update public.qylat_inbox_messages set created_at = created_at - $2::interval, received_at = received_at - $2::interval where thread_id = $1`, [threadId, iv]);
+    await pool.query(`update public.qylat_inbox_threads set created_at = created_at - $2::interval, updated_at = updated_at - $2::interval where id = $1`, [threadId, iv]);
+  };
+  const approveAndClaim = async (d) => { await rpc('qylat_inbox_decide', { p_draft_id: d.draft_id, p_decision: 'approve', p_sha: d.sha256, p_code: d.approval_code }); return rpc('qylat_inbox_claim_send', { p_draft_id: d.draft_id, p_sha: d.sha256 }); };
+  const rSent = await mk('<ret-sent@x>'); await approveAndClaim(rSent); await rpc('qylat_inbox_complete_send', { p_draft_id: rSent.draft_id, p_outcome: 'sent', p_provider_message_id: 'prov-1', p_error: null }); await age(rSent.thread_id);
+  const rOwner = await mk('<ret-owner@x>', false); await age(rOwner.thread_id);
+  const rDeclined = await mk('<ret-declined@x>'); await rpc('qylat_inbox_decide', { p_draft_id: rDeclined.draft_id, p_decision: 'decline', p_sha: rDeclined.sha256, p_code: rDeclined.approval_code }); await age(rDeclined.thread_id);
+  const rPending = await mk('<ret-pending@x>'); await age(rPending.thread_id);
+  const rClaimed = await mk('<ret-claimed@x>'); await approveAndClaim(rClaimed); await age(rClaimed.thread_id);
+  const rUncertain = await mk('<ret-uncertain@x>'); await approveAndClaim(rUncertain); await pool.query(`update public.qylat_inbox_drafts set send_status = 'uncertain' where id = $1`, [rUncertain.draft_id]); await pool.query(`update public.qylat_inbox_threads set status = 'uncertain' where id = $1`, [rUncertain.thread_id]); await age(rUncertain.thread_id);
+  const rProcessing = await rpc('qylat_inbox_claim_message', { ...base, p_rfc_message_id: '<ret-processing@x>', p_from_email: 'ret-processing@example.com' }); await age(rProcessing.thread_id);
+  const rHold = await mk('<ret-hold@x>', false); await rpc('qylat_inbox_set_hold', { p_thread_id: rHold.thread_id, p_hold: true, p_reason: 'dispute' }); await age(rHold.thread_id);
+  const rActive = await mk('<ret-active@x>', false); await age(rActive.thread_id); await rpc('qylat_inbox_log', { p_thread_id: rActive.thread_id, p_message_id: null, p_draft_id: null, p_type: 'note', p_actor: 'owner', p_summary: 'recent activity', p_detail: {} });
+  const rRecent = await mk('<ret-recent@x>', false);
+  const rElevenMonths = await mk('<ret-eleven@x>', false); await age(rElevenMonths.thread_id, 11);
+  await rpc('qylat_inbox_record_ignored', { p_mailbox: MB, p_rfc_message_id: '<ign-old@x>', p_from_email: 'old@example.com', p_subject: 'old', p_reasons: ['automated'] });
+  await rpc('qylat_inbox_record_ignored', { p_mailbox: MB, p_rfc_message_id: '<ign-new@x>', p_from_email: 'new@example.com', p_subject: 'new', p_reasons: ['automated'] });
+  await pool.query(`update public.qylat_inbox_ignored set created_at = created_at - interval '13 months' where rfc_message_id = '<ign-old@x>'`);
+  const counts = async () => one(`select (select count(*)::int from public.qylat_inbox_threads) threads, (select count(*)::int from public.qylat_inbox_messages) messages, (select count(*)::int from public.qylat_inbox_drafts) drafts, (select count(*)::int from public.qylat_inbox_events) events, (select count(*)::int from public.qylat_inbox_ignored) ignored`);
+  const before = await counts();
+  const dry = await rpc('qylat_inbox_retention', { p_mailbox: MB, p_apply: false, p_limit: 200 });
+  check('a count-only retention run finds the three finished old conversations and deletes nothing', dry.applied === false && dry.reason === 'count only' && dry.threads === 3 && dry.ignored === 1 && JSON.stringify(await counts()) === JSON.stringify(before), dry);
+  const off = await rpc('qylat_inbox_retention', { p_mailbox: MB, p_apply: true, p_limit: 200 });
+  check('with the retention switch off, a run asked to apply still deletes nothing', off.applied === false && off.reason === 'retention is switched off' && JSON.stringify(await counts()) === JSON.stringify(before), off);
+  check('a fresh install has retention switched off', (await one(`select column_default d from information_schema.columns where table_name = 'qylat_inbox_settings' and column_name = 'retention_enabled'`)).d === 'false');
+  await settings({ retention_enabled: true });
+  const ran = await rpc('qylat_inbox_retention', { p_mailbox: MB, p_apply: true, p_limit: 200 });
+  const left = (await q(`select thread_key from public.qylat_inbox_threads order by 1`)).map((x) => x.thread_key);
+  check('with the switch on, exactly the sent, declined and owner-handled conversations older than 12 months are deleted', ran.applied === true && ran.threads === 3 && !left.includes('<ret-sent@x>') && !left.includes('<ret-owner@x>') && !left.includes('<ret-declined@x>'), [ran, left]);
+  check('a pending approval is never deleted, whatever its age', left.includes('<ret-pending@x>'));
+  check('a send that was claimed with no outcome, and an uncertain send, are never deleted', left.includes('<ret-claimed@x>') && left.includes('<ret-uncertain@x>'));
+  check('a conversation still being processed is never deleted', left.includes('<ret-processing@x>'));
+  check('a conversation on hold is never deleted', left.includes('<ret-hold@x>'));
+  check('an old conversation with recent activity is kept', left.includes('<ret-active@x>'));
+  check('recent and eleven-month-old conversations are kept', left.includes('<ret-recent@x>') && left.includes('<ret-eleven@x>'));
+  check('the run reports what it kept as unresolved and on hold', ran.kept_unresolved === 4 && ran.kept_on_hold === 1, ran);
+  const orphans = await one(`select (select count(*)::int from public.qylat_inbox_messages m where not exists (select 1 from public.qylat_inbox_threads t where t.id = m.thread_id)) m, (select count(*)::int from public.qylat_inbox_drafts d where not exists (select 1 from public.qylat_inbox_threads t where t.id = d.thread_id)) d, (select count(*)::int from public.qylat_inbox_events e where e.thread_id is not null and not exists (select 1 from public.qylat_inbox_threads t where t.id = e.thread_id)) e`);
+  check('messages, drafts and log entries of a deleted conversation go with it, leaving no orphans', orphans.m === 0 && orphans.d === 0 && orphans.e === 0 && ran.messages >= 3 && ran.drafts === 3, [orphans, ran]);
+  check('ignored-mail records older than 12 months are deleted, newer ones kept', ran.ignored === 1 && (await q(`select rfc_message_id from public.qylat_inbox_ignored`)).map((x) => x.rfc_message_id).join() === '<ign-new@x>');
+  const audit = await q(`select * from public.qylat_inbox_send_audit`);
+  check('proof that the deleted reply was approved before sending is kept, with no address, name, subject or text', audit.length === 1 && audit[0].draft_id === rSent.draft_id && audit[0].approval_status === 'approved' && audit[0].send_status === 'sent' && audit[0].provider_message_id === 'prov-1' && !/example\.com|Dana|Hello|free/.test(JSON.stringify(audit)), audit);
+  const runs = await q(`select * from public.qylat_inbox_retention_runs`);
+  check('the run is logged with counts only', runs.length === 1 && runs[0].threads === 3 && !/example\.com/.test(JSON.stringify(runs)));
+  const again = await rpc('qylat_inbox_retention', { p_mailbox: MB, p_apply: true, p_limit: 200 });
+  check('a second run finds nothing more and logs nothing', again.threads === 0 && again.ignored === 0 && (await q(`select 1 from public.qylat_inbox_retention_runs`)).length === 1);
+  await rpc('qylat_inbox_set_hold', { p_thread_id: rHold.thread_id, p_hold: false, p_reason: 'closed' });
+  check('releasing a hold counts as activity, so the conversation is not deleted the same day', (await rpc('qylat_inbox_retention', { p_mailbox: MB, p_apply: true, p_limit: 200 })).threads === 0);
+  let monthsErr = ''; try { await settings({ retention_months: 6 }); } catch (e) { monthsErr = e.message; }
+  check('the retention period cannot be set below 12 months', /check/.test(monthsErr));
+  check('web roles cannot run retention or set a hold', /permission denied/.test(await asRole('anon', `select public.qylat_inbox_retention('${MB}', true)`)) && /permission denied/.test(await asRole('authenticated', `select public.qylat_inbox_set_hold(gen_random_uuid(), true, 'x')`)));
+  const retNode = node(shipped.watchdog, 'Run Retention');
+  check('the scheduled cleanup runs only on the daily trigger and leaves the decision to delete to the database switch', ((shipped.watchdog.connections['Daily Run?'].main[0]) || []).some((x) => x.node === 'Run Retention') && !((shipped.watchdog.connections['Daily Run?'].main[1]) || []).some((x) => x.node === 'Run Retention') && /qylat_inbox_retention$/.test(retNode.parameters.url));
+  await settings({ retention_enabled: false });
+
+  // ── Held messages: recorded, and listed for the owner the next day ──
+  await resetData(); await settings({ daily_notification_cap: 1 }); sentMail.length = 0;
+  await runHandler(mail({ subject: 'Under the limit' }));
+  const h1 = await runHandler(mail({ subject: 'Held one', from: 'Ana <ana@example.com>' }));
+  const h2 = await runHandler(mail({ subject: 'Held two', from: 'Ben <ben@example.com>' }));
+  const heldEvents = await q(`select t.subject from public.qylat_inbox_events e join public.qylat_inbox_threads t on t.id = e.thread_id where e.event_type = 'notification_held' order by e.created_at`);
+  check('every message held by the daily limit is marked as held in the same database call that counted it', heldEvents.map((x) => x.subject).join() === 'Held one,Held two' && h1.trace.includes('Ceiling Reached') && h2.trace.includes('Held Without Email'));
+  check('the summary waits for the next day, so the limit is not defeated on the day itself', (await sweep()).filter((x) => x.kind === 'held_summary').length === 0);
+  await pool.query(`update public.qylat_inbox_events set created_at = created_at - interval '1 day' where event_type = 'notification_held'`);
+  const sum1 = (await sweep()).filter((x) => x.kind === 'held_summary');
+  check('the next day the sweep returns one summary naming every held message by sender and subject', sum1.length === 1 && /^2 message/.test(sum1[0].detail) && /ana@example\.com: Held one/.test(sum1[0].detail) && /ben@example\.com: Held two/.test(sum1[0].detail) && !/Under the limit/.test(sum1[0].detail), sum1);
+  check('held messages are summarised once, not on every sweep', (await sweep()).filter((x) => x.kind === 'held_summary').length === 0);
+  const sumMail = runCode(js(watchdog, 'Build Sweep Alerts'), { Config: CFG }, sum1);
+  check('the summary is one email to the owner only', sumMail.length === 1 && sumMail[0].payload.to.join() === CFG.owner_to && /held without an email/.test(sumMail[0].payload.subject) && /Held one/.test(sumMail[0].payload.text));
+  check('held conversations keep their full record and status after the summary', (await q(`select 1 from public.qylat_inbox_threads t join public.qylat_inbox_messages m on m.thread_id = t.id where t.subject in ('Held one', 'Held two') and t.status = 'needs_owner' and length(m.body_text) > 0`)).length === 2);
+  check('the over-the-limit alert tells the owner where the messages are and carries no customer text', /still there, unread/.test(node(shipped.handler, 'Ceiling Reached').parameters.errorMessage) && !/\{\{/.test(node(shipped.handler, 'Ceiling Reached').parameters.errorMessage));
+  await settings({ daily_notification_cap: 60 });
+  }
 } catch (e) {
   fail++; failures.push('test run crashed: ' + (e.stack || e.message));
   console.log('CRASH', e.stack || e.message);

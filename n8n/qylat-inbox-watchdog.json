@@ -333,6 +333,34 @@
       "parameters": {}
     },
     {
+      "id": "retention",
+      "name": "Run Retention",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        690,
+        760
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://yglmlnfsyzsvozxirlpo.supabase.co/rest/v1/rpc/qylat_inbox_retention",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { p_mailbox: $('Config').first().json.mailbox, p_apply: true } }}",
+        "options": {}
+      },
+      "credentials": {
+        "supabaseApi": {
+          "id": "oxQOdBDbGP7WmsX1",
+          "name": "Supabase account"
+        }
+      },
+      "retryOnFail": false,
+      "notes": "Once a day. Deletes conversations with no activity for 12 months, and only while retention_enabled is on in the database. With the switch off this call counts and deletes nothing. It never touches a pending approval, an unresolved send or a conversation on hold."
+    },
+    {
       "id": "sweep",
       "name": "Sweep",
       "type": "n8n-nodes-base.httpRequest",
@@ -371,7 +399,7 @@
         0
       ],
       "parameters": {
-        "jsCode": "// Build Sweep Alerts (n8n Code node, run once for all items).\n// One short email per thing the sweep found. The sweep reports each thing once, changes states only,\n// and never sends or resends a customer email.\nconst cfg = $('Config').first().json;\nconst TITLES = {\n  stuck_processing: 'FAILED: a message was not processed',\n  approval_expired: 'EXPIRED: a draft was not decided in time',\n  send_uncertain: 'NOT KNOWN: a reply may or may not have been sent',\n  deferred_message: 'Needs you: a second message was not answered',\n  polling_stale: 'CHECK: the mailbox may not be being read',\n};\nconst out = [];\nfor (const item of $input.all()) {\n  const row = item.json || {};\n  if (!row.kind || !TITLES[row.kind]) continue;\n  const lines = [String(row.detail || '')];\n  if (row.customer_email) lines.push('', 'From: ' + row.customer_email);\n  if (row.subject) lines.push('Subject: ' + row.subject);\n  if (row.kind !== 'polling_stale') lines.push('', 'Nothing was sent automatically and nothing will be. Read the mailbox and answer by hand if needed.');\n  out.push({\n    json: {\n      kind: row.kind,\n      thread_id: row.thread_id || null,\n      draft_id: row.draft_id || null,\n      idempotency_key: 'qylat-inbox-sweep-' + row.kind + '-' + String(row.draft_id || row.thread_id || new Date().toISOString().slice(0, 13)),\n      payload: { from: cfg.alert_from, to: [cfg.owner_to], subject: '[QYLAT inbox] ' + TITLES[row.kind], text: lines.join('\\n') },\n    },\n  });\n}\nreturn out;\n"
+        "jsCode": "// Build Sweep Alerts (n8n Code node, run once for all items).\n// One short email per thing the sweep found. The sweep reports each thing once, changes states only,\n// and never sends or resends a customer email.\nconst cfg = $('Config').first().json;\nconst TITLES = {\n  stuck_processing: 'FAILED: a message was not processed',\n  approval_expired: 'EXPIRED: a draft was not decided in time',\n  send_uncertain: 'NOT KNOWN: a reply may or may not have been sent',\n  deferred_message: 'Needs you: a second message was not answered',\n  polling_stale: 'CHECK: the mailbox may not be being read',\n  held_summary: 'Needs you: messages held without an email',\n};\nconst out = [];\nfor (const item of $input.all()) {\n  const row = item.json || {};\n  if (!row.kind || !TITLES[row.kind]) continue;\n  const lines = [String(row.detail || '')];\n  if (row.customer_email) lines.push('', 'From: ' + row.customer_email);\n  if (row.subject) lines.push('Subject: ' + row.subject);\n  if (row.kind !== 'polling_stale') lines.push('', 'Nothing was sent automatically and nothing will be. Read the mailbox and answer by hand if needed.');\n  out.push({\n    json: {\n      kind: row.kind,\n      thread_id: row.thread_id || null,\n      draft_id: row.draft_id || null,\n      idempotency_key: 'qylat-inbox-sweep-' + row.kind + '-' + String(row.draft_id || row.thread_id || new Date().toISOString().slice(0, 13)),\n      payload: { from: cfg.alert_from, to: [cfg.owner_to], subject: '[QYLAT inbox] ' + TITLES[row.kind], text: lines.join('\\n') },\n    },\n  });\n}\nreturn out;\n"
       }
     },
     {
@@ -501,6 +529,11 @@
         [
           {
             "node": "Check Enabled?",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Run Retention",
             "type": "main",
             "index": 0
           }
