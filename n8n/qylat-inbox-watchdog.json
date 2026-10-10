@@ -1,0 +1,666 @@
+{
+  "name": "QYLAT Inbox - Watchdog (reports stuck, expired and uncertain items, never resends)",
+  "nodes": [
+    {
+      "id": "every",
+      "name": "Every 15 Minutes",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 15
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "daily",
+      "name": "Daily Mailbox Check",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        380
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "30 2 * * *"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "config",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        230,
+        190
+      ],
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{\n  \"mailbox\": \"liz@quityourlifeandtravel.com\",\n  \"own_addresses\": [\n    \"hello@quityourlifeandtravel.com\",\n    \"noreply@quityourlifeandtravel.com\",\n    \"noreply@send.quityourlifeandtravel.com\"\n  ],\n  \"system_subject_prefixes\": [\n    \"[QYLAT inbox]\"\n  ],\n  \"canary_subject_prefix\": \"[QYLAT inbox check]\",\n  \"canary_enabled\": true,\n  \"launch_cutoff\": \"SET AT ACTIVATION\",\n  \"owner_to\": \"lizalfond@gmail.com\",\n  \"alert_from\": \"QYLAT Inbox <noreply@quityourlifeandtravel.com>\",\n  \"reply_from\": \"Liz at Quit Your Life and Travel <liz@quityourlifeandtravel.com>\",\n  \"model\": \"anthropic/claude-sonnet-4.6\",\n  \"max_output_tokens\": 700,\n  \"max_request_bytes\": 30000,\n  \"min_confidence\": 0.8,\n  \"approval_ttl_hours\": 72,\n  \"approved_links\": [\n    \"quityourlifeandtravel.com\",\n    \"quityourlifeandtravel.com/assessment\",\n    \"quityourlifeandtravel.com/whats-stopping-you\",\n    \"quityourlifeandtravel.com/calculator\",\n    \"quityourlifeandtravel.com/60-day-leap-plan.pdf\",\n    \"cal.com/qylat/leap-session\",\n    \"ideatoplan.to\"\n  ],\n  \"approved_money\": [\n    \"$40\",\n    \"$35k\",\n    \"$2,720\",\n    \"$1,838\"\n  ],\n  \"sign_off\": \"Liz\",\n  \"fact_sheet\": \"PENDING APPROVAL. The model is not called until the approved fact sheet is pasted here.\"\n}",
+        "options": {}
+      },
+      "notes": "Settings only. Whether anything can be sent is decided in the database (qylat_inbox_settings), not here."
+    },
+    {
+      "id": "which",
+      "name": "Daily Run?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        460,
+        190
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "which-c",
+              "leftValue": "={{ $('Daily Mailbox Check').isExecuted }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "canary-on",
+      "name": "Check Enabled?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        690,
+        380
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "canary-on-c",
+              "leftValue": "={{ $('Config').first().json.canary_enabled === true }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "canary-start",
+      "name": "Start Mailbox Check",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        920,
+        380
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://yglmlnfsyzsvozxirlpo.supabase.co/rest/v1/rpc/qylat_inbox_canary_start",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { p_mailbox: $('Config').first().json.mailbox } }}",
+        "options": {}
+      },
+      "credentials": {
+        "supabaseApi": {
+          "id": "oxQOdBDbGP7WmsX1",
+          "name": "Supabase account"
+        }
+      },
+      "retryOnFail": false
+    },
+    {
+      "id": "canary-build",
+      "name": "Build Mailbox Check",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1150,
+        380
+      ],
+      "parameters": {
+        "jsCode": "// One short message from the no-reply address to the QYLAT mailbox. The poller reports seeing it.\n// If it does not, the next sweep tells the owner that the mailbox may not be being read.\nconst cfg = $('Config').first().json;\nconst token = String($input.first().json.token || '');\nreturn [{ json: { idempotency_key: 'qylat-inbox-check-' + token, payload: { from: cfg.alert_from, to: [cfg.mailbox], subject: cfg.canary_subject_prefix + ' ' + token, text: 'Automatic daily check that this mailbox is being read. Safe to delete.' } } }];"
+      }
+    },
+    {
+      "id": "canary-send",
+      "name": "Send Mailbox Check",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1380,
+        380
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.resend.com/emails",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Idempotency-Key",
+              "value": "={{ $json.idempotency_key }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.payload) }}",
+        "options": {
+          "timeout": 20000,
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          }
+        }
+      },
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "SQ8PjKvAme19ISp3",
+          "name": "Resend QYLAT"
+        }
+      },
+      "retryOnFail": false,
+      "onError": "continueRegularOutput",
+      "notes": "Goes to the QYLAT mailbox itself, never to a customer."
+    },
+    {
+      "id": "canary-outcome",
+      "name": "Mailbox Check Outcome",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1610,
+        380
+      ],
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Provider Outcome (n8n Code node, run once for each item). Shared by every step that hands an email\n// to the sending provider. Only a 2xx answer carrying a message id counts as accepted. An answer that\n// proves the provider refused the message is 'failed'. Anything else (timeout, network error, 5xx, 409)\n// is 'uncertain': the email may have gone, so it is reported and never sent again automatically.\nconst res = $json || {};\nconst code = Number(res.statusCode);\nconst body = (res.body && typeof res.body === 'object') ? res.body : {};\nlet outcome = 'uncertain';\nlet providerId = '';\nlet error = '';\nif (code >= 200 && code < 300 && body.id) {\n  outcome = 'sent';\n  providerId = String(body.id);\n} else if ([400, 401, 403, 404, 405, 413, 422, 429].includes(code)) {\n  outcome = 'failed';\n  error = 'Provider ' + code + ': ' + String(body.message || body.name || 'rejected');\n} else {\n  error = code ? 'Provider ' + code + ': ' + String(body.message || 'no confirmation')\n    : 'No response: ' + String((res.error && (res.error.message || res.error)) || 'unknown');\n}\nreturn { json: { outcome, provider_message_id: providerId, error: error.slice(0, 500) } };\n"
+      }
+    },
+    {
+      "id": "canary-ok",
+      "name": "Check Sent?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1840,
+        380
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "canary-ok-c",
+              "leftValue": "={{ $json.outcome === 'sent' }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "canary-failed",
+      "name": "Mailbox Check Not Sent",
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        2070,
+        570
+      ],
+      "parameters": {
+        "errorMessage": "QYLAT inbox: the daily mailbox check could not be sent, so there is no proof today that the mailbox is being read. This usually means the sending provider refused it or its daily quota is used up."
+      },
+      "notes": "Fails the execution on purpose so the instance-wide failure alert fires."
+    },
+    {
+      "id": "alert-delivered",
+      "name": "Alert Delivered?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1840,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "alert-delivered-c",
+              "leftValue": "={{ $('Sweep Alert Outcome').item.json.outcome === 'sent' }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "alert-failed",
+      "name": "Sweep Alert Not Delivered",
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        2070,
+        190
+      ],
+      "parameters": {
+        "errorMessage": "QYLAT inbox: an alert about a stuck, expired or uncertain item could not be emailed to you. The item is recorded. Check the QYLAT inbox records and the QYLAT mailbox."
+      },
+      "notes": "Fails the execution on purpose so the instance-wide failure alert fires. It carries no customer text."
+    },
+    {
+      "id": "canary-off",
+      "name": "Check Disabled",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        920,
+        570
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "sweep",
+      "name": "Sweep",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        690,
+        0
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://yglmlnfsyzsvozxirlpo.supabase.co/rest/v1/rpc/qylat_inbox_sweep",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { p_mailbox: $('Config').first().json.mailbox, p_stuck_minutes: 20 } }}",
+        "options": {}
+      },
+      "credentials": {
+        "supabaseApi": {
+          "id": "oxQOdBDbGP7WmsX1",
+          "name": "Supabase account"
+        }
+      },
+      "retryOnFail": false,
+      "alwaysOutputData": true,
+      "notes": "One database call marks what is stuck, expired or uncertain and returns each thing once. It sends nothing and resends nothing."
+    },
+    {
+      "id": "sweep-alerts",
+      "name": "Build Sweep Alerts",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        920,
+        0
+      ],
+      "parameters": {
+        "jsCode": "// Build Sweep Alerts (n8n Code node, run once for all items).\n// One short email per thing the sweep found. The sweep reports each thing once, changes states only,\n// and never sends or resends a customer email.\nconst cfg = $('Config').first().json;\nconst TITLES = {\n  stuck_processing: 'FAILED: a message was not processed',\n  approval_expired: 'EXPIRED: a draft was not decided in time',\n  send_uncertain: 'NOT KNOWN: a reply may or may not have been sent',\n  deferred_message: 'Needs you: a second message was not answered',\n  polling_stale: 'CHECK: the mailbox may not be being read',\n};\nconst out = [];\nfor (const item of $input.all()) {\n  const row = item.json || {};\n  if (!row.kind || !TITLES[row.kind]) continue;\n  const lines = [String(row.detail || '')];\n  if (row.customer_email) lines.push('', 'From: ' + row.customer_email);\n  if (row.subject) lines.push('Subject: ' + row.subject);\n  if (row.kind !== 'polling_stale') lines.push('', 'Nothing was sent automatically and nothing will be. Read the mailbox and answer by hand if needed.');\n  out.push({\n    json: {\n      kind: row.kind,\n      thread_id: row.thread_id || null,\n      draft_id: row.draft_id || null,\n      idempotency_key: 'qylat-inbox-sweep-' + row.kind + '-' + String(row.draft_id || row.thread_id || new Date().toISOString().slice(0, 13)),\n      payload: { from: cfg.alert_from, to: [cfg.owner_to], subject: '[QYLAT inbox] ' + TITLES[row.kind], text: lines.join('\\n') },\n    },\n  });\n}\nreturn out;\n"
+      }
+    },
+    {
+      "id": "sweep-send",
+      "name": "Send Sweep Alert",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1150,
+        0
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.resend.com/emails",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Idempotency-Key",
+              "value": "={{ $json.idempotency_key }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.payload) }}",
+        "options": {
+          "timeout": 20000,
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          }
+        }
+      },
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "SQ8PjKvAme19ISp3",
+          "name": "Resend QYLAT"
+        }
+      },
+      "retryOnFail": false,
+      "onError": "continueRegularOutput",
+      "notes": "OWNER ONLY."
+    },
+    {
+      "id": "sweep-outcome",
+      "name": "Sweep Alert Outcome",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1380,
+        0
+      ],
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Provider Outcome (n8n Code node, run once for each item). Shared by every step that hands an email\n// to the sending provider. Only a 2xx answer carrying a message id counts as accepted. An answer that\n// proves the provider refused the message is 'failed'. Anything else (timeout, network error, 5xx, 409)\n// is 'uncertain': the email may have gone, so it is reported and never sent again automatically.\nconst res = $json || {};\nconst code = Number(res.statusCode);\nconst body = (res.body && typeof res.body === 'object') ? res.body : {};\nlet outcome = 'uncertain';\nlet providerId = '';\nlet error = '';\nif (code >= 200 && code < 300 && body.id) {\n  outcome = 'sent';\n  providerId = String(body.id);\n} else if ([400, 401, 403, 404, 405, 413, 422, 429].includes(code)) {\n  outcome = 'failed';\n  error = 'Provider ' + code + ': ' + String(body.message || body.name || 'rejected');\n} else {\n  error = code ? 'Provider ' + code + ': ' + String(body.message || 'no confirmation')\n    : 'No response: ' + String((res.error && (res.error.message || res.error)) || 'unknown');\n}\nreturn { json: { outcome, provider_message_id: providerId, error: error.slice(0, 500) } };\n"
+      }
+    },
+    {
+      "id": "sweep-log",
+      "name": "Record Sweep Alert",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1610,
+        0
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://yglmlnfsyzsvozxirlpo.supabase.co/rest/v1/rpc/qylat_inbox_log",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { p_thread_id: $('Build Sweep Alerts').item.json.thread_id, p_message_id: null, p_draft_id: $('Build Sweep Alerts').item.json.draft_id, p_type: 'sweep_alert_' + $json.outcome, p_actor: 'system', p_summary: $('Build Sweep Alerts').item.json.kind, p_detail: { provider_message_id: $json.provider_message_id || null, error: $json.error || null } } }}",
+        "options": {}
+      },
+      "credentials": {
+        "supabaseApi": {
+          "id": "oxQOdBDbGP7WmsX1",
+          "name": "Supabase account"
+        }
+      },
+      "retryOnFail": false
+    }
+  ],
+  "connections": {
+    "Every 15 Minutes": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Daily Mailbox Check": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "Daily Run?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Daily Run?": {
+      "main": [
+        [
+          {
+            "node": "Check Enabled?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Sweep",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Enabled?": {
+      "main": [
+        [
+          {
+            "node": "Start Mailbox Check",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Check Disabled",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start Mailbox Check": {
+      "main": [
+        [
+          {
+            "node": "Build Mailbox Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Mailbox Check": {
+      "main": [
+        [
+          {
+            "node": "Send Mailbox Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Mailbox Check": {
+      "main": [
+        [
+          {
+            "node": "Mailbox Check Outcome",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mailbox Check Outcome": {
+      "main": [
+        [
+          {
+            "node": "Check Sent?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Sent?": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Mailbox Check Not Sent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sweep": {
+      "main": [
+        [
+          {
+            "node": "Build Sweep Alerts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Sweep Alerts": {
+      "main": [
+        [
+          {
+            "node": "Send Sweep Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Sweep Alert": {
+      "main": [
+        [
+          {
+            "node": "Sweep Alert Outcome",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sweep Alert Outcome": {
+      "main": [
+        [
+          {
+            "node": "Record Sweep Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Record Sweep Alert": {
+      "main": [
+        [
+          {
+            "node": "Alert Delivered?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Alert Delivered?": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Sweep Alert Not Delivered",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Asia/Bangkok",
+    "errorWorkflow": "BFirlikXaAuti0bh",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "active": false
+}
