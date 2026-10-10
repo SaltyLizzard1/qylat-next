@@ -100,6 +100,15 @@ export default function PrivacyPage() {
             after your last interaction. Email subscribers are kept until they unsubscribe. Comments remain published
             until you ask us to remove them.
           </p>
+          <p>
+            When you email us, the records our systems create to handle your message, including a copy of your message
+            and any draft or reply, are deleted 12 months after the last activity in that conversation. We keep a
+            conversation longer only while a request is still open, while a reply has not been confirmed as delivered,
+            or where we need it to meet a legal obligation or resolve a dispute. After deletion we keep a minimal
+            record that a reply was approved and sent, with no name, email address, or message text. Processing logs
+            are removed within 14 days. The original email stays in our email accounts until we delete it or you ask
+            us to.
+          </p>
         </Section>
 
         <Section title="6. Your Rights">
