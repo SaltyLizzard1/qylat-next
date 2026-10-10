@@ -161,7 +161,7 @@ try {
     const fn = url.split('/rpc/')[1];
     const sent = Array.from(new Set((n.parameters.jsonBody.match(/\bp_[a-z_0-9]+(?=\s*:)/g) || [])));
     const want = fnArgs[fn] || [];
-    const required = fn === 'qylat_inbox_sweep' ? ['p_mailbox'] : fn === 'qylat_inbox_retention' ? ['p_mailbox', 'p_apply'] : want;
+    const required = fn === 'qylat_inbox_sweep' ? ['p_mailbox'] : fn === 'qylat_inbox_retention' ? ['p_mailbox', 'p_apply'] : fn === 'qylat_inbox_outstanding' ? ['p_mailbox'] : want;
     if (!fnArgs[fn] || sent.some((a) => !want.includes(a)) || required.some((a) => !sent.includes(a))) { rpcOk = false; rpcBad.push([n.name, fn, sent, want]); }
   }
   check('every database call in the workflows names a real function with exactly its arguments (' + rpcCount + ' calls)', rpcOk && rpcCount >= 12, rpcBad);
@@ -177,7 +177,7 @@ try {
     check('Send Reply cannot be reached without passing "' + gateNode + '"', !reach(shipped.handler, 'One Email', [gateNode]).has('Send Reply'));
   }
   const resendNodes = [shipped.handler, shipped.watchdog].flatMap((wf) => wf.nodes.filter((n) => n.parameters && n.parameters.url === 'https://api.resend.com/emails').map((n) => n.name));
-  check('the workflows have exactly five nodes that hand mail to the provider', resendNodes.sort().join(',') === ['Send Mailbox Check', 'Send Owner Email', 'Send Reply', 'Send Result Notice', 'Send Sweep Alert'].sort().join(','), resendNodes);
+  check('the workflows have exactly six nodes that hand mail to the provider', resendNodes.sort().join(',') === ['Send Daily Summary', 'Send Mailbox Check', 'Send Owner Email', 'Send Reply', 'Send Result Notice', 'Send Sweep Alert'].sort().join(','), resendNodes);
   check('no node retries a send', [shipped.handler, shipped.watchdog].every((wf) => wf.nodes.every((n) => n.retryOnFail !== true)));
   check('the poller leaves mail unread and downloads no attachments', node(shipped.poller, 'New Email').parameters.postProcessAction === 'nothing' && node(shipped.poller, 'New Email').parameters.downloadAttachments === false);
   check('no I2P workflow id or Gmail credential is used anywhere', !/Cjn4k0oOCYmRHHLV|gmailOAuth2|tDz2V2FHb8o3hCZQ|NyrlhbzF91PuUiT1|4KUZmXYnBub7AXIT/.test(JSON.stringify(shipped)));
@@ -186,7 +186,7 @@ try {
   check('no test path is left in the shipped files', !/dry_run|_dry_run|dry run|e2e_test|TEST RUN/i.test(JSON.stringify(shipped)));
   check('owner emails do not go to the IdeaToPlan inbox, and no IdeaToPlan address appears anywhere', shippedCfg0.owner_to === 'lizalfond@gmail.com' && !/@ideatoplan\.to/.test(JSON.stringify(shipped)));
   const stops = Object.fromEntries([shipped.handler, shipped.watchdog].flatMap((wf) => wf.nodes.filter((n) => n.type === 'n8n-nodes-base.stopAndError').map((n) => [n.name, n.parameters.errorMessage])));
-  check('four failures escalate through the instance failure alert instead of the sending provider', ['Owner Email Not Sent', 'Ceiling Reached', 'Result Notice Not Delivered', 'Sweep Alert Not Delivered', 'Mailbox Check Not Sent'].every((n) => typeof stops[n] === 'string' && stops[n].length > 40));
+  check('four failures escalate through the instance failure alert instead of the sending provider', ['Owner Email Not Sent', 'Ceiling Reached', 'Result Notice Not Delivered', 'Sweep Alert Not Delivered', 'Mailbox Check Not Sent', 'Daily Summary Not Delivered'].every((n) => typeof stops[n] === 'string' && stops[n].length > 40));
   check('those escalation messages carry no customer text and no technical ids', Object.values(stops).every((m) => !/\{\{|\$json|\$\(/.test(m)));
   const falseBranch = (wf, name) => ((wf.connections[name] || { main: [] }).main[1] || []).map((x) => x.node).join();
   check('each escalation hangs off the "not delivered" branch', falseBranch(shipped.handler, 'Notice Delivered?') === 'Result Notice Not Delivered' && falseBranch(shipped.watchdog, 'Alert Delivered?') === 'Sweep Alert Not Delivered' && falseBranch(shipped.watchdog, 'Check Sent?') === 'Mailbox Check Not Sent' && falseBranch(shipped.handler, 'Notify Allowed?') === 'First Over Ceiling?');
@@ -686,6 +686,48 @@ try {
   check('held conversations keep their full record and status after the summary', (await q(`select 1 from public.qylat_inbox_threads t join public.qylat_inbox_messages m on m.thread_id = t.id where t.subject in ('Held one', 'Held two') and t.status = 'needs_owner' and length(m.body_text) > 0`)).length === 2);
   check('the over-the-limit alert tells the owner where the messages are and carries no customer text', /still there, unread/.test(node(shipped.handler, 'Ceiling Reached').parameters.errorMessage) && !/\{\{/.test(node(shipped.handler, 'Ceiling Reached').parameters.errorMessage));
   await settings({ daily_notification_cap: 60 });
+  }
+
+  {
+    // ── Daily summary of everything that still needs the owner ──
+    await resetData(); await openSending(); sentMail.length = 0;
+    const out = async (days = 7) => q(`select * from public.qylat_inbox_outstanding($1, $2)`, [MB, days]);
+    const kindOf = (rows, key) => (rows.find((x) => x.subject === key) || {}).kind;
+    const named = async (id, subject, approvable, blocks) => {
+      const c = await rpc('qylat_inbox_claim_message', { ...base, p_rfc_message_id: id, p_from_email: id.replace(/[<>]/g, '').split('@')[0] + '@example.com', p_subject: subject });
+      const d = await rpc('qylat_inbox_save_draft', { p_thread_id: c.thread_id, p_message_id: c.message_id, p_category: 'routine_qylat', p_confidence: 0.9, p_reply_text: 'Hi,' + String.fromCharCode(10, 10) + 'Yes.', p_approvable: approvable, p_blocks: blocks || (approvable ? [] : ['sensitive subject, approval withheld: the message asks about a refund']), p_warnings: [], p_model: 'm', p_usage: {}, p_reason: 'r' });
+      return { ...c, ...d };
+    };
+    check('with nothing open the list is empty and no summary email is built', (await out()).length === 0 && runCode(js(watchdog, 'Build Daily Summary'), { Config: CFG }, [{}]).length === 0);
+    const oPending = await named('<o-pending@x>', 'Pending decision', true);
+    const oSensitive = await named('<o-sensitive@x>', 'Sensitive one', false);
+    const oNoDraft = await named('<o-nodraft@x>', 'No draft one', false, ['no model call was made: the monthly limit of model calls was reached']);
+    const oHeld = await named('<o-held@x>', 'Held one', false); await pool.query(`insert into public.qylat_inbox_events (thread_id, event_type, actor, summary) values ($1, 'notification_held', 'system', 'held')`, [oHeld.thread_id]);
+    const oBlocked = await named('<o-blocked@x>', 'Approved not sent', true); await settings({ shadow: true }); await rpc('qylat_inbox_decide', { p_draft_id: oBlocked.draft_id, p_decision: 'approve', p_sha: oBlocked.sha256, p_code: oBlocked.approval_code }); await rpc('qylat_inbox_claim_send', { p_draft_id: oBlocked.draft_id, p_sha: oBlocked.sha256 }); await openSending();
+    const oUncertain = await named('<o-uncertain@x>', 'Uncertain send', true); await rpc('qylat_inbox_decide', { p_draft_id: oUncertain.draft_id, p_decision: 'approve', p_sha: oUncertain.sha256, p_code: oUncertain.approval_code }); await rpc('qylat_inbox_claim_send', { p_draft_id: oUncertain.draft_id, p_sha: oUncertain.sha256 }); await pool.query(`update public.qylat_inbox_drafts set send_claimed_at = now() - interval '16 minutes' where id = $1`, [oUncertain.draft_id]);
+    const oExpired = await named('<o-expired@x>', 'Expired approval', true); await pool.query(`update public.qylat_inbox_drafts set approval_expires_at = now() - interval '1 minute' where id = $1`, [oExpired.draft_id]);
+    const oStuck = await rpc('qylat_inbox_claim_message', { ...base, p_rfc_message_id: '<o-stuck@x>', p_from_email: 'o-stuck@example.com', p_subject: 'Stuck one' }); await pool.query(`update public.qylat_inbox_threads set claimed_at = now() - interval '25 minutes' where id = $1`, [oStuck.thread_id]);
+    await sweep();
+    const oSent = await named('<o-sent@x>', 'Sent one', true); await rpc('qylat_inbox_decide', { p_draft_id: oSent.draft_id, p_decision: 'approve', p_sha: oSent.sha256, p_code: oSent.approval_code }); await rpc('qylat_inbox_claim_send', { p_draft_id: oSent.draft_id, p_sha: oSent.sha256 }); await rpc('qylat_inbox_complete_send', { p_draft_id: oSent.draft_id, p_outcome: 'sent', p_provider_message_id: 'p', p_error: null });
+    const oDeclined = await named('<o-declined@x>', 'Declined one', true); await rpc('qylat_inbox_decide', { p_draft_id: oDeclined.draft_id, p_decision: 'decline', p_sha: oDeclined.sha256, p_code: oDeclined.approval_code });
+    const rows = await out();
+    check('the list has a pending approval, a sensitive message, a message with no draft, a held message, an unsent approval, an uncertain send, an expired approval and a stuck message, each under its own heading',
+      kindOf(rows, 'Pending decision') === 'awaiting_approval' && kindOf(rows, 'Sensitive one') === 'by_hand' && kindOf(rows, 'No draft one') === 'no_draft' && kindOf(rows, 'Held one') === 'held' && kindOf(rows, 'Approved not sent') === 'not_sent' && kindOf(rows, 'Uncertain send') === 'uncertain' && kindOf(rows, 'Expired approval') === 'expired' && kindOf(rows, 'Stuck one') === 'not_sent' && rows.length === 8, rows.map((x) => x.subject + ':' + x.kind));
+    check('answered and declined conversations are not on the list', !rows.some((x) => /Sent one|Declined one/.test(x.subject)));
+    const before = JSON.stringify(await q(`select id, status, updated_at from public.qylat_inbox_threads order by id`));
+    await out(); await out();
+    check('reading the list changes nothing', JSON.stringify(await q(`select id, status, updated_at from public.qylat_inbox_threads order by id`)) === before);
+    const mailOut = runCode(js(watchdog, 'Build Daily Summary'), { Config: CFG }, rows);
+    const body = mailOut[0].payload.text;
+    check('the summary is one email to the owner only, counting and naming every open item', mailOut.length === 1 && mailOut[0].payload.to.join() === CFG.owner_to && /8 emails need you/.test(mailOut[0].payload.subject) && ['Pending decision', 'Sensitive one', 'No draft one', 'Held one', 'Approved not sent', 'Uncertain send', 'Expired approval', 'Stuck one'].every((s) => body.includes(s)) && mailOut[0].payload.subject.startsWith('[QYLAT inbox] '));
+    check('the summary carries no message text, no draft and no approval code', !/A question|Yes\.|[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{4}/.test(body) && !body.includes(oPending.approval_code));
+    await pool.query(`update public.qylat_inbox_threads set updated_at = now() - interval '9 days' where subject <> 'Sent one'`);
+    const old = await out();
+    check('a pending decision and an uncertain send stay on the list whatever their age, and hand-reply items leave after the window', old.map((x) => x.subject).sort().join() === 'Pending decision,Uncertain send', old.map((x) => x.subject));
+    check('web roles cannot read the list', /permission denied/.test(await asRole('anon', `select * from public.qylat_inbox_outstanding('${MB}')`)) && (await asRole('service_role', `select * from public.qylat_inbox_outstanding('${MB}')`)) === 'ok');
+    const dr = shipped.watchdog.connections['Daily Run?'].main;
+    check('the summary runs on the daily trigger only, and a summary that cannot be sent is escalated', (dr[0] || []).some((x) => x.node === 'Outstanding') && !(dr[1] || []).some((x) => x.node === 'Outstanding') && ((shipped.watchdog.connections['Summary Sent?'].main[1]) || []).map((x) => x.node).join() === 'Daily Summary Not Delivered');
+    await settings({ shadow: true, sending_enabled: false, production_send_authorized: false });
   }
 } catch (e) {
   fail++; failures.push('test run crashed: ' + (e.stack || e.message));

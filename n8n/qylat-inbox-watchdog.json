@@ -35,7 +35,7 @@
           "interval": [
             {
               "field": "cronExpression",
-              "expression": "30 2 * * *"
+              "expression": "0 8 * * *"
             }
           ]
         }
@@ -333,6 +333,156 @@
       "parameters": {}
     },
     {
+      "id": "outstanding",
+      "name": "Outstanding",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        690,
+        950
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://yglmlnfsyzsvozxirlpo.supabase.co/rest/v1/rpc/qylat_inbox_outstanding",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { p_mailbox: $('Config').first().json.mailbox, p_days: 7 } }}",
+        "options": {}
+      },
+      "credentials": {
+        "supabaseApi": {
+          "id": "oxQOdBDbGP7WmsX1",
+          "name": "Supabase account"
+        }
+      },
+      "retryOnFail": false,
+      "alwaysOutputData": true,
+      "notes": "Read only. Every conversation that still needs the owner: undecided, not sent, unknown send, expired, held by the daily limit, written without a draft, or left for a reply by hand."
+    },
+    {
+      "id": "summary-build",
+      "name": "Build Daily Summary",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        920,
+        950
+      ],
+      "parameters": {
+        "jsCode": "// Build Daily Summary (n8n Code node, run once for all items).\n// One email a day listing every message that still needs the owner. No email when there is nothing.\n// It lists senders and subjects only: no message text, no draft, no approval code.\nconst cfg = $('Config').first().json;\nconst rows = $input.all().map((i) => i.json || {}).filter((r) => r.thread_id && r.kind);\nif (!rows.length) return [];\n\nconst GROUPS = [\n  ['awaiting_approval', 'Waiting for your decision'],\n  ['uncertain', 'Not known whether the reply was sent (it is never resent)'],\n  ['not_sent', 'Approved or processed, but not sent'],\n  ['expired', 'Approval closed with no decision, nothing was sent'],\n  ['held', 'Held without an email because the daily limit was reached'],\n  ['no_draft', 'No draft was written (a model or message limit was reached)'],\n  ['by_hand', 'Needs your reply by hand'],\n];\nconst when = (v) => { const d = new Date(v); return Number.isNaN(d.getTime()) ? '' : d.toISOString().slice(0, 16).replace('T', ' ') + ' UTC'; };\nconst lines = [rows.length + (rows.length === 1 ? ' email still needs you.' : ' emails still need you.') + ' Each one is in the QYLAT mailbox. Nothing is sent to anyone without your approval.'];\nfor (const [kind, title] of GROUPS) {\n  const group = rows.filter((r) => r.kind === kind);\n  if (!group.length) continue;\n  lines.push('', title + ' (' + group.length + ')');\n  for (const r of group.slice(0, 30)) {\n    const bits = [String(r.customer_email || 'unknown sender') + ': ' + String(r.subject || '(no subject)').slice(0, 120)];\n    if (r.received_at) bits.push('received ' + when(r.received_at));\n    if (r.detail) bits.push(String(r.detail).slice(0, 200));\n    lines.push('- ' + bits.join(' | '));\n  }\n  if (group.length > 30) lines.push('and ' + (group.length - 30) + ' more in the mailbox.');\n}\nlines.push('', 'A message you answered by hand stays on this list for up to ' + (cfg.summary_days || 7) + ' days, because the system cannot see replies you send yourself.');\nreturn [{\n  json: {\n    idempotency_key: 'qylat-inbox-summary-' + new Date().toISOString().slice(0, 10),\n    payload: {\n      from: cfg.alert_from, to: [cfg.owner_to],\n      subject: '[QYLAT inbox] Daily summary: ' + rows.length + (rows.length === 1 ? ' email needs you' : ' emails need you'),\n      text: lines.join('\\n'),\n    },\n  },\n}];\n"
+      }
+    },
+    {
+      "id": "summary-send",
+      "name": "Send Daily Summary",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1150,
+        950
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.resend.com/emails",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Idempotency-Key",
+              "value": "={{ $json.idempotency_key }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.payload) }}",
+        "options": {
+          "timeout": 20000,
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          }
+        }
+      },
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "SQ8PjKvAme19ISp3",
+          "name": "Resend QYLAT"
+        }
+      },
+      "retryOnFail": false,
+      "onError": "continueRegularOutput",
+      "notes": "OWNER ONLY. One email a day, and none when nothing is outstanding."
+    },
+    {
+      "id": "summary-outcome",
+      "name": "Daily Summary Outcome",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1380,
+        950
+      ],
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Provider Outcome (n8n Code node, run once for each item). Shared by every step that hands an email\n// to the sending provider. Only a 2xx answer carrying a message id counts as accepted. An answer that\n// proves the provider refused the message is 'failed'. Anything else (timeout, network error, 5xx, 409)\n// is 'uncertain': the email may have gone, so it is reported and never sent again automatically.\nconst res = $json || {};\nconst code = Number(res.statusCode);\nconst body = (res.body && typeof res.body === 'object') ? res.body : {};\nlet outcome = 'uncertain';\nlet providerId = '';\nlet error = '';\nif (code >= 200 && code < 300 && body.id) {\n  outcome = 'sent';\n  providerId = String(body.id);\n} else if ([400, 401, 403, 404, 405, 413, 422, 429].includes(code)) {\n  outcome = 'failed';\n  error = 'Provider ' + code + ': ' + String(body.message || body.name || 'rejected');\n} else {\n  error = code ? 'Provider ' + code + ': ' + String(body.message || 'no confirmation')\n    : 'No response: ' + String((res.error && (res.error.message || res.error)) || 'unknown');\n}\nreturn { json: { outcome, provider_message_id: providerId, error: error.slice(0, 500) } };\n"
+      }
+    },
+    {
+      "id": "summary-ok",
+      "name": "Summary Sent?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1610,
+        950
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "summary-ok-c",
+              "leftValue": "={{ $json.outcome === 'sent' }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "summary-failed",
+      "name": "Daily Summary Not Delivered",
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        1840,
+        1140
+      ],
+      "parameters": {
+        "errorMessage": "QYLAT inbox: the daily summary of emails that still need you could not be sent. There are open items. Open the QYLAT mailbox to see them: every one is still there."
+      },
+      "notes": "Fails the execution on purpose so the instance-wide failure alert fires. It carries no customer text."
+    },
+    {
       "id": "retention",
       "name": "Run Retention",
       "type": "n8n-nodes-base.httpRequest",
@@ -536,6 +686,11 @@
             "node": "Run Retention",
             "type": "main",
             "index": 0
+          },
+          {
+            "node": "Outstanding",
+            "type": "main",
+            "index": 0
           }
         ],
         [
@@ -682,6 +837,62 @@
         [
           {
             "node": "Sweep Alert Not Delivered",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Outstanding": {
+      "main": [
+        [
+          {
+            "node": "Build Daily Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Daily Summary": {
+      "main": [
+        [
+          {
+            "node": "Send Daily Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Daily Summary": {
+      "main": [
+        [
+          {
+            "node": "Daily Summary Outcome",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Daily Summary Outcome": {
+      "main": [
+        [
+          {
+            "node": "Summary Sent?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summary Sent?": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Daily Summary Not Delivered",
             "type": "main",
             "index": 0
           }

@@ -10,4 +10,4 @@ The two packages they need (`embedded-postgres` and `pg`) are deliberately not i
 node inbox_test.mjs <path to this repo>
 ```
 
-Last run 2026-10-10: 195 passed, 0 failed.
+Last run 2026-10-10: 204 passed, 0 failed.

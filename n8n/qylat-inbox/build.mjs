@@ -265,7 +265,7 @@ const pollerNodes = [
 // ── Watchdog ────────────────────────────────────────────────────────────────
 const watchdogNodes = [
   { id: 'every', name: 'Every 15 Minutes', type: 'n8n-nodes-base.scheduleTrigger', typeVersion: 1.2, position: pos(0, 0), parameters: { rule: { interval: [{ field: 'minutes', minutesInterval: 15 }] } } },
-  { id: 'daily', name: 'Daily Mailbox Check', type: 'n8n-nodes-base.scheduleTrigger', typeVersion: 1.2, position: pos(0, 2), parameters: { rule: { interval: [{ field: 'cronExpression', expression: '30 2 * * *' }] } } },
+  { id: 'daily', name: 'Daily Mailbox Check', type: 'n8n-nodes-base.scheduleTrigger', typeVersion: 1.2, position: pos(0, 2), parameters: { rule: { interval: [{ field: 'cronExpression', expression: '0 8 * * *' }] } } },
   config(pos(1, 1)),
   iff('which', 'Daily Run?', "$('Daily Mailbox Check').isExecuted", pos(2, 1)),
   iff('canary-on', 'Check Enabled?', "$('Config').first().json.canary_enabled === true", pos(3, 2)),
@@ -287,6 +287,17 @@ const watchdogNodes = [
     notes: 'Fails the execution on purpose so the instance-wide failure alert fires. It carries no customer text.',
   },
   noop('canary-off', 'Check Disabled', pos(4, 3)),
+  rpc('outstanding', 'Outstanding', 'qylat_inbox_outstanding', "{ p_mailbox: $('Config').first().json.mailbox, p_days: 7 }", pos(3, 5),
+    { alwaysOutputData: true, notes: 'Read only. Every conversation that still needs the owner: undecided, not sent, unknown send, expired, held by the daily limit, written without a draft, or left for a reply by hand.' }),
+  code('summary-build', 'Build Daily Summary', 'daily_summary.js', pos(4, 5)),
+  resend('summary-send', 'Send Daily Summary', pos(5, 5), 'OWNER ONLY. One email a day, and none when nothing is outstanding.'),
+  code('summary-outcome', 'Daily Summary Outcome', 'provider_outcome.js', pos(6, 5), 'runOnceForEachItem'),
+  iff('summary-ok', 'Summary Sent?', "$json.outcome === 'sent'", pos(7, 5)),
+  {
+    id: 'summary-failed', name: 'Daily Summary Not Delivered', type: 'n8n-nodes-base.stopAndError', typeVersion: 1, position: pos(8, 6),
+    parameters: { errorMessage: 'QYLAT inbox: the daily summary of emails that still need you could not be sent. There are open items. Open the QYLAT mailbox to see them: every one is still there.' },
+    notes: 'Fails the execution on purpose so the instance-wide failure alert fires. It carries no customer text.',
+  },
   rpc('retention', 'Run Retention', 'qylat_inbox_retention', "{ p_mailbox: $('Config').first().json.mailbox, p_apply: true }", pos(3, 4),
     { notes: 'Once a day. Deletes conversations with no activity for 12 months, and only while retention_enabled is on in the database. With the switch off this call counts and deletes nothing. It never touches a pending approval, an unresolved send or a conversation on hold.' }),
   rpc('sweep', 'Sweep', 'qylat_inbox_sweep', "{ p_mailbox: $('Config').first().json.mailbox, p_stuck_minutes: 20 }", pos(3, 0),
@@ -299,10 +310,11 @@ const watchdogNodes = [
 ];
 const watchdogWires = wire([
   ['Every 15 Minutes', 'Config'], ['Daily Mailbox Check', 'Config'], ['Config', 'Daily Run?'],
-  ['Daily Run?', 'Check Enabled?', 0], ['Daily Run?', 'Run Retention', 0], ['Daily Run?', 'Sweep', 1],
+  ['Daily Run?', 'Check Enabled?', 0], ['Daily Run?', 'Run Retention', 0], ['Daily Run?', 'Outstanding', 0], ['Daily Run?', 'Sweep', 1],
   ['Check Enabled?', 'Start Mailbox Check', 0], ['Check Enabled?', 'Check Disabled', 1],
   ['Start Mailbox Check', 'Build Mailbox Check'], ['Build Mailbox Check', 'Send Mailbox Check'], ['Send Mailbox Check', 'Mailbox Check Outcome'], ['Mailbox Check Outcome', 'Check Sent?'], ['Check Sent?', 'Mailbox Check Not Sent', 1],
   ['Sweep', 'Build Sweep Alerts'], ['Build Sweep Alerts', 'Send Sweep Alert'], ['Send Sweep Alert', 'Sweep Alert Outcome'], ['Sweep Alert Outcome', 'Record Sweep Alert'], ['Record Sweep Alert', 'Alert Delivered?'], ['Alert Delivered?', 'Sweep Alert Not Delivered', 1],
+  ['Outstanding', 'Build Daily Summary'], ['Build Daily Summary', 'Send Daily Summary'], ['Send Daily Summary', 'Daily Summary Outcome'], ['Daily Summary Outcome', 'Summary Sent?'], ['Summary Sent?', 'Daily Summary Not Delivered', 1],
 ]);
 
 const settings = { executionOrder: 'v1', timezone: 'Asia/Bangkok', errorWorkflow: ERROR_WORKFLOW, callerPolicy: 'workflowsFromSameOwner' };
