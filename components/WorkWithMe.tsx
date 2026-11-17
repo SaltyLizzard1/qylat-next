@@ -2,6 +2,7 @@
 
 import { motion, MotionConfig } from 'framer-motion';
 import { Check } from 'lucide-react';
+import { trackOutbound } from '../lib/track';
 
 const CAL_URL = 'https://cal.com/qylat/leap-session';
 
@@ -14,6 +15,7 @@ const goldBtn = {
 
 export default function WorkWithMe() {
   const openBooking = () => {
+    trackOutbound(CAL_URL, 'home-work-with-me');
     window.open(CAL_URL, '_blank');
   };
 

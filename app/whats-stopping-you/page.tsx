@@ -7,6 +7,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import { QUESTIONS } from '../../lib/leapTest';
+import { track } from '../../lib/track';
 
 const GOLD_GRADIENT =
   'linear-gradient(135deg, #8B6914 0%, #E8C84A 35%, #F5E070 55%, #C9A030 75%, #8B6914 100%)';
@@ -104,6 +105,8 @@ export default function LeapTestPage() {
           return;
         }
 
+        // The result is scored and saved: that is the completion.
+        track('quiz_complete');
         router.push(`/whats-stopping-you/result/${data.id}`);
       } catch {
         setError('Something went wrong. Please try again.');

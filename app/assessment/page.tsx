@@ -5,6 +5,7 @@ import Footer from '../../components/Footer';
 import ShareButtons from '@/components/ShareButtons';
 import AssessmentLoader from '@/components/AssessmentLoader';
 import { subscribe } from '@/lib/emailSources';
+import { track, trackOutbound } from '@/lib/track';
 import NewsletterOptIn from '@/components/NewsletterOptIn';
 import { useState, useEffect, useRef } from 'react';
 import { ArrowLeft, ArrowRight, Sparkles } from 'lucide-react';
@@ -511,6 +512,8 @@ export default function QuizPage() {
       if (!parsed.length) throw new Error('No matches returned');
 
       setMatches(parsed);
+      // Matches came back: that is the completion, whether or not an email follows.
+      track('assessment_complete');
       if (data.resultId) setResultId(data.resultId);
       if (data.reportToken) setReportToken(data.reportToken);
       setLoaderComplete(true);
@@ -889,6 +892,7 @@ export default function QuizPage() {
                   href="https://ideatoplan.to/#pricing"
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={() => trackOutbound('https://ideatoplan.to/#pricing', 'assessment-results')}
                   className="inline-block px-8 py-3 font-semibold rounded-lg transition-all hover:brightness-105"
                   style={GOLD_BUTTON_STYLE}
                 >

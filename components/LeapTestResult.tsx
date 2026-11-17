@@ -1,6 +1,7 @@
 'use client';
 
 import ShareButtons from './ShareButtons';
+import { trackOutbound } from '../lib/track';
 import {
   ARCHETYPE_COPY,
   DIMENSION_DISPLAY_ORDER,
@@ -221,6 +222,7 @@ export default function LeapTestResult({ scores, archetype, id, shareOrigin }: P
             <div className="mt-4 flex flex-wrap justify-center gap-3">
               <a
                 href={copy.primaryCta.href}
+                onClick={() => trackOutbound(copy.primaryCta.href, 'quiz-result')}
                 className="inline-block px-6 py-3 font-semibold rounded-lg transition-all hover:brightness-105"
                 style={{
                   background: GOLD_GRADIENT,

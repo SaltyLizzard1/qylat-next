@@ -10,6 +10,8 @@
 // Leap Log is a separate, unchecked choice on those forms. Only the footer
 // form is itself a newsletter signup.
 
+import { track } from './track';
+
 export const NEWSLETTER_LABEL = 'Also send me the Leap Log, my occasional email. Unsubscribe any time.';
 
 export type EmailSource =
@@ -104,12 +106,19 @@ type SubscribeInput = {
   reportToken?: string;
 };
 
-/** Browser helper. Resolves true when the capture was recorded. */
+/**
+ * Browser helper. Resolves true when the capture was recorded.
+ *
+ * A recorded capture is reported to GA4 as generate_lead, here and nowhere
+ * else, so all six forms are counted the same way. Only the form's source
+ * name is sent, never the address.
+ */
 export async function subscribe(input: SubscribeInput): Promise<boolean> {
   const res = await fetch('/api/subscribe', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(input),
   });
+  if (res.ok) track('generate_lead', { lead_source: input.source });
   return res.ok;
 }

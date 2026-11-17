@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react';
 import { Plane, Info } from 'lucide-react';
 import { subscribe } from '../lib/emailSources';
+import { trackOutbound } from '../lib/track';
 import NewsletterOptIn from './NewsletterOptIn';
 
 // ── Brand tokens ────────────────────────────────────────────────────────────
@@ -1024,6 +1025,7 @@ export default function LeapCalculator() {
               href="https://cal.com/qylat/leap-session"
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => trackOutbound('https://cal.com/qylat/leap-session', 'calculator')}
               className="underline"
               style={{ color: ESPRESSO_DEEP }}
             >

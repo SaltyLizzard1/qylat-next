@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import AnimatedLogo from './AnimatedLogo';
+import { track, trackOutbound } from '../lib/track';
 import { Lightbulb, FileText, Rocket, X, CheckCircle, AlertCircle, Loader } from 'lucide-react';
 
 const goldGradient =
@@ -141,6 +142,7 @@ export default function IdeaToPlan() {
       if (!res.ok) {
         throw new Error(`Submission failed: ${res.status}`);
       }
+      track('plan_request_submit');
       setStatus('success');
       setForm(initialForm);
     } catch (err: unknown) {
@@ -215,6 +217,7 @@ export default function IdeaToPlan() {
             href="https://ideatoplan.to/#pricing"
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => trackOutbound('https://ideatoplan.to/#pricing', 'home-ideatoplan')}
             className="inline-block font-sans whitespace-nowrap rounded-full px-8 md:px-12 py-4 text-base md:text-lg font-semibold transition-all duration-300 hover:scale-[1.03] hover:shadow-md active:scale-[0.98] min-w-0 md:min-w-[260px] text-center"
             style={goldBtn}
           >
